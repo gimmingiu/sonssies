@@ -127,6 +127,19 @@ input[type=color][data-on="true"]{box-shadow:0 0 0 2px var(--accent)}
 .foot button{flex:1;font:500 13px var(--f-body);border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:8px;padding:8px;cursor:pointer;min-width:110px}
 #out{display:block;width:calc(100% - 32px);margin:0 16px 16px;font:11px/1.5 var(--f-mono);background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:8px;height:110px;resize:vertical}
 .toast{font-size:12px;color:var(--accent);padding:0 16px 12px;min-height:1em}
+.accs{display:flex;flex-direction:column}
+.acc{border-top:1px solid var(--line)}
+.acc:first-child{border-top:0}
+.acc-h{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px 16px;border:0;background:transparent;color:var(--fg);font:500 15px var(--f-body);cursor:pointer;text-align:left}
+.acc-h:hover{background:color-mix(in srgb,var(--line) 35%,transparent)}
+.acc.open .acc-h{color:var(--accent)}
+.chev{width:20px;height:20px;flex:none;color:var(--muted);transition:transform .25s ease}
+.acc.open .chev{transform:rotate(180deg);color:var(--accent)}
+.acc-p{display:grid;grid-template-rows:0fr;transition:grid-template-rows .28s ease}
+.acc.open .acc-p{grid-template-rows:1fr}
+.acc-in{overflow:hidden;min-height:0}
+.acc-in .grp{padding:4px 16px 18px;gap:16px}
+@media (prefers-reduced-motion: reduce){.acc-p,.chev{transition:none}}
 .ctabs{display:flex;gap:6px;overflow-x:auto;padding:12px 16px;border-bottom:1px solid var(--line);scrollbar-width:thin}
 .ctab{flex:none;font:500 13px var(--f-body);padding:7px 13px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--muted);cursor:pointer;transition:background .15s,color .15s}
 .ctab:hover{color:var(--fg)}
@@ -217,7 +230,7 @@ footer{font:400 12px var(--f-mono);color:var(--muted);text-align:left;letter-spa
       <span class="chip">머리 : 몸 <b id="ratio">2.0 : 1</b></span>
       <span class="chip">상체 : 하체 <b id="ratio2">1 : 1</b></span>
       <span class="chip">질감 <b id="texChip">매트</b></span>
-      <span class="chip">버전 <b>v0.17.4</b></span>
+      <span class="chip">버전 <b>v0.18.0</b></span>
     </div>
   </header>
 
@@ -1051,27 +1064,28 @@ GROUPS.forEach(([name,rows])=>{
   }
   $('groups').appendChild(d);
 });
-// 패널을 게임 커스터마이즈 창처럼: 위쪽 카테고리 탭 + 한 번에 한 카테고리
+// 패널: 항목마다 '이름 + 화살표' 블럭을 세로로 쌓은 아코디언. 처음엔 모두 닫힘, 누른 블럭만 열리고 나머지는 닫힘
 (()=>{
-  const aside=document.querySelector('aside'),tabs=document.createElement('div'),panes=document.createElement('div');
-  tabs.className='ctabs';tabs.setAttribute('role','tablist');tabs.setAttribute('aria-label','커스터마이즈 항목');panes.className='cpanes';
-  // 매번 처음부터: 마지막 탭을 기억하지 않고 항상 첫 탭에서 시작
+  const aside=document.querySelector('aside'),list=document.createElement('div');list.className='accs';
   try{localStorage.removeItem('dk_tab')}catch(e){}
   const ORDER=['색 · 질감','뿔','머리','눈썹','눈','귀','코','입','볼','몸','팔','다리','꼬리','포즈'];
   const dets=[...aside.querySelectorAll('details')].sort((a,b)=>ORDER.indexOf(a.querySelector('summary').textContent.trim())-ORDER.indexOf(b.querySelector('summary').textContent.trim()));
-  const names=dets.map(d=>d.querySelector('summary').textContent.trim());
-  const start=names[0];
+  const items=[];
+  const setOpen=(it,on)=>{it.el.classList.toggle('open',on);it.h.setAttribute('aria-expanded',on);it.p.inert=!on;it.p.setAttribute('aria-hidden',!on)};
   dets.forEach((d,i)=>{
-    const name=names[i],g=d.querySelector('.grp'),b=document.createElement('button'),pane=document.createElement('div');
-    b.className='ctab';b.type='button';b.textContent=name;b.setAttribute('role','tab');b.id='tab'+i;
-    pane.className='cpane';pane.setAttribute('role','tabpanel');pane.setAttribute('aria-labelledby',b.id);pane.appendChild(g);pane.hidden=name!==start;
-    b.setAttribute('aria-selected',name===start);
-    b.onclick=()=>{[...tabs.children].forEach(x=>x.setAttribute('aria-selected','false'));b.setAttribute('aria-selected','true');
-      [...panes.children].forEach(p=>p.hidden=p!==pane)};
-    tabs.appendChild(b);panes.appendChild(pane);d.remove();
+    const name=d.querySelector('summary').textContent.trim(),g=d.querySelector('.grp');
+    const el=document.createElement('section');el.className='acc';
+    el.innerHTML=`<button type="button" class="acc-h" id="acch${i}" aria-controls="accp${i}" aria-expanded="false"><span>${name}</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="acc-p" id="accp${i}" role="region" aria-labelledby="acch${i}"><div class="acc-in"></div></div>`;
+    el.querySelector('.acc-in').appendChild(g);d.remove();list.appendChild(el);
+    const it={el,h:el.querySelector('.acc-h'),p:el.querySelector('.acc-p')};items.push(it);setOpen(it,false);
+    it.h.onclick=()=>{const on=!el.classList.contains('open');items.forEach(o=>setOpen(o,o===it&&on));
+      if(on)setTimeout(()=>{   // 연 블럭의 맨 위가 보이게 (휴대폰에선 위에 붙은 미리보기 아래로)
+        const st=document.getElementById('stage'),stuck=getComputedStyle(st).position==='sticky'&&innerWidth<=860,top=it.h.getBoundingClientRect().top;
+        const minTop=stuck?st.getBoundingClientRect().bottom+8:8;
+        if(top<minTop||top>innerHeight-120)scrollBy({top:top-minTop,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})},280)};
   });
-  const pre=aside.querySelector('.presets');pre.after(tabs);tabs.after(panes);
-  setTimeout(()=>{const sel=tabs.querySelector('[aria-selected="true"]');if(sel)sel.scrollIntoView({block:'nearest',inline:'nearest'})},0);
+  aside.querySelector('.presets').after(list);
 })();
 // 드래그 중엔 거친 해상도로 빠르게, 손을 떼면 매끈하게 다시 계산
 let pend=false,fineT;
