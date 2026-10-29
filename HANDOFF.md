@@ -77,3 +77,4 @@
 
 ## 9. 보류 중인 작업 (요청 시 실행)
 - **다국어(영어·일본어·중국어):** 방식·글꼴·명칭 확정본은 [`docs/i18n-plan.md`](docs/i18n-plan.md). 일본어 Kosugi Maru, 중국어 ZCOOL KuaiLe, 도깨비는 `Dokkaebi`.
+- **이모티콘 세트(카톡 이미지 전송용 12종):** 진행 중. 확정 사항·장면 목록·현황은 [`docs/emoticon-plan.md`](docs/emoticon-plan.md).

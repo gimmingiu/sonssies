@@ -1393,6 +1393,52 @@ function drawBubble(x,B,headY,headX=540,headCY=headY+200){
   x.restore();
   return {x:cx-a,y:cy-b,w:2*a,h:2*b,bottom:cy+b+B.gapB*0.6};
 }
+// ---------- 이모티콘 세트 (카톡에 이미지로 보내는 512×512 PNG, 흰 바탕) ----------
+// 지금 꾸민 도깨비에 장면별 표정·자세·소품만 잠시 덮어써서 렌더 → 원래대로 되돌림
+const D2Rs=Math.PI/180;
+const PROP_COL={spark:'#ffd36b',heart:'#ff7d8f',sweat:'#a8dcef'};
+function propGeo(type){
+  if(type==='heart'){const s=new THREE.Shape();s.moveTo(0,-0.9);s.bezierCurveTo(-0.15,-0.62,-1.05,-0.25,-1.05,0.28);s.bezierCurveTo(-1.05,0.82,-0.38,1.02,0,0.55);
+    s.bezierCurveTo(0.38,1.02,1.05,0.82,1.05,0.28);s.bezierCurveTo(1.05,-0.25,0.15,-0.62,0,-0.9);
+    const g=new THREE.ExtrudeGeometry(s,{depth:0.32,bevelEnabled:true,bevelThickness:0.22,bevelSize:0.2,bevelSegments:8,curveSegments:28});g.center();return g}
+  if(type==='spark'){const s=new THREE.Shape(),c=0.16;s.moveTo(0,1);s.quadraticCurveTo(c,c,1,0);s.quadraticCurveTo(c,-c,0,-1);s.quadraticCurveTo(-c,-c,-1,0);s.quadraticCurveTo(-c,c,0,1);
+    const g=new THREE.ExtrudeGeometry(s,{depth:0.14,bevelEnabled:true,bevelThickness:0.14,bevelSize:0.1,bevelSegments:6,curveSegments:20});g.center();return g}
+  if(type==='sweat'){const pts=[];for(let i=0;i<=12;i++){const a=-Math.PI/2+i/12*Math.PI/2;pts.push(new THREE.Vector2(Math.cos(a)+1e-4,Math.sin(a)))}
+    for(let i=1;i<=16;i++){const u=i/16;pts.push(new THREE.Vector2(Math.max(1e-4,Math.pow(1-u,1.25)*(1-0.15*u)),u*1.9))}
+    const g=new THREE.LatheGeometry(pts,40);g.translate(0,-0.4,0);return g}
+}
+// 장면: set=표정 덮어쓰기, head/body=고개·몸 숙임(°, +가 앞으로), props=[종류, 머리 가운데 기준 [x,y,z], 크기, 기울기°]
+const STICKERS=[
+ {id:'hello',name:'안녕하세요',set:{eyeType:'happy',mouthType:'smile',blush:true,browAng:-6},head:12,body:4,
+   props:[['spark',[1.25,0.75,0.4],0.2,10],['spark',[1.55,0.25,0.3],0.12,-15],['spark',[-1.3,0.6,0.3],0.1,20]]},
+ {id:'thanks',name:'감사합니다',set:{eyeType:'content',mouthType:'smile',blush:true,browAng:-12},head:26,body:12,
+   props:[['heart',[1.2,0.85,0.4],0.2,-14],['heart',[1.5,0.35,0.2],0.13,12],['heart',[-1.3,0.8,0.3],0.11,16]]},
+ {id:'sorry',name:'죄송합니다',set:{eyeType:'dot',mouthType:'flat',blush:false,browAng:-30,tuck:true},head:16,body:6,
+   props:[['sweat',[1.0,0.45,0.55],0.16,-18],['sweat',[1.28,0.05,0.4],0.1,-10]]},
+];
+function renderSticker(def,S=512){
+  const keep={...P},pr=renderer.getPixelRatio();
+  Object.assign(P,def.set||{});rebuild(true);
+  const c=chars[0],HG=c.userData.HG;
+  c.rotation.set((def.body||0)*D2Rs,0,0);if(HG)HG.rotation.x+=(def.head||0)*D2Rs;
+  c.updateMatrixWorld(true);
+  const hc=HG?HG.localToWorld(new THREE.Vector3(0,0.68*P.headH*0.75,0)):new THREE.Vector3(0,charH*0.65,0);
+  const G=new THREE.Group(),made=[];
+  (def.props||[]).forEach(([t,o,sc,rz])=>{const g=propGeo(t),mt=clay(PROP_COL[t]);made.push(g,mt);const m=new THREE.Mesh(g,mt);
+    m.scale.setScalar(sc*(t==='sweat'?1:1));m.position.set(hc.x+o[0],hc.y+o[1],hc.z+o[2]);m.rotation.z=(rz||0)*D2Rs;G.add(m)});
+  scene.add(G);
+  // 캐릭터+소품이 정사각형 안에 꽉 차되 여백 8%
+  const bb=new THREE.Box3().setFromObject(c).union(new THREE.Box3().setFromObject(G)),sp=bb.getBoundingSphere(new THREE.Sphere());
+  const cam=new THREE.PerspectiveCamera(26,1,0.1,80),dist=sp.radius/Math.sin(13*D2Rs)*0.94;
+  cam.position.set(sp.center.x,sp.center.y+dist*0.12,sp.center.z+dist);cam.lookAt(sp.center);
+  renderer.setPixelRatio(1);renderer.setSize(S*2,S*2,false);renderer.render(scene,cam);
+  const out=document.createElement('canvas');out.width=out.height=S;const x=out.getContext('2d');
+  x.fillStyle='#ffffff';x.fillRect(0,0,S,S);x.drawImage(renderer.domElement,0,0,S,S);   // 카톡은 투명 바탕을 흰색으로 보여 주므로 처음부터 흰 바탕
+  scene.remove(G);made.forEach(o=>o.dispose());
+  Object.keys(P).forEach(k=>delete P[k]);Object.assign(P,keep);rebuild(true);renderer.setPixelRatio(pr);layout();
+  return out;
+}
+window.__dkSticker=id=>renderSticker(STICKERS.find(s=>s.id===id)).toDataURL('image/png');
 const resCv=$('resCv');let pv=0;
 function placeBubHit(){const h=$('bubHit');if(!h)return;const b=bubbleRect;h.hidden=!b;if(!b)return;
   Object.assign(h.style,{left:(b.x/1080*100)+'%',top:(b.y/1920*100)+'%',width:(b.w/1080*100)+'%',height:(b.h/1920*100)+'%'})}
