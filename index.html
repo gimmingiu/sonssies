@@ -163,6 +163,8 @@ input[type=color][data-on="true"]{box-shadow:0 0 0 2px var(--accent)}
 .pip.mid.cur{background:var(--fg);opacity:1}
 .plusonly .pip:nth-child(-n+5){opacity:.28}
 .plusonly .sb[data-d="-1"]{opacity:.55}
+.minusonly .pip:nth-child(n+7){opacity:.28}
+.minusonly .sb[data-d="1"]{opacity:.55}
 @media (prefers-reduced-motion: reduce){.pip,.sb,.ctab{transition:none}}
 /* 꾸미기 패널 맨 아래에 붙어 있는 '완성!' 버튼 */
 .side{display:flex;flex-direction:column;gap:12px;min-width:0}
@@ -226,7 +228,7 @@ footer{font:400 12px var(--f-mono);color:var(--muted);text-align:left;letter-spa
       <span class="chip">머리 : 몸 <b id="ratio">2.0 : 1</b></span>
       <span class="chip">상체 : 하체 <b id="ratio2">1 : 1</b></span>
       <span class="chip">질감 <b id="texChip">매트</b></span>
-      <span class="chip">버전 <b>v0.16.1</b></span>
+      <span class="chip">버전 <b>v0.16.2</b></span>
     </div>
   </header>
 
@@ -330,14 +332,15 @@ footer{font:400 12px var(--f-mono);color:var(--muted);text-align:left;letter-spa
         <button type="button" id="bubDone">완료</button>
       </div>
     </div>
-    <p class="rhint">말풍선을 누르면 글을 쓸 수 있어요</p>
+    <p class="rhint">말풍선은 드래그하여 이동 가능하고, 누르면 글을 쓸 수 있어요.</p>
     <div class="rside">
       <span class="t">이름</span>
       <div class="namerow"><input id="resName" type="text" maxlength="12" aria-label="캐릭터 이름" autocomplete="off" spellcheck="false">
         <button type="button" class="namedice" id="resDice" aria-label="랜덤 이름" title="랜덤 이름">
           <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="4" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="8.5" cy="8.5" r="1.4" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="15.5" cy="8.5" r="1.4" fill="currentColor"/><circle cx="8.5" cy="15.5" r="1.4" fill="currentColor"/></svg>
         </button></div>
-      <span class="t">이름표 색</span>
+      <label class="tg" for="tagOn">이름표 <input id="tagOn" type="checkbox" checked></label>
+      <span class="t" id="tagColT">이름표 색</span>
       <div class="colors" id="tagCols">
         <button class="sw" type="button" data-c="" id="tagAuto" aria-label="기본 (피부색에 맞춘 색)" title="기본"></button>
         <button class="sw" type="button" style="background:#e0607e" data-c="#e0607e" aria-label="장미"></button>
@@ -384,14 +387,14 @@ const GROUPS=[
  ['귀',[['earSize','크기',0.6,1.45,1],['earY','높이',-0.176,0.084,-0.06]]],
  ['코',[['noseSize','크기',0.5,1.7,1],['noseSq','모양',0,1,0.5],['noseY','위치',-0.3,0.1,-0.09]]],
  ['입',[['mouthW','너비',0.5,2.2,1],['mouthCurve','곡률',0,2,1],['mouthY','높이',-0.5,-0.14,-0.324]]],
- ['몸',[['bodyLen','길이',0.6,1.5,1],['lowerRatio','허리',0.3,0.7,0.5],['upperW','상체 너비',0.75,1.4,1],['bodyD','두께',0.75,1.3,1]]],
+ ['몸',[['bodyLen','길이',0.6,1.5,1],['upperW','너비',0.75,1.4,1],['bodyD','두께',0.75,1.3,1],['lowerRatio','허리',0.3,0.7,0.5]]],
  ['팔',[['armLen','길이',0.6,1.6,0.76],['armThick','두께',0.7,1.6,1.4]]],
  ['볼',[['blushY','위치',-0.1,0.1,0],['cheek','볼살',0,1,0]]],
  ['다리',[['legSplit','길이',0.15,0.95,0.42],['legThick','두께',0.7,1.4,1]]],
- ['꼬리',[['tailSize','크기',0.5,2,1],['tailW','너비',0.6,1.8,1],['tailSq','모양',0,1,0]]],
+ ['꼬리',[['tailSize','크기',0.5,1,1],['tailW','너비',1,1.8,1]]],
  ['포즈',[]],
 ];
-const DEF={hornSize:1,hornTilt:8,browX:0.25,earSpread:0,lowerW:1,blushColor:'#f6b3a9',horns:true,blush:false,tail:true,tex:'smooth',color:'#a9e4f0',eyeType:'dot',mouthType:'smile',sit:false,tuck:false,footSize:2,legGap:0.05,handSize:1,earInnerH:0.6,earInnerW:0.85,tailShape:'round',tailLen:1,tailY:0,tailTilt:15,tailBlend:0.35,armRaiseR:6,armFwdR:0,armRaiseL:6,armFwdL:0,legSwingR:0,legSwingL:0,headPitch:0,headYaw:0,tilt:0};
+const DEF={tailSq:0,hornSize:1,hornTilt:8,browX:0.25,earSpread:0,lowerW:1,blushColor:'#f6b3a9',horns:true,blush:false,tail:true,tex:'smooth',color:'#a9e4f0',eyeType:'dot',mouthType:'smile',sit:false,tuck:false,footSize:2,legGap:0.05,handSize:1,earInnerH:0.6,earInnerW:0.85,tailShape:'round',tailLen:1,tailY:0,tailTilt:15,tailBlend:0.35,armRaiseR:6,armFwdR:0,armRaiseL:6,armFwdL:0,legSwingR:0,legSwingL:0,headPitch:0,headYaw:0,tilt:0};
 const EXPR_KEYS=['eyeType','mouthType','blush'];   // 랜덤에서만 표정 조합으로 씀
 const POSE_KEYS=['tilt','tuck','legSwingR','legSwingL','armRaiseR','armFwdR','armRaiseL','armFwdL','headPitch','headYaw','sit'];
 const POSES={
@@ -617,7 +620,7 @@ function bodyModel(){
   const unwY=(x,y)=>tl?rotR(x,y,-PH*bw(y)):[x,y];   // 몸통: 높이에 따라 부드럽게 굽힘
   const unwF=(x,y)=>tl?rotR(x,y,-PH):[x,y];          // 팔: 윗몸에 붙어 통째로 따라감
   const fbBent=(xr,y,z)=>{const u=unwY(xr,y);return fb(Math.abs(u[0]),u[1],z,u[0]>=0?1:-1)};
-  function freeArm(raiseDeg,fwdDeg,sd){
+  function freeArm(raiseDeg,fwdDeg,sd,push=false){
     let r=raiseDeg,fw=Math.max(-45,fwdDeg),H,Sp;
     for(let it=0;it<220;it++){
       const k=smooth01(40,140,r), kf=smooth01(25,85,fw)*(1-smooth01(100,150,fw)*0.5), kk=Math.max(k,kf);
@@ -644,10 +647,17 @@ function bodyModel(){
           const hr=rotR(hb[0],hb[1],-PH);H=[sd*hr[0],hr[1],H[2]]}
         break}   // 차렷: 몸에 반쯤 파묻힘 / 기본: 몸에서 살짝 떨어짐
       if(H[0]<rh+0.02){r+=2;continue}
-      if(fb(H[0],H[1],H[2])<ra*0.9){if(r<175)r+=2;else fw+=2;continue}
+      if(fb(H[0],H[1],H[2])<ra*0.9){
+        // (다시 풀기) 앉기에서 몸이 좁아 손이 배·다리에 묻히면: 팔을 치켜들지 않고 손만 바깥으로 살짝 벌려 같은 자세 유지
+        if(push){let hx=H[0];for(let k=0;k<45&&fb(hx,H[1],H[2])<ra*0.9;k++)hx+=0.01;
+          if(fb(hx,H[1],H[2])>=ra*0.9){const v=[hx-Sp[0],H[1]-Sp[1],H[2]-Sp[2]],l=Math.hypot(...v),d2=v.map(c=>c/l);
+            H=[Sp[0]+d2[0]*al,Sp[1]+d2[1]*al,Sp[2]+d2[2]*al];break}}
+        if(r<175)r+=2;else fw+=2;continue}
       if(headF(H[0],H[1],H[2],rh*0.45)<1){if(fw<58)fw+=2;else r-=2;continue}   // 손이 볼 앞에 닿을 만큼만
       H=Hreal;break;
     }
+    // 앉기에서 팔이 옆·위로 치켜 올라가 버리면(몸이 좁을 때) 손을 바깥으로 벌리는 방식으로 다시 풂
+    if(P.sit&&!push){const v=[H[0]-Sp[0],H[1]-Sp[1],H[2]-Sp[2]];if(v[1]/Math.hypot(...v)>-0.3)return freeArm(raiseDeg,fwdDeg,sd,true)}
     return {S:Sp,H};
   }
   function finish(A){
@@ -992,7 +1002,7 @@ setZoom(1);
 // ---------- UI ----------
 const $=id=>document.getElementById(id);
 // 단계식 슬라이더: 모든 항목이 −5 ~ 0(기본값) ~ +5. 0 위·아래 한 칸 크기는 항목마다 따로(기존 조절 범위 유지)
-const unit=(k,d)=>d>0?(META[k].mx-DEF[k])/5:Math.max(0,DEF[k]-META[k].mn)/5;
+const unit=(k,d)=>d>0?Math.max(0,META[k].mx-DEF[k])/5:Math.max(0,DEF[k]-META[k].mn)/5;
 const toVal=(k,st)=>DEF[k]+(st>=0?st*unit(k,1):st*unit(k,-1));
 const stepOf=(k,v)=>{const d=DEF[k],up=unit(k,1),dn=unit(k,-1);let st=v>=d?(up>0?Math.round((v-d)/up):0):(dn>0?-Math.round((d-v)/dn):0);return Math.max(-5,Math.min(5,st))};
 const toStep=k=>stepOf(k,P[k]);
@@ -1002,7 +1012,7 @@ function renderStep(k){const st=toStep(k),el=$(k),o=$('o_'+k);
   el.setAttribute('aria-valuenow',st);el.setAttribute('aria-valuetext',(st>0?'+':'')+st);el.dataset.sign=sgn(st);
   o.textContent=(st>0?'+':'')+st;o.dataset.sign=sgn(st);
   el.querySelectorAll('.pip').forEach((p,i)=>{const s=i-5;p.classList.toggle('on',st>0?(s>0&&s<st):st<0?(s<0&&s>st):false);p.classList.toggle('cur',s===st)})}
-function setStep(k,st){st=Math.max(META[k].mn>=DEF[k]?0:-5,Math.min(5,st));const v=toVal(k,st);
+function setStep(k,st){st=Math.max(META[k].mn>=DEF[k]?0:-5,Math.min(META[k].mx<=DEF[k]?0:5,st));const v=toVal(k,st);
   let on=false;
   if(k==='mouthCurve'&&P.mouthType!=='smile'&&P.mouthType!=='smirk'){P.mouthType='smile';on=true;syncUI()}   // 곡률은 미소 계열 입에 적용
 if(k.startsWith('horn')&&!P.horns){P.horns=true;on=true;const h=$('horns');if(h)h.checked=true}   // 뿔을 끈 상태에서 뿔 값을 만지면 다시 켬
@@ -1016,6 +1026,7 @@ function makeRow(k,l,grp){
       <button class="sb" type="button" data-d="1" aria-label="${label} 한 단계 늘리기">›</button></div>`;
     grp.appendChild(r);
     if(META[k].mn>=DEF[k]){r.classList.add('plusonly');r.querySelector('.pips').setAttribute('aria-valuemin','0')}   // − 쪽 없음
+    if(META[k].mx<=DEF[k]){r.classList.add('minusonly');r.querySelector('.pips').setAttribute('aria-valuemax','0')}   // + 쪽 없음
     r.querySelectorAll('.sb').forEach(b=>b.onclick=()=>setStep(k,toStep(k)+(+b.dataset.d)));
     const pips=r.querySelector('.pips');let down=false;
     const at=e=>{const rc=pips.getBoundingClientRect();const i=Math.floor((e.clientX-rc.left)/rc.width*11);setStep(k,Math.max(0,Math.min(10,i))-5)};
@@ -1126,7 +1137,7 @@ document.querySelectorAll('#colors .sw').forEach(s=>s.onclick=()=>setColor(s.dat
 // 미리보기 배경색: 비우면 기본(화면 모드에 맞춘 색). 어두운 배경이면 라벨 글자를 밝게
 let bgColor='';
 const isDark=hex=>{const c=new THREE.Color(hex);return 0.2126*c.r+0.7152*c.g+0.0722*c.b<0.45};
-function setBg(c){bgColor=c||'';$('rcard').style.background=bgColor;stage.style.background=bgColor;stage.style.setProperty('--sfg',bgColor?(isDark(bgColor)?'#eef4f5':'#1f2a2e'):'');syncUI();if(!$('result').hidden)drawPreview()}
+function setBg(c){bgColor=c||'';$('rcard').style.background=bgColor;stage.style.background=bgColor;stage.style.setProperty('--sfg',bgColor?(isDark(bgColor)?'#eef4f5':'#1f2a2e'):'');syncUI();if(!$('result').hidden)drawPreview(true)}
 document.querySelectorAll('.bgset .sw').forEach(s=>s.onclick=()=>setBg(s.dataset.bg));
 document.querySelectorAll('.bgpick').forEach(p=>p.addEventListener('input',e=>setBg(e.target.value)));
 $('pick').addEventListener('input',e=>{P.color=e.target.value;syncUI();soon()});
@@ -1164,9 +1175,12 @@ function romanize(str){
 const NAMES=['말랑','토실','포실','뚱실','포동','다다','구레','파루','포아','아차','까루','뽀도','꾸루','휘리','소곰','시꾸','디구','또루','디뚜','깡초','덤버',
  '실구디','오미디','망오디','똥구디','쇳디','올미','우루미','고소미','아가지','도티','마딘','타내','올마대','가리대','터대','샹재','수새','더믈','검불','북쇠','모리쇠','곰쇠','매뇌','쟈가둥','흰둥','검둥'];
 let charName='깨두';
-function setName(n){charName=(n||'').trim().slice(0,12)||'깨두';$('charName').value=charName;$('resName').value=charName;$('nameTitle').textContent=charName;if(!$('result').hidden)loadTagFonts().then(drawPreview)}
+function setName(n){charName=(n||'').trim().slice(0,12)||'깨두';$('charName').value=charName;$('resName').value=charName;$('nameTitle').textContent=charName;if(!$('result').hidden)loadTagFonts().then(()=>drawPreview(true))}
 // 주사위: 약 1초 동안 이름이 슬롯머신처럼 빠르게 바뀌다가 느려지며 멈춤
 let rolling=null;
+// 이름표 '통' 착지: 입력칸의 land 애니메이션과 같은 곡선(0.92 → 1.06 → 1)
+function tagLand(){const t0=performance.now(),D=380;const f=now=>{const u=Math.min(1,(now-t0)/D);
+  tagScale=u<0.6?0.92+(1.06-0.92)*(u/0.6):1.06-(0.06)*((u-0.6)/0.4);drawPreview(true);if(u<1)requestAnimationFrame(f);else{tagScale=1;drawPreview(true)}};requestAnimationFrame(f)}
 function rollName(d0,inp0){
   let n;do{n=NAMES[Math.floor(Math.random()*NAMES.length)]}while(n===charName&&NAMES.length>1);
   const d=d0&&d0.nodeType?d0:$('nameDice'),inp=inp0||$('charName');
@@ -1175,8 +1189,9 @@ function rollName(d0,inp0){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){setName(n);return}
   inp.classList.remove('landed');inp.classList.add('shuffling');
   const delays=[50,50,55,60,65,75,85,100,120,145,175];let i=0;
-  const tick=()=>{if(i<delays.length){inp.value=NAMES[Math.floor(Math.random()*NAMES.length)];rolling=setTimeout(tick,delays[i++])}
-    else{rolling=null;inp.classList.remove('shuffling');setName(n);void inp.offsetWidth;inp.classList.add('landed')}};
+  const live=!$('result').hidden;
+  const tick=()=>{if(i<delays.length){inp.value=NAMES[Math.floor(Math.random()*NAMES.length)];if(live){tagNameShow=inp.value;drawPreview(true)}rolling=setTimeout(tick,delays[i++])}
+    else{rolling=null;inp.classList.remove('shuffling');tagNameShow=null;setName(n);void inp.offsetWidth;inp.classList.add('landed');if(live)tagLand()}};
   tick();
 }
 $('nameDice').onclick=()=>rollName();
@@ -1197,45 +1212,59 @@ function syncTagCols(){const a=$('tagAuto');a.style.background=autoTagColor();
   document.querySelectorAll('#tagCols .sw').forEach(s=>s.setAttribute('aria-pressed',s.dataset.c===tagColor));
   const pk=$('tagPick');pk.dataset.on=!!tagColor&&![...document.querySelectorAll('#tagCols .sw')].some(s=>s.dataset.c===tagColor);if(pk.dataset.on==='true')pk.value=tagColor}
 // 캐릭터를 그려 1080×1920 캔버스(dst)에 합성. q=렌더 배율(저장 2, 미리보기 1)
-function compose(dst,q){
+// reuse=true면 3D는 다시 그리지 않고 직전 미리보기 그림을 재사용(이름·말풍선·색만 바뀔 때 빠르게)
+let lastChar=null,tagOn=true,tagNameShow=null,tagScale=1;
+const CHAR_MAXW=760;   // 카드(1080) 안에서 캐릭터 가로 최대 폭 → 좌우 여백 최소 160px씩
+function renderChar(q){
   const OW=1080,OH=1920,RH=1660,pr=renderer.getPixelRatio(),ch=Math.max(2.0,charH);
   renderer.setPixelRatio(q);renderer.setSize(OW,RH,false);
   const cb=camBase;persp.aspect=OW/RH;camBase={d:12*ch/2.2,y:ch*0.8,ty:ch*0.46};placePersp();persp.updateProjectionMatrix();
-  chars[0].rotation.y=angle;
-  // 캐릭터(뿔 자리~발)와 명찰을 한 묶음으로 보고 위아래 가운데에
+  chars[0].rotation.y=angle;chars[0].updateMatrixWorld(true);
+  const bb=new THREE.Box3().setFromObject(chars[0]);
+  const span=()=>{let mn=1e9,mx=-1e9;for(const X of [bb.min.x,bb.max.x])for(const Y of [bb.min.y,bb.max.y])for(const Z of [bb.min.z,bb.max.z]){const v=new THREE.Vector3(X,Y,Z).project(persp);const px=(v.x+1)/2*OW;mn=Math.min(mn,px);mx=Math.max(mx,px)}return [mn,mx]};
+  // 가로로 너무 넓으면 카메라를 뒤로 물려 정해진 폭 안에 들어오게
+  let [mnx,mxx]=span();
+  if(mxx-mnx>CHAR_MAXW){camBase.d*=(mxx-mnx)/CHAR_MAXW*1.01;placePersp();persp.updateProjectionMatrix();[mnx,mxx]=span()}
   const py=v=>(1-new THREE.Vector3(0,v,0).project(persp).y)/2*RH, tpx=py(charH), fpx=py(-0.05);
-  // 캐릭터·이름표 위치는 말풍선 종류·길이와 상관없이 고정 (머리 위에 말풍선 자리를 늘 비워 둠)
-  const tagH=230,gap=190,RES=360;
-  const B=bubbleLayout(dst.getContext('2d'));
-  let y0=Math.round((OH-(RES+fpx-tpx+gap+tagH))/2+RES-tpx)+30;
-  y0=Math.min(y0,OH-70-tagH-gap-fpx);y0=Math.max(y0,40+RES-tpx);
-  renderer.render(scene,persp);
-  const x=dst.getContext('2d');x.clearRect(0,0,OW,OH);
-  if(bgColor){x.fillStyle=bgColor;x.fillRect(0,0,OW,OH)}
-  // 기울인 포즈에서도 캐릭터가 한쪽으로 쏠려 보이지 않게: 화면에 보이는 캐릭터 폭의 가운데를 이미지 가운데로
-  chars[0].updateMatrixWorld(true);
-  const bb=new THREE.Box3().setFromObject(chars[0]);let mnx=1e9,mxx=-1e9;
-  for(const X of [bb.min.x,bb.max.x])for(const Y of [bb.min.y,bb.max.y])for(const Z of [bb.min.z,bb.max.z]){const v=new THREE.Vector3(X,Y,Z).project(persp);const px=(v.x+1)/2*OW;mnx=Math.min(mnx,px);mxx=Math.max(mxx,px)}
   const sx=Math.round(OW/2-(mnx+mxx)/2);
-  const hv=new THREE.Vector3();chars[0].userData.HG?chars[0].userData.HG.getWorldPosition(hv):hv.set(0,charH,0);
-  const headX=(hv.project(persp).x+1)/2*OW+sx;
-  x.drawImage(renderer.domElement,sx,y0,OW,RH);
+  const hv=new THREE.Vector3();chars[0].userData.HG?chars[0].userData.HG.getWorldPosition(hv):hv.set(0,charH*0.7,0);
+  hv.y+=0.68*P.headH*0.75;   // 목 → 머리 가운데
+  const hp=hv.clone().project(persp),headX=(hp.x+1)/2*OW+sx,headCY=(1-hp.y)/2*RH;
+  renderer.render(scene,persp);
+  const img=document.createElement('canvas');img.width=renderer.domElement.width;img.height=renderer.domElement.height;img.getContext('2d').drawImage(renderer.domElement,0,0);
   camBase=cb;renderer.setPixelRatio(pr);layout();
-  // 명찰: 흰 카드 + 피부색 테두리·윗띠, 살짝 기울여 붙인 스티커처럼 (그림자 없음)
-  const name=charName||'깨두',{deep,pale}=tagColors();
-  let fs=150;x.font=fs+'px Dongle, "Noto Sans KR", sans-serif';
-  const tw=x.measureText(name).width,cw=Math.min(900,Math.max(440,tw+130));
-  if(tw>cw-90){fs=Math.floor(fs*(cw-90)/tw);x.font=fs+'px Dongle, "Noto Sans KR", sans-serif'}
-  const cx=OW/2,cy=y0+fpx+gap+tagH/2;
-  x.save();x.translate(cx,cy);x.rotate(-2.5*Math.PI/180);
-  x.beginPath();x.roundRect(-cw/2,-tagH/2,cw,tagH,42);x.fillStyle='#fff';x.fill();
-  x.save();x.beginPath();x.roundRect(-cw/2,-tagH/2,cw,tagH,42);x.clip();x.fillStyle=pale;x.fillRect(-cw/2,-tagH/2,cw,72);x.restore();
-  x.lineWidth=12;x.strokeStyle=deep;x.beginPath();x.roundRect(-cw/2+6,-tagH/2+6,cw-12,tagH-12,36);x.stroke();
-  x.textAlign='center';x.textBaseline='middle';
-  x.fillStyle=deep;x.font='700 34px "Noto Sans KR", sans-serif';x.fillText('내 이름은',0,-tagH/2+40);
-  x.fillStyle='#1f2a2e';x.font=fs+'px Dongle, "Noto Sans KR", sans-serif';x.fillText(name,0,42);
-  x.restore();
-  bubbleRect=B?drawBubble(x,B,y0+tpx,headX):null;placeBubHit();
+  return {img,sx,tpx,fpx,headX,headCY,q};
+}
+function compose(dst,q,reuse){
+  const OW=1080,OH=1920,RH=1660;
+  const C=(reuse&&lastChar&&lastChar.q===q)?lastChar:renderChar(q);if(q===1)lastChar=C;
+  const {tpx,fpx,sx,headX}=C;
+  // 캐릭터·이름표 위치는 말풍선 종류·길이와 상관없이 고정 (머리 위에 말풍선 자리를 늘 비워 둠). 이름표를 끄면 캐릭터만 가운데로
+  const tagH=tagOn?230:0,gap=tagOn?250:0,RES=360;
+  const x=dst.getContext('2d');
+  const B=bubbleLayout(x);
+  let y0=Math.round((OH-(RES+fpx-tpx+gap+tagH))/2+RES-tpx)+(tagOn?40:0);
+  y0=Math.min(y0,OH-70-tagH-gap-fpx);y0=Math.max(y0,40+RES-tpx);
+  x.clearRect(0,0,OW,OH);
+  if(bgColor){x.fillStyle=bgColor;x.fillRect(0,0,OW,OH)}
+  x.drawImage(C.img,sx,y0,OW,RH);
+  // 명찰: 흰 카드 + 테두리·윗띠, 살짝 기울여 붙인 스티커처럼 (그림자 없음)
+  if(tagOn){
+    const name=tagNameShow||charName||'깨두',{deep,pale}=tagColors();
+    let fs=150;x.font=fs+'px Dongle, "Noto Sans KR", sans-serif';
+    const tw=x.measureText(name).width,cw=Math.min(900,Math.max(440,tw+130));
+    if(tw>cw-90){fs=Math.floor(fs*(cw-90)/tw);x.font=fs+'px Dongle, "Noto Sans KR", sans-serif'}
+    const cx=OW/2,cy=y0+fpx+gap+tagH/2;
+    x.save();x.translate(cx,cy);x.rotate(-2.5*Math.PI/180);x.scale(tagScale,tagScale);
+    x.beginPath();x.roundRect(-cw/2,-tagH/2,cw,tagH,42);x.fillStyle='#fff';x.fill();
+    x.save();x.beginPath();x.roundRect(-cw/2,-tagH/2,cw,tagH,42);x.clip();x.fillStyle=pale;x.fillRect(-cw/2,-tagH/2,cw,72);x.restore();
+    x.lineWidth=12;x.strokeStyle=deep;x.beginPath();x.roundRect(-cw/2+6,-tagH/2+6,cw-12,tagH-12,36);x.stroke();
+    x.textAlign='center';x.textBaseline='middle';
+    x.fillStyle=deep;x.font='700 34px "Noto Sans KR", sans-serif';x.fillText('내 이름은',0,-tagH/2+40);
+    x.fillStyle=tagNameShow?'#7b888c':'#1f2a2e';x.font=fs+'px Dongle, "Noto Sans KR", sans-serif';x.fillText(name,0,42);
+    x.restore();
+  }
+  bubbleRect=B?drawBubble(x,B,y0+tpx,headX,y0+C.headCY):null;placeBubHit();
   // 저작권 표기: 카드 오른쪽 아래에 작게 (배경 밝기에 맞춰 글자색)
   x.save();x.font='400 26px "Nanum Gothic Coding", monospace';x.textAlign='right';x.textBaseline='alphabetic';
   x.fillStyle=bgColor&&isDark(bgColor)?'rgba(255,255,255,.55)':'rgba(31,42,46,.5)';x.fillText('ⓒthesonsie',OW-44,OH-44);x.restore();
@@ -1255,32 +1284,38 @@ function wrapText(x,t,maxW){
   }
   if(line.trim())out.push(line.trim());return out;
 }
+// 같은 줄 수가 유지되는 가장 좁은 폭으로 다시 나눠서 줄 길이를 고르게 (마지막 줄만 짧아지는 것 방지)
+function balanceWrap(x,t,mw){const n=wrapText(x,t,mw).length;if(n<2)return wrapText(x,t,mw);
+  let lo=mw*0.4,hi=mw;for(let i=0;i<14;i++){const m=(lo+hi)/2;if(wrapText(x,t,m).length<=n)hi=m;else lo=m}return wrapText(x,t,hi)}
 function bubbleLayout(x){
   const t=bubText.trim();if(!t)return null;
   const n=[...t].length,fs=n<=6?64:n<=14?56:50;x.font=BUB_FONT(fs);
-  const lh=Math.round(fs*1.3);let best=null;
+  const D=Math.round(fs*1.6),lh=Math.round(D*0.98);   // 줄 간격: 받침(ㄹ 등)이 아랫줄과 겹치지 않게 넉넉히
+  let best=null;
   for(const mw of [640,540,460,390,330,280,230]){
-    const lines=wrapText(x,t,mw);if(lines.length>5)continue;
-    const tw=Math.max(...lines.map(l=>x.measureText(l).width)),th=lines.length*lh;
+    const lines=balanceWrap(x,t,mw);if(lines.length>5)continue;
+    const ms=lines.map(l=>x.measureText(l)),tw=Math.max(...ms.map(m=>m.width));
+    const asc=ms[0].actualBoundingBoxAscent,desc=ms[ms.length-1].actualBoundingBoxDescent,th=(lines.length-1)*lh+asc+desc;
     // 글 상자의 네 모서리가 타원 안에 들어오도록 √2배
-    let a=(tw/2+26)*Math.SQRT2,b=(th/2+14)*Math.SQRT2;
+    let a=(tw/2+26)*Math.SQRT2,b=(th/2+20)*Math.SQRT2;
     if(a/b<1.18){a=b=Math.max(a,b)}
     a=Math.max(a,105);b=Math.max(b,105);
     if(a>500)continue;
     const sc=Math.abs(a/b-1.55)+0.2*(lines.length-1);
-    if(!best||sc<best.sc)best={lines,a,b,sc};
+    if(!best||sc<best.sc)best={lines,a,b,sc,asc,desc};
   }
-  if(!best){const lines=wrapText(x,t,230),tw=Math.max(...lines.map(l=>x.measureText(l).width));best={lines,a:Math.min(500,(tw/2+26)*Math.SQRT2),b:(lines.length*lh/2+14)*Math.SQRT2}}
+  if(!best){const lines=balanceWrap(x,t,230),ms=lines.map(l=>x.measureText(l)),tw=Math.max(...ms.map(m=>m.width)),asc=ms[0].actualBoundingBoxAscent,desc=ms[ms.length-1].actualBoundingBoxDescent;
+    best={lines,a:Math.min(500,(tw/2+26)*Math.SQRT2),b:(((lines.length-1)*lh+asc+desc)/2+20)*Math.SQRT2,asc,desc}}
   const r1=Math.max(26,Math.min(36,best.b*0.24));
   const gapB=118;   // 기본·생각 꼬리 모두 같은 자리
-  return {lines:best.lines,fs,lh,a:best.a,b:best.b,r1,gapB};
+  return {lines:best.lines,fs,lh,a:best.a,b:best.b,asc:best.asc,desc:best.desc,r1,gapB};
 }
-function drawBubble(x,B,headY,headX=540){
+function drawBubble(x,B,headY,headX=540,headCY=headY+200){
   const OW=1080,{a,b}=B;
   // 기본 자리(머리 위 살짝 오른쪽) + 끌어서 옮긴 만큼. 카드 밖으로는 못 나감
   const cx=Math.min(OW-36-a,Math.max(36+a,headX+60+bubOff.x)),cy=Math.min(1920-60-b,Math.max(36+b,headY-B.gapB+12-b+bubOff.y));
-  // 꼬리 방향: 말풍선 가운데 → 머리 위쪽
-  let dx=headX-20-cx,dy=headY-cy;const dl=Math.hypot(dx,dy);dx/=dl;dy/=dl;
+  // 꼬리 방향: 말풍선이 어디에 있든 늘 캐릭터 머리 가운데를 향함
+  let dx=headX-cx,dy=headCY-cy;const dl=Math.hypot(dx,dy)||1;dx/=dl;dy/=dl;
   const k=1/Math.sqrt((dx/a)**2+(dy/b)**2),P=[cx+dx*k,cy+dy*k],nx=-dy,ny=dx;   // 타원 가장자리 점, 수직 방향
   const shapes=[p=>p.ellipse(cx,cy,a,b,0,0,Math.PI*2)];
   if(bubTail==='think'){
@@ -1304,9 +1339,10 @@ function drawBubble(x,B,headY,headX=540){
   x.save();x.beginPath();x.ellipse(cx,cy,a,b,0,0,Math.PI*2);x.clip();
   const hl=x.createRadialGradient(cx-a*0.25,cy-b*0.55,0,cx-a*0.25,cy-b*0.55,Math.max(a,b)*0.8);hl.addColorStop(0,'rgba(255,255,255,.95)');hl.addColorStop(1,'rgba(255,255,255,0)');
   x.fillStyle=hl;x.fillRect(cx-a,cy-b,2*a,2*b);x.restore();
-  x.fillStyle='#1f2a2e';x.font=BUB_FONT(B.fs);x.textAlign='center';x.textBaseline='middle';
-  const y1=cy-(B.lines.length-1)*B.lh/2+B.fs*0.04;
-  B.lines.forEach((l,i)=>x.fillText(l,cx,y1+i*B.lh));
+  // 글: 실제 글자 윗끝~아랫끝 묶음의 가운데를 타원 가운데에 맞춤
+  x.fillStyle='#1f2a2e';x.font=BUB_FONT(B.fs);x.textAlign='center';x.textBaseline='alphabetic';
+  const n=B.lines.length,b0=cy-((n-1)*B.lh+B.desc-B.asc)/2;
+  B.lines.forEach((l,i)=>x.fillText(l,cx,b0+i*B.lh));
   x.restore();
   return {x:cx-a,y:cy-b,w:2*a,h:2*b,bottom:cy+b+B.gapB*0.6};
 }
@@ -1316,11 +1352,13 @@ function placeBubHit(){const h=$('bubHit');if(!h)return;const b=bubbleRect;h.hid
 {const h=$('bubHit');let on=false,sx=0,sy=0,ox=0,oy=0,mv=0;
  h.addEventListener('pointerdown',e=>{on=true;mv=0;sx=e.clientX;sy=e.clientY;ox=bubOff.x;oy=bubOff.y;h.setPointerCapture(e.pointerId);e.preventDefault()});
  h.addEventListener('pointermove',e=>{if(!on)return;const r=$('resCv').getBoundingClientRect(),k=1080/r.width,dx=(e.clientX-sx)*k,dy=(e.clientY-sy)*k;
-   mv=Math.max(mv,Math.hypot(e.clientX-sx,e.clientY-sy));if(mv<4)return;bubOff={x:ox+dx,y:oy+dy};drawPreview()});
+   mv=Math.max(mv,Math.hypot(e.clientX-sx,e.clientY-sy));if(mv<4)return;bubOff={x:ox+dx,y:oy+dy};drawPreview(true)});
  h.addEventListener('pointerup',()=>{if(!on)return;on=false;if(mv<4)openBubEdit()});
  h.addEventListener('pointercancel',()=>{on=false});
  h.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openBubEdit()}});}
-function drawPreview(){if(pv)return;pv=requestAnimationFrame(()=>{pv=0;compose(resCv,1);placeBubEdit()})}
+// reuse: 3D는 그대로 두고 이름·말풍선·색만 다시 그림. 한 프레임 안의 요청은 하나로 묶고, 하나라도 전체 다시 그리기면 전체로
+let pvFull=false;
+function drawPreview(reuse){if(!reuse)pvFull=true;if(pv)return;pv=requestAnimationFrame(()=>{pv=0;const full=pvFull;pvFull=false;compose(resCv,1,!full);placeBubEdit()})}
 // 말풍선 입력 팝업: 말풍선 바로 아래(꼬리 아래)에 떠서, 쓰는 동안 말풍선이 바뀌는 걸 보면서 입력
 function placeBubEdit(){const e=$('bubEdit');if(e.hidden)return;const b=bubbleRect;
   const y=b?Math.min(1920*0.62,b.bottom+30):1920*0.18;e.style.top=(y/1920*100)+'%'}
@@ -1336,7 +1374,7 @@ async function openResult(){
   syncTagCols();$('resName').value=charName;$('saveMsg').textContent=dl?'':'이 화면에서는 저장 버튼을 쓸 수 없어요. 화면을 캡처해서 저장해 주세요.';
   $('result').hidden=false;document.body.style.overflow='hidden';
   const card=$('rcard');card.style.animation='none';void card.offsetWidth;card.style.animation='';
-  compose(resCv,1);$('backBtn').focus({preventScroll:true});
+  compose(resCv,1,false);$('backBtn').focus({preventScroll:true});
 }
 function closeResult(){closeBubEdit();$('result').hidden=true;document.body.style.overflow='';$('doneBtn').focus({preventScroll:true})}
 $('doneBtn').onclick=openResult;
@@ -1378,17 +1416,18 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('result').hidden
    if(b?(cx>b.x-30&&cx<b.x+b.w+30&&cy>b.y-30&&cy<b.bottom+20):cy<760)openBubEdit();else closeBubEdit()});
  resCv.addEventListener('pointercancel',()=>{drag=false});}
 const bubCount=()=>{const n=[...$('bubText').value].length;$('bubCnt').textContent=n+'/'+BUB_MAX;$('bubCnt').classList.toggle('full',n>=BUB_MAX)};
-$('bubText').addEventListener('input',e=>{const v=[...e.target.value];if(v.length>BUB_MAX)e.target.value=v.slice(0,BUB_MAX).join('');bubText=e.target.value;bubCount();loadTagFonts().then(drawPreview)});
+$('bubText').addEventListener('input',e=>{const v=[...e.target.value];if(v.length>BUB_MAX)e.target.value=v.slice(0,BUB_MAX).join('');bubText=e.target.value;bubCount();loadTagFonts().then(()=>drawPreview(true))});
 $('bubText').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing){e.preventDefault();e.target.blur();closeBubEdit()}else if(e.key==='Escape'){e.stopPropagation();closeBubEdit()}});
 $('bubDone').addEventListener('pointerdown',e=>e.preventDefault());
 $('bubDone').onclick=()=>{$('bubText').blur();closeBubEdit()};
-document.querySelectorAll('#tagCols .sw').forEach(b=>b.onclick=()=>{tagColor=b.dataset.c;syncTagCols();drawPreview()});
-$('tagPick').addEventListener('input',e=>{tagColor=e.target.value;syncTagCols();drawPreview()});
+document.querySelectorAll('#tagCols .sw').forEach(b=>b.onclick=()=>{tagColor=b.dataset.c;syncTagCols();drawPreview(true)});
+$('tagPick').addEventListener('input',e=>{tagColor=e.target.value;syncTagCols();drawPreview(true)});
 $('resDice').onclick=()=>rollName($('resDice'),$('resName'));
-document.querySelectorAll('#bubTail .pbtn').forEach(b=>b.onclick=()=>{bubTail=b.dataset.v;document.querySelectorAll('#bubTail .pbtn').forEach(o=>o.setAttribute('aria-pressed',o===b));drawPreview()});
-$('resName').addEventListener('input',e=>{charName=e.target.value.trim().slice(0,12);$('charName').value=charName;$('nameTitle').textContent=charName||'깨두';loadTagFonts().then(drawPreview)});
-$('resName').addEventListener('blur',()=>{setName($('resName').value);drawPreview()});
-$('resName').addEventListener('keydown',e=>{if(e.key!=='Enter'||e.isComposing)return;e.preventDefault();setName($('resName').value);$('resName').blur();drawPreview()});
+$('tagOn').onchange=e=>{tagOn=e.target.checked;$('tagCols').style.opacity=tagOn?'':'.4';$('tagCols').style.pointerEvents=tagOn?'':'none';drawPreview()};
+document.querySelectorAll('#bubTail .pbtn').forEach(b=>b.onclick=()=>{bubTail=b.dataset.v;document.querySelectorAll('#bubTail .pbtn').forEach(o=>o.setAttribute('aria-pressed',o===b));drawPreview(true)});
+$('resName').addEventListener('input',e=>{charName=e.target.value.trim().slice(0,12);$('charName').value=charName;$('nameTitle').textContent=charName||'깨두';loadTagFonts().then(()=>drawPreview(true))});
+$('resName').addEventListener('blur',()=>{setName($('resName').value);drawPreview(true)});
+$('resName').addEventListener('keydown',e=>{if(e.key!=='Enter'||e.isComposing)return;e.preventDefault();setName($('resName').value);$('resName').blur();drawPreview(true)});
 let dl=null;
 (async()=>{
   try{dl=await window.claude?.use?.('downloads')}catch(e){}
