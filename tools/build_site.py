@@ -35,10 +35,10 @@ head='''<!doctype html>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="반려 도깨비">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://gimmingiu.github.io/thesonsie/">
+<meta property="og:url" content="https://sonssies.com/">
 <meta property="og:title" content="나의 반려 도깨비 만들기">
 <meta property="og:description" content="나만의 반려 도깨비를 꾸미고 이미지로 저장해 보세요.">
-<meta property="og:image" content="https://gimmingiu.github.io/thesonsie/og.png">
+<meta property="og:image" content="https://sonssies.com/og.png">
 <meta name="twitter:card" content="summary_large_image">
 '''
 i=s.index('<div class="wrap">')

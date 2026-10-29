@@ -308,7 +308,7 @@ footer{font:400 12px var(--f-mono);color:var(--muted);text-align:left;letter-spa
     </div>
   </div>
 
-  <footer>ⓒ 2026 thesonsie. all rights reserved.</footer>
+  <footer>ⓒ 2026 sonssies. all rights reserved.</footer>
   <p class="note" hidden>몸은 상체·골반·다리·팔·손·발·꼬리가 하나로 이어진 덩어리이고, 손·발·꼬리의 흰색은 같은 덩어리 위에 칠한 색 면이에요. 슬라이더를 끝까지 움직여도 눈·눈썹·코·입은 얼굴 안에서 서로 겹치지 않게, 귀·뿔은 머리에, 팔은 상체에 붙어 있도록 자동으로 제한돼요. 마음에 드는 조합은 ‘설정값 복사’로 대화에 붙여 주세요.</p>
 </div>
 
@@ -361,7 +361,7 @@ footer{font:400 12px var(--f-mono);color:var(--muted);text-align:left;letter-spa
       </div>
       <p class="rnote" id="saveMsg" aria-live="polite"></p>
     </div>
-    <footer class="rfoot">ⓒ 2026 thesonsie. all rights reserved.</footer>
+    <footer class="rfoot">ⓒ 2026 sonssies. all rights reserved.</footer>
   </div>
 </div>
 
@@ -1273,7 +1273,7 @@ function compose(dst,q,reuse){
   bubbleRect=B?drawBubble(x,B,y0+tpx,headX,y0+C.headCY):null;placeBubHit();
   // 저작권 표기: 카드 오른쪽 아래에 작게 (배경 밝기에 맞춰 글자색)
   x.save();x.font='400 26px "Nanum Gothic Coding", monospace';x.textAlign='right';x.textBaseline='alphabetic';
-  x.fillStyle=bgColor&&isDark(bgColor)?'rgba(255,255,255,.55)':'rgba(31,42,46,.5)';x.fillText('ⓒthesonsie',OW-44,OH-44);x.restore();
+  x.fillStyle=bgColor&&isDark(bgColor)?'rgba(255,255,255,.55)':'rgba(31,42,46,.5)';x.fillText('ⓒsonssies',OW-44,OH-44);x.restore();
 }
 // ---------- 말풍선 ----------
 // 늘 동그라미 또는 타원. 글이 짧으면 동그라미, 길수록 줄을 나눠 너무 납작하지 않은 타원이 되게 고름
@@ -1519,7 +1519,7 @@ let lastBubText='반가워!';
 function closeBubEdit(){const e=$('bubEdit');if(e.hidden)return;e.hidden=true;
   if(!bubText.trim()){bubText=lastBubText;$('bubText').value=lastBubText;bubCount();drawPreview(true)}else lastBubText=bubText}
 // 구글 폰트는 글자 범위별로 나뉘어 있어서, 그릴 글자를 넘겨 해당 조각을 미리 받아 둠
-async function loadTagFonts(){try{await Promise.all([document.fonts.load('100px Jua',(charName||'깨두')+bubText),document.fonts.load('700 34px "Noto Sans KR"','내 이름은'+bubText),document.fonts.load('26px "Nanum Gothic Coding"','ⓒthesonsie')])}catch(_){}}
+async function loadTagFonts(){try{await Promise.all([document.fonts.load('100px Jua',(charName||'깨두')+bubText),document.fonts.load('700 34px "Noto Sans KR"','내 이름은'+bubText),document.fonts.load('26px "Nanum Gothic Coding"','ⓒsonssies')])}catch(_){}}
 async function openResult(){
   if($('busy').classList.contains('on'))await new Promise(r=>setTimeout(r,320));
   spinning=false;$('spinBtn').setAttribute('aria-pressed',false);target=angle;

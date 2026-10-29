@@ -11,7 +11,7 @@
 ## 2. 언어 고르기
 - 첫 접속: 브라우저/휴대폰 언어(`navigator.language`)로 자동 선택, 없으면 한국어.
 - 화면 위쪽에 언어 버튼 `한 / EN / 日 / 中`.
-- 주소로 고정 가능: `https://gimmingiu.github.io/thesonsie/?lang=en|ja|zh|ko` (공유 시 언어 고정).
+- 주소로 고정 가능: `https://sonssies.com/?lang=en|ja|zh|ko` (공유 시 언어 고정).
 - 고른 언어는 브라우저에 기억(편의용, 없어도 동작).
 
 ## 3. 글꼴 (확정)

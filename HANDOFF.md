@@ -7,8 +7,8 @@
 | 무엇 | 주소 |
 |---|---|
 | 아티팩트(작업 원본, 링크 공유 중) | https://claude.ai/artifact/QsKmVUGhDwi9MMJZFdwTZa |
-| 공개 사이트 (GitHub Pages) | https://gimmingiu.github.io/thesonsie/ |
-| 저장소 | https://github.com/gimmingiu/thesonsie (Claude GitHub App 설치됨 → push 가능) |
+| 공개 사이트 (GitHub Pages) | https://sonssies.com (가비아 도메인 연결) · 기본 주소 https://gimmingiu.github.io/sonssies/ |
+| 저장소 | https://github.com/gimmingiu/sonssies (예전 이름 sonssies, Claude GitHub App 설치됨 → push 가능) |
 
 ## 2. 파일
 | 파일 | 역할 |
@@ -33,7 +33,7 @@
 - **팔:** 곧고 짧은 소시지 모양만. 팔꿈치·늘어남·꺾임은 "기괴해서" 금지.
 - **질감:** 매트 / 글로시 두 가지. 말풍선 등도 이걸 따라감.
 - **글꼴(Google Fonts):** 이름·말풍선 = Jua(우아한형제들), 숫자·푸터·저작권 = Nanum Gothic Coding, 나머지 = Noto Sans KR Medium(500).
-- **푸터:** `ⓒ 2026 thesonsie. all rights reserved.` 왼쪽 정렬. 저장 카드 우하단 표기는 `ⓒthesonsie`.
+- **푸터:** `ⓒ 2026 sonssies. all rights reserved.` 왼쪽 정렬. 저장 카드 우하단 표기는 `ⓒsonssies`.
 
 ## 5. 꾸미기 화면 규칙
 - **슬라이더는 모두 단계식 −5 … 0 … +5.** 0이 기본값. 0 위·아래 한 칸 크기는 따로(`unit()`), 화면엔 숫자만.
