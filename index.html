@@ -101,7 +101,11 @@ aside{background:var(--panel);border:1px solid var(--line);border-radius:14px;di
 .namerow input.shuffling{color:var(--muted);letter-spacing:.04em}
 .namerow input.landed{animation:land .38s cubic-bezier(.3,1.6,.5,1)}
 @keyframes land{0%{transform:scale(.92)}60%{transform:scale(1.06)}100%{transform:scale(1)}}
-@media (prefers-reduced-motion: reduce){.namedice.roll svg,.namerow input.landed{animation:none}}
+/* 미리보기 왼쪽 위 이름도 주사위와 같이: 굴리는 동안 흐리게 바뀌다가 '통' */
+.sname{transform-origin:left center}
+.sname.shuffling{opacity:.55}
+.sname.landed{animation:land .38s cubic-bezier(.3,1.6,.5,1)}
+@media (prefers-reduced-motion: reduce){.namedice.roll svg,.namerow input.landed,.sname.landed{animation:none}}
 .pbtns{display:flex;flex-wrap:wrap;gap:6px}
 .pbtn{font:500 13px var(--f-body);border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:999px;padding:5px 12px;cursor:pointer}
 .pbtn.dice{border-color:var(--accent);color:var(--accent)}
@@ -232,7 +236,7 @@ footer{font:400 12px var(--f-mono);color:var(--muted);text-align:left;letter-spa
       <span class="chip">머리 : 몸 <b id="ratio">2.0 : 1</b></span>
       <span class="chip">상체 : 하체 <b id="ratio2">1 : 1</b></span>
       <span class="chip">질감 <b id="texChip">매트</b></span>
-      <span class="chip">버전 <b>v0.16.6</b></span>
+      <span class="chip">버전 <b>v0.16.7</b></span>
     </div>
   </header>
 
@@ -1199,8 +1203,9 @@ function rollName(d0,inp0){
   inp.classList.remove('landed');inp.classList.add('shuffling');
   const delays=[50,50,55,60,65,75,85,100,120,145,175];let i=0;
   const live=!$('result').hidden;
-  const tick=()=>{if(i<delays.length){inp.value=NAMES[Math.floor(Math.random()*NAMES.length)];if(live){tagNameShow=inp.value;drawPreview(true)}rolling=setTimeout(tick,delays[i++])}
-    else{rolling=null;inp.classList.remove('shuffling');tagNameShow=null;setName(n);void inp.offsetWidth;inp.classList.add('landed');if(live)tagLand()}};
+  const tt=$('nameTitle');tt.classList.remove('landed');tt.classList.add('shuffling');
+  const tick=()=>{if(i<delays.length){inp.value=NAMES[Math.floor(Math.random()*NAMES.length)];tt.textContent=inp.value;if(live){tagNameShow=inp.value;drawPreview(true)}rolling=setTimeout(tick,delays[i++])}
+    else{rolling=null;inp.classList.remove('shuffling');tagNameShow=null;setName(n);void inp.offsetWidth;inp.classList.add('landed');tt.classList.remove('shuffling');void tt.offsetWidth;tt.classList.add('landed');if(live)tagLand()}};
   tick();
 }
 $('nameDice').onclick=()=>rollName();
