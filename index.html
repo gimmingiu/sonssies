@@ -116,7 +116,11 @@ details[open] summary::after{transform:rotate(-135deg)}
 .row output{font-family:var(--f-mono);font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
 input[type=range]{width:100%;accent-color:var(--accent);margin:0}
 .tg{display:flex;align-items:center;justify-content:space-between;font-size:13px;cursor:pointer}
-.tg input{width:17px;height:17px;accent-color:var(--accent);margin:0}
+.tg input{-webkit-appearance:none;appearance:none;flex:none;width:42px;height:24px;margin:0;border-radius:999px;background:var(--line);position:relative;cursor:pointer;transition:background .18s}
+.tg input::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .2s cubic-bezier(.3,1.4,.5,1)}
+.tg input:checked{background:var(--accent)}
+.tg input:checked::after{transform:translateX(18px)}
+@media (prefers-reduced-motion: reduce){.tg input,.tg input::after{transition:none}}
 .segrow{display:flex;align-items:center;justify-content:space-between;font-size:13px;gap:8px}
 .seg{display:flex;border:1px solid var(--line);border-radius:999px;padding:2px;gap:2px;background:var(--bg)}
 .seg button{padding:4px 12px;font-size:12.5px}
@@ -222,7 +226,7 @@ footer{font:400 12px var(--f-mono);color:var(--muted);text-align:left;letter-spa
       <span class="chip">머리 : 몸 <b id="ratio">2.0 : 1</b></span>
       <span class="chip">상체 : 하체 <b id="ratio2">1 : 1</b></span>
       <span class="chip">질감 <b id="texChip">매트</b></span>
-      <span class="chip">버전 <b>v0.16.0</b></span>
+      <span class="chip">버전 <b>v0.16.1</b></span>
     </div>
   </header>
 
@@ -384,7 +388,7 @@ const GROUPS=[
  ['팔',[['armLen','길이',0.6,1.6,0.76],['armThick','두께',0.7,1.6,1.4]]],
  ['볼',[['blushY','위치',-0.1,0.1,0],['cheek','볼살',0,1,0]]],
  ['다리',[['legSplit','길이',0.15,0.95,0.42],['legThick','두께',0.7,1.4,1]]],
- ['꼬리',[['tailSize','크기',0.5,2,1]]],
+ ['꼬리',[['tailSize','크기',0.5,2,1],['tailW','너비',0.6,1.8,1],['tailSq','모양',0,1,0]]],
  ['포즈',[]],
 ];
 const DEF={hornSize:1,hornTilt:8,browX:0.25,earSpread:0,lowerW:1,blushColor:'#f6b3a9',horns:true,blush:false,tail:true,tex:'smooth',color:'#a9e4f0',eyeType:'dot',mouthType:'smile',sit:false,tuck:false,footSize:2,legGap:0.05,handSize:1,earInnerH:0.6,earInnerW:0.85,tailShape:'round',tailLen:1,tailY:0,tailTilt:15,tailBlend:0.35,armRaiseR:6,armFwdR:0,armRaiseL:6,armFwdL:0,legSwingR:0,legSwingL:0,headPitch:0,headYaw:0,tilt:0};
@@ -668,7 +672,11 @@ function bodyModel(){
   function tailD(x,y,z){
     const wx=x-tC[0],wy=y-tC[1],wz=z-tC[2];
     const a=wy*tDir[1]+wz*tDir[2], v=wy*tUp[1]+wz*tUp[2];
-    return ell(x,v,a,tR,tR,tR*tLen);   // 동글
+    const rx=tR*P.tailW,ry=tR,rz=tR*tLen;
+    if(P.tailSq<0.01)return ell(x,v,a,rx,ry,rz);   // 동글
+    // 모양: 값이 클수록 모서리가 각진 둥근 상자(초타원체)
+    const n=2+6*P.tailSq,kk=Math.pow(Math.pow(Math.abs(x)/rx,n)+Math.pow(Math.abs(v)/ry,n)+Math.pow(Math.abs(a)/rz,n),1/n);
+    return (kk-1)*Math.min(rx,ry,rz);
   }
   const capD=(x,y,z,A,B,r)=>{const bx=B[0]-A[0],by=B[1]-A[1],bz=B[2]-A[2],l2=bx*bx+by*by+bz*bz||1e-9;
     let t=((x-A[0])*bx+(y-A[1])*by+(z-A[2])*bz)/l2;t=t<0?0:t>1?1:t;return Math.hypot(x-A[0]-bx*t,y-A[1]-by*t,z-A[2]-bz*t)-r};
@@ -754,7 +762,7 @@ function surfaceNets(f,b0,b1,h,cls){
 }
 let bodyCache={key:'',geo:null,model:null};
 function getBody(h){
-  const keys=['bodyLen','lowerRatio','upperW','lowerW','bodyD','legSplit','legGap','footSize','armLen','armThick','handSize','tail','tailSize','tailLen','tailY','tailTilt','tailBlend','tailShape','armRaiseR','armFwdR','armRaiseL','armFwdL','sit','tuck','headW','headH','headD','headSq','legSwingR','legSwingL','tilt','legThick'];
+  const keys=['bodyLen','lowerRatio','upperW','lowerW','bodyD','legSplit','legGap','footSize','armLen','armThick','handSize','tail','tailSize','tailLen','tailY','tailTilt','tailBlend','tailShape','tailW','tailSq','armRaiseR','armFwdR','armRaiseL','armFwdL','sit','tuck','headW','headH','headD','headSq','legSwingR','legSwingL','tilt','legThick'];
   const k=keys.map(x=>P[x]).join('|')+'|'+h;
   if(bodyCache.key===k)return bodyCache;
   const model=bodyModel();
@@ -799,7 +807,8 @@ function build(M,B){
   // 볼살: 얼굴 아래 양옆을 바깥(앞·옆)으로 통통하게 부풀림
   if(P.cheek>0){const pa=hgeo.attributes.position,na=hgeo.attributes.normal,amp=0.15*P.cheek,cxk=hwA*0.58,cyk=-hb*0.4;
     for(let i=0;i<pa.count;i++){const x=pa.getX(i),y=pa.getY(i),nz=na.getZ(i);if(nz<-0.2)continue;
-      const w=Math.exp(-(((Math.abs(x)-cxk)/(hwA*0.3))**2+((y-cyk)/(hb*0.34))**2))*Math.min(1,(nz+0.2)/0.6);
+      const wy=Math.exp(-(((y-cyk)/(hb*0.46))**2)), wx=0.62+0.38*Math.exp(-(((Math.abs(x)-cxk)/(hwA*0.32))**2)), side=Math.exp(-((Math.max(0,Math.abs(x)-hwA*0.82)/(hwA*0.18))**2));
+      const w=wy*wx*side*Math.min(1,(nz+0.2)/0.6);   // 가운데(입·턱)도 62%만큼, 볼은 가장 크게
       if(w<1e-3)continue;pa.setXYZ(i,x+na.getX(i)*amp*w,y+na.getY(i)*amp*w*0.6,pa.getZ(i)+nz*amp*w)}
     hgeo.computeVertexNormals()}
   const head=mesh(hgeo,hm);head.position.y=hy;HI.add(head);
@@ -883,13 +892,12 @@ function build(M,B){
   }
   // ---- 뿔 (항상 머리 윗면에 박힘) ----
   if(P.horns){
-    const S=P.hornSize, r0=0.2*S, Ht=0.34*S*P.hornH, pts=[], N=40, sink=0.06*S;
-    // 몸통은 뿌리(r0)에서 끝 반지름(rc)까지 부드럽게 가늘어지고, 끝은 반지름 rc의 반구 → 길어져도 꼭대기가 뾰족하거나 각지지 않음
-    let rc=r0*(0.4+0.38*P.hornRound);rc=Math.min(rc,(Ht+sink)*0.62);
-    const h0=Math.max(1e-3,Ht+sink-rc);
-    for(let i=0;i<=N;i++){const u=i/N,flare=1+0.18*Math.pow(1-u,5),sm=u*u*(3-2*u);
-      pts.push(new THREE.Vector2((rc+(r0-rc)*(1-sm))*flare,-sink+u*h0))}
-    for(let i=1;i<=24;i++){const a=i/24*Math.PI/2;pts.push(new THREE.Vector2(Math.max(rc*Math.cos(a),1e-4),-sink+h0+rc*Math.sin(a)))}
+    const S=P.hornSize, r0=0.2*S*(0.76+0.4*P.hornRound), Ht=0.34*S*P.hornH, pts=[], sink=0.06*S;
+    // 옆선은 뿌리에서 꼭지까지 곧은 직선(원뿔). 꼭지만 옆선에 '접하는' 작은 원으로 마무리해서 꺾이거나 부푼 곳이 없음
+    const H=Ht+sink, al=Math.atan2(r0,H), rc=Math.min(r0*0.3,H*0.25);
+    const yc=H-rc/Math.sin(al), ty=yc+rc*Math.sin(al), tr=rc*Math.cos(al);   // 둥근 끝의 중심과, 옆선이 원에 닿는 점
+    pts.push(new THREE.Vector2(r0,-sink));pts.push(new THREE.Vector2(r0+(tr-r0)*0.5,-sink+ty*0.5));pts.push(new THREE.Vector2(tr,-sink+ty));
+    for(let i=1;i<=16;i++){const a=al+(Math.PI/2-al)*i/16;pts.push(new THREE.Vector2(Math.max(rc*Math.cos(a),1e-4),-sink+yc+rc*Math.sin(a)))}
     const lathe=new THREE.LatheGeometry(pts,48), tilt=P.hornTilt*Math.PI/180;
     for(const s of[-1,1]){
       let cx=s*clamp(P.hornX*hwA,r0*1.1,hwA*0.9-r0*1.15);
