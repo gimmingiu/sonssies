@@ -1,13 +1,13 @@
 <title>도깨비 3D 턴어라운드</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Dongle:wght@400;700&family=Nanum+Gothic+Coding&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Gothic+Coding&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
 <style>
-/* 글꼴(Google Fonts): 이름 Dongle · 본문 Noto Sans KR Medium · 숫자·푸터 Nanum Gothic Coding */
+/* 글꼴(Google Fonts): 이름·말풍선 Jua(우아한형제들) · 본문 Noto Sans KR Medium · 숫자·푸터 Nanum Gothic Coding */
 /* Layout: 고정되는 스테이지(턴어라운드) + 오른쪽 파츠별 조정 패널, 좁은 화면에선 스테이지가 위에 붙고 패널이 아래로 */
 :root{
   --bg:#e4ebeb; --stage:#c4d1d3; --panel:#f8fbfb; --fg:#1f2a2e; --muted:#5b6b70; --line:#cfdbdc; --accent:#2b8599; --accent-ink:#ffffff; --neg:#c4693f;
-  --f-name:"Dongle","Noto Sans KR",system-ui,sans-serif;
+  --f-name:"Jua","Noto Sans KR",system-ui,sans-serif;
   --f-body:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
   --f-mono:"Nanum Gothic Coding",ui-monospace,monospace;
 }
@@ -36,17 +36,19 @@ header{position:relative}
 .stip .bx::before{content:"";position:absolute;top:-7px;left:calc(var(--tx,24px) - 9px);width:18px;height:18px;background:#fff;border-radius:4px;transform:rotate(45deg)}
 .stip strong{position:relative;display:block;font:700 14px/1.35 var(--f-body);margin-bottom:3px}
 .stip span{position:relative;display:block;font:500 12.5px/1.55 var(--f-body);color:#4b5a5f}
-.sname{position:absolute;top:10px;left:18px;margin:0;font:400 50px/1 var(--f-name);color:var(--sfg,var(--fg));pointer-events:none;max-width:70%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;z-index:1}
+.sname{position:absolute;top:14px;left:18px;margin:0;font:400 30px/1.15 var(--f-name);color:var(--sfg,var(--fg));pointer-events:none;max-width:70%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;z-index:1}
 .spec{display:flex;flex-wrap:wrap;gap:6px}
 .chip{font-size:12px;padding:4px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted);background:var(--panel)}
 .chip b{color:var(--fg);font-weight:500;font-family:var(--f-mono);font-size:11.5px;font-variant-numeric:tabular-nums}
 .main{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start}
-.stage{position:sticky;top:12px;background:var(--stage);border-radius:14px;overflow:hidden;aspect-ratio:16/10;min-height:340px;max-width:100%}
+.stage{position:sticky;top:12px;background:transparent;isolation:isolate;border-radius:14px;overflow:hidden;aspect-ratio:16/10;min-height:340px;max-width:100%}
 @media (max-width:860px){
   .main{grid-template-columns:minmax(0,1fr)}
   .stage{top:env(safe-area-inset-top,0px);aspect-ratio:auto;height:52vh;min-height:300px;z-index:5;box-shadow:0 6px 16px -10px rgba(0,0,0,.35)}
 }
 canvas{display:block;width:100%;height:100%}
+/* 미리보기 배경은 안쪽 층에: 화면 위에 붙는(sticky) 상자에 색이 있으면 iOS Safari가 그 색으로 상태바를 물들임 */
+.stagebg{position:absolute;inset:0;z-index:-1;background:var(--stage);border-radius:inherit;pointer-events:none}
 .stage.rot canvas{cursor:grab;touch-action:none}
 .zoom{position:absolute;right:12px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px}
 .zoom button{width:32px;height:32px;border:0;border-radius:50%;background:transparent;color:var(--fg);font:600 17px/1 var(--f-body);cursor:pointer;display:grid;place-items:center;padding:0}
@@ -73,7 +75,7 @@ aside{background:var(--panel);border:1px solid var(--line);border-radius:14px;di
 .presets{padding:14px 16px;display:flex;flex-direction:column;gap:8px;border-bottom:1px solid var(--line)}
 .presets .t{font:500 11px var(--f-body);letter-spacing:.12em;color:var(--muted)}
 .namerow{display:flex;gap:6px;align-items:center}
-.namerow input{flex:1;min-width:0;font:400 30px/1 var(--f-name);color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:6px 12px 4px}
+.namerow input{flex:1;min-width:0;font:400 19px/1.2 var(--f-name);color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
 .namerow input:focus{outline:2px solid var(--accent);outline-offset:1px}
 .namedice{flex:none;width:38px;height:38px;border-radius:10px;border:1px solid var(--accent);background:var(--panel);color:var(--accent);display:grid;place-items:center;cursor:pointer;padding:0}
 .namedice:hover{background:var(--accent);color:var(--accent-ink)}
@@ -215,12 +217,13 @@ footer{font:400 12px var(--f-mono);color:var(--muted);text-align:left;letter-spa
       <span class="chip">머리 : 몸 <b id="ratio">2.0 : 1</b></span>
       <span class="chip">상체 : 하체 <b id="ratio2">1 : 1</b></span>
       <span class="chip">질감 <b id="texChip">매트</b></span>
-      <span class="chip">버전 <b>v0.17.2</b></span>
+      <span class="chip">버전 <b>v0.17.3</b></span>
     </div>
   </header>
 
   <div class="main">
     <div class="stage rot" id="stage">
+      <div class="stagebg" id="stageBg"></div>
       <canvas id="c" aria-label="도깨비 캐릭터 3D 미리보기"></canvas>
       <p class="sname" id="nameTitle">깨두</p>
       <div class="busy" id="busy">다듬는 중…</div>
@@ -1127,7 +1130,7 @@ document.querySelectorAll('#colors .sw').forEach(s=>s.onclick=()=>setColor(s.dat
 // 미리보기 배경색: 비우면 기본(화면 모드에 맞춘 색). 어두운 배경이면 라벨 글자를 밝게
 let bgColor='';
 const isDark=hex=>{const c=new THREE.Color(hex);return 0.2126*c.r+0.7152*c.g+0.0722*c.b<0.45};
-function setBg(c){bgColor=c||'';$('rcard').style.background=bgColor;stage.style.background=bgColor;stage.style.setProperty('--sfg',bgColor?(isDark(bgColor)?'#eef4f5':'#1f2a2e'):'');syncUI();if(!$('result').hidden)drawPreview(true)}
+function setBg(c){bgColor=c||'';$('rcard').style.background=bgColor;$('stageBg').style.background=bgColor;stage.style.setProperty('--sfg',bgColor?(isDark(bgColor)?'#eef4f5':'#1f2a2e'):'');syncUI();if(!$('result').hidden)drawPreview(true)}
 document.querySelectorAll('.bgset .sw').forEach(s=>s.onclick=()=>setBg(s.dataset.bg));
 document.querySelectorAll('.bgpick').forEach(p=>p.addEventListener('input',e=>setBg(e.target.value)));
 $('pick').addEventListener('input',e=>{P.color=e.target.value;syncUI();soon()});
@@ -1248,8 +1251,8 @@ function compose(dst,q,reuse){
   if(tagOn){
     const name=tagNameShow||charName||'깨두',{deep,pale}=tagColors();
     // 이름 글자는 흰 칸(윗띠 아래) 안에 '실제 글자 모양' 기준으로 맞춤 → 겹받침(ㄼ 등)이 아래로 삐져나오지 않음
-    const NF=f=>f+'px Dongle, "Noto Sans KR", sans-serif';
-    let fs=150;x.font=NF(fs);
+    const NF=f=>f+'px Jua, "Noto Sans KR", sans-serif';
+    let fs=100;x.font=NF(fs);
     const ink=()=>{const m=x.measureText(name),r=x.measureText('깨둥');return {w:m.width,asc:Math.max(m.actualBoundingBoxAscent,r.actualBoundingBoxAscent),desc:Math.max(m.actualBoundingBoxDescent,r.actualBoundingBoxDescent)}};
     let M=ink();const cw=Math.min(900,Math.max(440,M.w+130)),boxH=tagH-72-34;
     const k=Math.min(1,(cw-90)/M.w,boxH/(M.asc+M.desc));if(k<1){fs=Math.floor(fs*k);x.font=NF(fs);M=ink()}
@@ -1272,7 +1275,7 @@ function compose(dst,q,reuse){
 // ---------- 말풍선 ----------
 // 늘 동그라미 또는 타원. 글이 짧으면 동그라미, 길수록 줄을 나눠 너무 납작하지 않은 타원이 되게 고름
 const BUB_MAX=30;let bubOn=true,bubText='반가워!',bubTail='talk',bubbleRect=null,bubOff={x:0,y:0};
-const BUB_FONT=fs=>`${Math.round(fs*1.6)}px Dongle, "Noto Sans KR", sans-serif`;   // 이름과 같은 Dongle (글자가 작게 그려지는 글꼴이라 크게)
+const BUB_FONT=fs=>`${Math.round(fs*1.05)}px Jua, "Noto Sans KR", sans-serif`;   // 이름과 같은 Jua
 function wrapText(x,t,maxW){
   if(t.includes('\n'))return t.split('\n').flatMap(par=>par.trim()?wrapText(x,par,maxW):[]);   // 직접 넣은 줄바꿈은 그대로
   const out=[];let line='';
@@ -1291,7 +1294,7 @@ function balanceWrap(x,t,mw){const n=wrapText(x,t,mw).length;if(n<2||t.includes(
 function bubbleLayout(x){
   const t=bubText.trim();if(!t||!bubOn)return null;
   const n=[...t.replace(/\n/g,'')].length,fs=n<=6?64:n<=14?56:50;x.font=BUB_FONT(fs);
-  const D=Math.round(fs*1.6),lh=Math.round(D*0.98);   // 줄 간격: 받침(ㄹ 등)이 아랫줄과 겹치지 않게 넉넉히
+  const D=Math.round(fs*1.05),lh=Math.round(D*1.32);   // 줄 간격: 받침(ㄹ 등)이 아랫줄과 겹치지 않게 넉넉히
   let best=null;
   for(const mw of [640,540,460,390,330,280,230]){
     const lines=balanceWrap(x,t,mw);if(lines.length>6)continue;
@@ -1415,7 +1418,7 @@ let lastBubText='반가워!';
 function closeBubEdit(){const e=$('bubEdit');if(e.hidden)return;e.hidden=true;
   if(!bubText.trim()){bubText=lastBubText;$('bubText').value=lastBubText;bubCount();drawPreview(true)}else lastBubText=bubText}
 // 구글 폰트는 글자 범위별로 나뉘어 있어서, 그릴 글자를 넘겨 해당 조각을 미리 받아 둠
-async function loadTagFonts(){try{await Promise.all([document.fonts.load('150px Dongle',(charName||'깨두')+bubText),document.fonts.load('700 34px "Noto Sans KR"','내 이름은'+bubText),document.fonts.load('26px "Nanum Gothic Coding"','ⓒthesonsie')])}catch(_){}}
+async function loadTagFonts(){try{await Promise.all([document.fonts.load('100px Jua',(charName||'깨두')+bubText),document.fonts.load('700 34px "Noto Sans KR"','내 이름은'+bubText),document.fonts.load('26px "Nanum Gothic Coding"','ⓒthesonsie')])}catch(_){}}
 async function openResult(){
   if($('busy').classList.contains('on'))await new Promise(r=>setTimeout(r,320));
   spinning=false;$('spinBtn').setAttribute('aria-pressed',false);target=angle;

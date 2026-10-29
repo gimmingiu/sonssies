@@ -1,11 +1,11 @@
 // 화면 확인용 스크립트 (Playwright). 작업 환경에서 cdnjs·Google Fonts에 직접 접속할 수 없을 때,
 // 같은 파일을 로컬 npm 패키지로 대신 내려줘서 실제와 같은 모습으로 렌더링한다.
 //
-// 준비:  npm i three@0.128.0 @fontsource/dongle @fontsource/noto-sans-kr @fontsource/nanum-gothic-coding playwright
+// 준비:  npm i three@0.128.0 @fontsource/jua @fontsource/noto-sans-kr @fontsource/nanum-gothic-coding playwright
 // 실행:  node tools/test_page.js            → out_main.png(꾸미기 화면), out_card.png(저장 이미지 1080×1920)
 const {chromium}=require('playwright');const fs=require('fs');const path=require('path');
 const ROOT=path.join(__dirname,'..'),NM=path.join(process.cwd(),'node_modules');
-const FONTS=[['Dongle',400,'dongle/files/dongle-korean-400-normal.woff2'],['Dongle',400,'dongle/files/dongle-latin-400-normal.woff2'],
+const FONTS=[['Jua',400,'jua/files/jua-korean-400-normal.woff2'],['Jua',400,'jua/files/jua-latin-400-normal.woff2'],
  ['Noto Sans KR',500,'noto-sans-kr/files/noto-sans-kr-korean-500-normal.woff2'],['Noto Sans KR',500,'noto-sans-kr/files/noto-sans-kr-latin-500-normal.woff2'],
  ['Noto Sans KR',700,'noto-sans-kr/files/noto-sans-kr-korean-700-normal.woff2'],['Noto Sans KR',700,'noto-sans-kr/files/noto-sans-kr-latin-700-normal.woff2'],
  ['Nanum Gothic Coding',400,'nanum-gothic-coding/files/nanum-gothic-coding-korean-400-normal.woff2'],['Nanum Gothic Coding',400,'nanum-gothic-coding/files/nanum-gothic-coding-latin-400-normal.woff2']];
