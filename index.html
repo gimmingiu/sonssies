@@ -228,7 +228,7 @@ footer{font:400 12px var(--f-mono);color:var(--muted);text-align:left;letter-spa
       <span class="chip">머리 : 몸 <b id="ratio">2.0 : 1</b></span>
       <span class="chip">상체 : 하체 <b id="ratio2">1 : 1</b></span>
       <span class="chip">질감 <b id="texChip">매트</b></span>
-      <span class="chip">버전 <b>v0.16.3</b></span>
+      <span class="chip">버전 <b>v0.16.4</b></span>
     </div>
   </header>
 
@@ -1311,37 +1311,57 @@ function bubbleLayout(x){
   const gapB=118;   // 기본·생각 꼬리 모두 같은 자리
   return {lines:best.lines,fs,lh,a:best.a,b:best.b,asc:best.asc,desc:best.desc,r1,gapB};
 }
-// 말풍선을 캐릭터의 흰 손·발과 같은 매트 클레이처럼: 아래쪽에 얇은 옆면(두께), 가장자리로 갈수록 살짝 어두워지는 둥근 음영,
-// 위쪽의 부드러운 빛, 아주 옅은 알갱이 질감. 바닥 그림자는 없음. 흰 배경에서도 윤곽이 보이도록 가장자리에 옅은 선
-let bubCv=null,invCv=null,grainPat=null;
-function clayBubble(x,shapes,cx,cy,a,b,gapB){
-  if(!bubCv){bubCv=document.createElement('canvas');bubCv.width=1080;bubCv.height=1920}
-  const o=bubCv.getContext('2d');o.setTransform(1,0,0,1,0,0);o.clearRect(0,0,1080,1920);
-  const each=(c,fn)=>shapes.forEach(f=>{c.beginPath();f(c);fn()});
-  const T=7;   // 두께(px)
-  // ① 옆면: 같은 모양을 아래로 T만큼 내려 조금 어두운 색으로 (선을 먼저 긋고 덮어서 바깥 윤곽만 남김 → 몸통·꼬리 이음새 없음)
-  x.save();x.translate(0,T);x.lineWidth=3;x.strokeStyle='rgba(60,80,88,.2)';each(x,()=>x.stroke());x.fillStyle='#c9d4d7';each(x,()=>x.fill());x.restore();
-  // 윗면 윤곽도 먼저: 아주 옅은 선 (흰 배경에서도 보이게)
-  x.save();x.lineWidth=3;x.strokeStyle='rgba(60,80,88,.16)';each(x,()=>x.stroke());x.restore();
-  // ② 윗면: 오프스크린에 모양을 칠하고, 그 안에서만 음영·빛·알갱이를 입힘
-  o.fillStyle='#fff';each(o,()=>o.fill());
-  o.globalCompositeOperation='source-atop';
-  const g=o.createLinearGradient(0,cy-b,0,cy+b+gapB);g.addColorStop(0,'#fbfdfd');g.addColorStop(1,'#e8eef0');o.fillStyle=g;o.fillRect(0,0,1080,1920);
-  // 가장자리 안쪽 음영: 모양 바깥을 칠한 그림자를 안쪽으로 번지게
-  if(!invCv){invCv=document.createElement('canvas');invCv.width=1080;invCv.height=1920}
-  const iv=invCv.getContext('2d');iv.globalCompositeOperation='source-over';iv.fillStyle='#000';iv.fillRect(0,0,1080,1920);
-  iv.globalCompositeOperation='destination-out';each(iv,()=>iv.fill());iv.globalCompositeOperation='source-over';
-  o.save();o.shadowColor='rgba(70,95,104,.30)';o.shadowBlur=26;o.shadowOffsetX=-3000;o.shadowOffsetY=-6;o.drawImage(invCv,3000,0);o.restore();
-  // 위쪽 부드러운 빛
-  const hl=o.createRadialGradient(cx-a*0.28,cy-b*0.5,0,cx-a*0.28,cy-b*0.5,Math.max(a,b)*0.9);hl.addColorStop(0,'rgba(255,255,255,.85)');hl.addColorStop(1,'rgba(255,255,255,0)');
-  o.fillStyle=hl;o.fillRect(0,0,1080,1920);
-  // 매트 알갱이
-  if(!grainPat){const n=document.createElement('canvas');n.width=n.height=96;const nc=n.getContext('2d'),id=nc.createImageData(96,96);
-    for(let i=0;i<id.data.length;i+=4){const v=Math.random()*255;id.data[i]=id.data[i+1]=id.data[i+2]=v;id.data[i+3]=14}nc.putImageData(id,0,0);grainPat=o.createPattern(n,'repeat')}
-  o.fillStyle=grainPat;o.fillRect(0,0,1080,1920);
-  o.globalCompositeOperation='source-over';
-  x.drawImage(bubCv,0,0);
+// 말풍선도 도깨비처럼 3D로 빚어서 그림: 둥근 베개 모양 몸통 + 꼬리를 하나의 덩어리(SDF)로 매끈하게 잇고,
+// 캐릭터의 흰 부분과 같은 재질(매트/글로시 따라감)과 조명으로 렌더 → 각진 곳·선·이음새 없음. 바닥 그림자 없음
+const bubOrtho=new THREE.OrthographicCamera(0,1,0,-1,-50,50);bubOrtho.position.set(0,0,10);
+let bubCache={key:'',img:null,box:null};
+function bubble3D(x,G){
+  const {cx,cy,a,b,P,dx,dy,nx,ny,think,r1}=G,q=x.canvas.width/1080;
+  const TH=22,RR=20;   // 반두께, 가장자리 둥글기(px)
+  const sm=(d1,d2,k)=>{const h=Math.max(k-Math.abs(d1-d2),0)/k;return Math.min(d1,d2)-h*h*k*0.25};
+  const slab=(e2,z)=>{const qx=e2+RR,qy=Math.abs(z)-TH+RR;return Math.hypot(Math.max(qx,0),Math.max(qy,0))+Math.min(Math.max(qx,qy),0)-RR};
+  const ell2=(X,Y,A,Bb)=>{const k0=Math.hypot(X/A,Y/Bb),k1=Math.hypot(X/(A*A),Y/(Bb*Bb))||1e-6;return k0*(k0-1)/k1};
+  // 꼬리(기본): 굵은 뿌리에서 가는 끝으로 이어지는 둥근 원뿔
+  const rcone=(px,py,pz,A,Bp,ra,rb)=>{const bx=Bp[0]-A[0],by=Bp[1]-A[1],l2=bx*bx+by*by,rr=ra-rb,a2=l2-rr*rr,il2=1/l2;
+    const pax=px-A[0],pay=py-A[1],paz=pz,y=pax*bx+pay*by,z=y-l2;
+    const vx=pax*l2-bx*y,vy=pay*l2-by*y,vz=paz*l2,x2=vx*vx+vy*vy+vz*vz,y2=y*y*l2,z2=z*z*l2,k=Math.sign(rr)*rr*rr*x2;
+    if(Math.sign(z)*a2*z2>k)return Math.sqrt(x2+z2)*il2-rb;if(Math.sign(y)*a2*y2<k)return Math.sqrt(x2+y2)*il2-ra;return (Math.sqrt(x2*a2*il2)+y*rr)*il2-ra};
+  const parts=[];
+  if(think){const r2=r1*0.6,r3=r1*0.36,g1=r1*0.5,g2=r1*0.42;
+    const c1=[P[0]-dx*r1*0.06,P[1]-dy*r1*0.06],c2=[c1[0]+dx*(r1+g1+r2),c1[1]+dy*(r1+g1+r2)],c3=[c2[0]+dx*(r2+g2+r3),c2[1]+dy*(r2+g2+r3)];
+    parts.push([c1,r1],[c2,r2],[c3,r3]);}
+  const S0=[P[0]-dx*34,P[1]-dy*34],T=[P[0]+dx*74+nx*20,P[1]+dy*74+ny*20];
+  const f=(X,Y,Z)=>{
+    let d=slab(ell2(X-cx,Y-cy,a,b),Z);
+    if(think){const [c1,q1]=parts[0];d=sm(d,slab(Math.hypot(X-c1[0],Y-c1[1])-q1,Z*1.15),7);
+      for(let i=1;i<3;i++){const [c,r]=parts[i];d=Math.min(d,slab(Math.hypot(X-c[0],Y-c[1])-r,Z*(1.3+0.25*i)))}}
+    else d=sm(d,rcone(X,Y,Z*1.7,S0,T,30,8)/1.0,22);
+    return d};
+  // 그릴 범위
+  let x0=cx-a,x1=cx+a,y0=cy-b,y1=cy+b;
+  const pts=think?parts.map(([c,r])=>[c[0]-r,c[1]-r,c[0]+r,c[1]+r]):[[T[0]-10,T[1]-10,T[0]+10,T[1]+10]];
+  pts.forEach(([a0,b0,a1,b1])=>{x0=Math.min(x0,a0);y0=Math.min(y0,b0);x1=Math.max(x1,a1);y1=Math.max(y1,b1)});
+  x0=Math.floor(x0-16);y0=Math.floor(y0-16);x1=Math.ceil(x1+16);y1=Math.ceil(y1+16);
+  const key=[Math.round(cx),Math.round(cy),Math.round(a),Math.round(b),Math.round(T[0]),Math.round(T[1]),think,q,P_tex(),r1].join(',');
+  if(bubCache.key!==key){
+    const geo=surfaceNets(f,[x0,y0,-TH-4],[x1,y1,TH+4],Math.max(4,Math.min(7,(x1-x0)/90)),{});
+    // 화면 좌표(아래로 +y) → 3D(위로 +y): y 뒤집기, 크기는 캐릭터와 비슷한 단위로(1/100)
+    geo.scale(0.01,-0.01,0.01);geo.computeBoundingSphere();
+    const idx=geo.index;if(idx){const ar=idx.array;for(let t=0;t<ar.length;t+=3){const tmp=ar[t+1];ar[t+1]=ar[t+2];ar[t+2]=tmp}idx.needsUpdate=true}   // 뒤집으면서 앞뒤가 바뀐 면 방향 되돌림
+    const m=new THREE.Mesh(geo,mats.white);
+    const pr=renderer.getPixelRatio(),bw=x1-x0,bh=y1-y0;
+    renderer.setPixelRatio(q);renderer.setSize(bw,bh,false);
+    Object.assign(bubOrtho,{left:x0*0.01,right:x1*0.01,top:-y0*0.01,bottom:-y1*0.01});bubOrtho.updateProjectionMatrix();
+    const vis=chars.map(c=>c.visible);chars.forEach(c=>c.visible=false);scene.add(m);
+    renderer.render(scene,bubOrtho);
+    scene.remove(m);geo.dispose();chars.forEach((c,i)=>c.visible=vis[i]);
+    const img=document.createElement('canvas');img.width=renderer.domElement.width;img.height=renderer.domElement.height;img.getContext('2d').drawImage(renderer.domElement,0,0);
+    renderer.setPixelRatio(pr);layout();
+    bubCache={key,img,box:[x0,y0,x1-x0,y1-y0]};
+  }
+  const [bx,by,bw,bh]=bubCache.box;x.drawImage(bubCache.img,bx,by,bw,bh);
 }
+const P_tex=()=>P.tex+P.color;
 function drawBubble(x,B,headY,headX=540,headCY=headY+200){
   const OW=1080,{a,b}=B;
   // 기본 자리(머리 위 살짝 오른쪽) + 끌어서 옮긴 만큼. 카드 밖으로는 못 나감
@@ -1361,7 +1381,7 @@ function drawBubble(x,B,headY,headX=540,headCY=headY+200){
     shapes.push(p=>{p.moveTo(b1[0],b1[1]);p.quadraticCurveTo(P[0]+dx*34+nx*14,P[1]+dy*34+ny*14,tip[0],tip[1]);
       p.quadraticCurveTo(P[0]+dx*30-nx*8,P[1]+dy*30-ny*8,b2[0],b2[1]);p.closePath()});
   }
-  clayBubble(x,shapes,cx,cy,a,b,B.gapB);
+  bubble3D(x,{cx,cy,a,b,P,dx,dy,nx,ny,think:bubTail==='think',r1:B.r1});
   x.save();
   // 글: 실제 글자 윗끝~아랫끝 묶음의 가운데를 타원 가운데에 맞춤
   x.fillStyle='#1f2a2e';x.font=BUB_FONT(B.fs);x.textAlign='center';x.textBaseline='alphabetic';
