@@ -384,7 +384,7 @@ const GROUPS=[
  ['꼬리',[['tailSize','크기',0.5,1,1],['tailW','너비',1,1.8,1]]],
  ['포즈',[]],
 ];
-const DEF={tailSq:0,hornSize:1,hornTilt:8,browX:0.25,earSpread:0,lowerW:1,blushColor:'#f6b3a9',horns:true,blush:false,tail:true,tex:'smooth',color:'#a9e4f0',eyeType:'dot',mouthType:'smile',sit:false,tuck:false,footSize:2,legGap:0.05,handSize:1,earInnerH:0.6,earInnerW:0.85,tailShape:'round',tailLen:1,tailY:0,tailTilt:15,tailBlend:0.35,armRaiseR:6,armFwdR:0,armRaiseL:6,armFwdL:0,legSwingR:0,legSwingL:0,headPitch:0,headYaw:0,tilt:0};
+const DEF={handPose:'',tailSq:0,hornSize:1,hornTilt:8,browX:0.25,earSpread:0,lowerW:1,blushColor:'#f6b3a9',horns:true,blush:false,tail:true,tex:'smooth',color:'#a9e4f0',eyeType:'dot',mouthType:'smile',sit:false,tuck:false,footSize:2,legGap:0.05,handSize:1,earInnerH:0.6,earInnerW:0.85,tailShape:'round',tailLen:1,tailY:0,tailTilt:15,tailBlend:0.35,armRaiseR:6,armFwdR:0,armRaiseL:6,armFwdL:0,legSwingR:0,legSwingL:0,headPitch:0,headYaw:0,tilt:0};
 const EXPR_KEYS=['eyeType','mouthType','blush'];   // 랜덤에서만 표정 조합으로 씀
 const POSE_KEYS=['tilt','tuck','legSwingR','legSwingL','armRaiseR','armFwdR','armRaiseL','armFwdL','headPitch','headYaw','sit'];
 const POSES={
@@ -611,6 +611,9 @@ function bodyModel(){
   const unwF=(x,y)=>tl?rotR(x,y,-PH):[x,y];          // 팔: 윗몸에 붙어 통째로 따라감
   const fbBent=(xr,y,z)=>{const u=unwY(xr,y);return fb(Math.abs(u[0]),u[1],z,u[0]>=0?1:-1)};
   function freeArm(raiseDeg,fwdDeg,sd,push=false){
+    // 손 모으기(이모티콘용): 어깨 뿌리가 가슴 앞쪽으로 옮겨가고, 두 손이 배 앞 가운데에서 만남
+    if(P.handPose==='front'&&!sit){const y0=sy-0.03,Sp0=[surfX(y0)-ra*0.7,y0,surfZf(y0)*0.5];
+      const hy=Math.max(rh+0.12,sy-0.34),H0=[rh*0.92,hy,surfZf(hy)+rh*0.5];return {S:Sp0,H:H0}}
     let r=raiseDeg,fw=Math.max(-45,fwdDeg),H,Sp;
     for(let it=0;it<220;it++){
       const k=smooth01(40,140,r), kf=smooth01(25,85,fw)*(1-smooth01(100,150,fw)*0.5), kk=Math.max(k,kf);
@@ -762,7 +765,7 @@ function surfaceNets(f,b0,b1,h,cls){
 }
 let bodyCache={key:'',geo:null,model:null};
 function getBody(h){
-  const keys=['bodyLen','lowerRatio','upperW','lowerW','bodyD','legSplit','legGap','footSize','armLen','armThick','handSize','tail','tailSize','tailLen','tailY','tailTilt','tailBlend','tailShape','tailW','tailSq','armRaiseR','armFwdR','armRaiseL','armFwdL','sit','tuck','headW','headH','headD','headSq','legSwingR','legSwingL','tilt','legThick'];
+  const keys=['bodyLen','lowerRatio','upperW','lowerW','bodyD','legSplit','legGap','footSize','armLen','armThick','handSize','tail','tailSize','tailLen','tailY','tailTilt','tailBlend','tailShape','tailW','tailSq','armRaiseR','armFwdR','armRaiseL','armFwdL','sit','tuck','headW','headH','headD','headSq','legSwingR','legSwingL','tilt','legThick','handPose'];
   const k=keys.map(x=>P[x]).join('|')+'|'+h;
   if(bodyCache.key===k)return bodyCache;
   const model=bodyModel();
@@ -1396,25 +1399,28 @@ function drawBubble(x,B,headY,headX=540,headCY=headY+200){
 // ---------- 이모티콘 세트 (카톡에 이미지로 보내는 512×512 PNG, 흰 바탕) ----------
 // 지금 꾸민 도깨비에 장면별 표정·자세·소품만 잠시 덮어써서 렌더 → 원래대로 되돌림
 const D2Rs=Math.PI/180;
-const PROP_COL={spark:'#ffd36b',heart:'#ff7d8f',sweat:'#a8dcef'};
+const PROP_COL={spark:'#ffd36b',heart:'#ff7d8f',sweat:'#f7fafa'};
 function propGeo(type){
   if(type==='heart'){const s=new THREE.Shape();s.moveTo(0,-0.9);s.bezierCurveTo(-0.15,-0.62,-1.05,-0.25,-1.05,0.28);s.bezierCurveTo(-1.05,0.82,-0.38,1.02,0,0.55);
     s.bezierCurveTo(0.38,1.02,1.05,0.82,1.05,0.28);s.bezierCurveTo(1.05,-0.25,0.15,-0.62,0,-0.9);
     const g=new THREE.ExtrudeGeometry(s,{depth:0.32,bevelEnabled:true,bevelThickness:0.22,bevelSize:0.2,bevelSegments:8,curveSegments:28});g.center();return g}
   if(type==='spark'){const s=new THREE.Shape(),c=0.16;s.moveTo(0,1);s.quadraticCurveTo(c,c,1,0);s.quadraticCurveTo(c,-c,0,-1);s.quadraticCurveTo(-c,-c,-1,0);s.quadraticCurveTo(-c,c,0,1);
     const g=new THREE.ExtrudeGeometry(s,{depth:0.14,bevelEnabled:true,bevelThickness:0.14,bevelSize:0.1,bevelSegments:6,curveSegments:20});g.center();return g}
-  if(type==='sweat'){const pts=[];for(let i=0;i<=12;i++){const a=-Math.PI/2+i/12*Math.PI/2;pts.push(new THREE.Vector2(Math.cos(a)+1e-4,Math.sin(a)))}
-    for(let i=1;i<=16;i++){const u=i/16;pts.push(new THREE.Vector2(Math.max(1e-4,Math.pow(1-u,1.25)*(1-0.15*u)),u*1.9))}
-    const g=new THREE.LatheGeometry(pts,40);g.translate(0,-0.4,0);return g}
+  if(type==='sweat'){
+    // 물방울: 아래는 반지름 1인 공, 위는 반지름 rt인 작은 공, 둘을 잇는 옆선은 두 원에 모두 접하는 직선 → 꺾임 없음
+    const R=1,rt=0.24,Hh=1.75,dd=Hh,al=Math.asin((R-rt)/dd),pts=[];
+    for(let i=0;i<=20;i++){const a=-Math.PI/2+i/20*(Math.PI/2+al);pts.push(new THREE.Vector2(Math.max(1e-4,R*Math.cos(a)),R*Math.sin(a)))}
+    for(let i=1;i<=20;i++){const a=al+i/20*(Math.PI/2-al);pts.push(new THREE.Vector2(Math.max(1e-4,rt*Math.cos(a)),Hh+rt*Math.sin(a)))}
+    const g=new THREE.LatheGeometry(pts,48);g.translate(0,-0.5,0);return g}
 }
 // 장면: set=표정 덮어쓰기, head/body=고개·몸 숙임(°, +가 앞으로), props=[종류, 머리 가운데 기준 [x,y,z], 크기, 기울기°]
 const STICKERS=[
- {id:'hello',name:'안녕하세요',set:{eyeType:'happy',mouthType:'smile',blush:true,browAng:-6},head:12,body:4,
+ {id:'hello',name:'안녕하세요',set:{eyeType:'happy',mouthType:'smile',blush:true,browAng:-6,handPose:'front'},head:12,body:4,
    props:[['spark',[1.25,0.75,0.4],0.2,10],['spark',[1.55,0.25,0.3],0.12,-15],['spark',[-1.3,0.6,0.3],0.1,20]]},
  {id:'thanks',name:'감사합니다',set:{eyeType:'content',mouthType:'smile',blush:true,browAng:-12},head:26,body:12,
    props:[['heart',[1.2,0.85,0.4],0.2,-14],['heart',[1.5,0.35,0.2],0.13,12],['heart',[-1.3,0.8,0.3],0.11,16]]},
  {id:'sorry',name:'죄송합니다',set:{eyeType:'dot',mouthType:'flat',blush:false,browAng:-30,tuck:true},head:16,body:6,
-   props:[['sweat',[1.0,0.45,0.55],0.16,-18],['sweat',[1.28,0.05,0.4],0.1,-10]]},
+   props:[['sweat',[0.62,0.3,0.82],0.13,-22]]},
 ];
 function renderSticker(def,S=512){
   const keep={...P},pr=renderer.getPixelRatio();
