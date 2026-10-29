@@ -232,7 +232,7 @@ footer{font:400 12px var(--f-mono);color:var(--muted);text-align:left;letter-spa
       <span class="chip">머리 : 몸 <b id="ratio">2.0 : 1</b></span>
       <span class="chip">상체 : 하체 <b id="ratio2">1 : 1</b></span>
       <span class="chip">질감 <b id="texChip">매트</b></span>
-      <span class="chip">버전 <b>v0.16.4</b></span>
+      <span class="chip">버전 <b>v0.16.6</b></span>
     </div>
   </header>
 
@@ -1179,7 +1179,12 @@ function romanize(str){
 const NAMES=['말랑','토실','포실','뚱실','포동','다다','구레','파루','포아','아차','까루','뽀도','꾸루','휘리','소곰','시꾸','디구','또루','디뚜','깡초','덤버',
  '실구디','오미디','망오디','똥구디','쇳디','올미','우루미','고소미','아가지','도티','마딘','타내','올마대','가리대','터대','샹재','수새','더믈','검불','북쇠','모리쇠','곰쇠','매뇌','쟈가둥','흰둥','검둥'];
 let charName='깨두';
-function setName(n){charName=(n||'').trim().slice(0,12)||'깨두';$('charName').value=charName;$('resName').value=charName;$('nameTitle').textContent=charName;if(!$('result').hidden)loadTagFonts().then(()=>drawPreview(true))}
+// 이름 규칙: 띄어쓰기 없음 · 최소 1자 · 최대 한글 8자 / 영문 12자 (영문·숫자 1칸, 그 밖의 글자 1.5칸, 합 12칸까지)
+function cleanName(v){let u=0,out='';for(const ch of (v||'').replace(/\s+/g,'')){const w=/[\x21-\x7e]/.test(ch)?1:1.5;if(u+w>12)break;u+=w;out+=ch}return out}
+function bindName(inp,after){const fix=()=>{const c=cleanName(inp.value);if(c!==inp.value)inp.value=c;charName=c;after()};
+  inp.addEventListener('input',e=>{if(e.isComposing)return;fix()});inp.addEventListener('compositionend',fix);
+  inp.addEventListener('keydown',e=>{if(e.key===' '&&!e.isComposing)e.preventDefault()})}
+function setName(n){charName=cleanName(n)||'깨두';$('charName').value=charName;$('resName').value=charName;$('nameTitle').textContent=charName;if(!$('result').hidden)loadTagFonts().then(()=>drawPreview(true))}
 // 주사위: 약 1초 동안 이름이 슬롯머신처럼 빠르게 바뀌다가 느려지며 멈춤
 let rolling=null;
 // 이름표 '통' 착지: 입력칸의 land 애니메이션과 같은 곡선(0.92 → 1.06 → 1)
@@ -1199,7 +1204,7 @@ function rollName(d0,inp0){
   tick();
 }
 $('nameDice').onclick=()=>rollName();
-$('charName').addEventListener('input',e=>{charName=e.target.value.trim().slice(0,12);$('nameTitle').textContent=charName||'깨두'});
+bindName($('charName'),()=>{$('nameTitle').textContent=charName||'깨두'});
 $('charName').addEventListener('blur',()=>setName($('charName').value));
 // 엔터: 키보드를 내리고, 주사위로 이름이 정해질 때와 같은 '통' 애니메이션
 $('charName').addEventListener('keydown',e=>{if(e.key!=='Enter'||e.isComposing)return;e.preventDefault();const inp=$('charName');
@@ -1255,9 +1260,13 @@ function compose(dst,q,reuse){
   // 명찰: 흰 카드 + 테두리·윗띠, 살짝 기울여 붙인 스티커처럼 (그림자 없음)
   if(tagOn){
     const name=tagNameShow||charName||'깨두',{deep,pale}=tagColors();
-    let fs=150;x.font=fs+'px Dongle, "Noto Sans KR", sans-serif';
-    const tw=x.measureText(name).width,cw=Math.min(900,Math.max(440,tw+130));
-    if(tw>cw-90){fs=Math.floor(fs*(cw-90)/tw);x.font=fs+'px Dongle, "Noto Sans KR", sans-serif'}
+    // 이름 글자는 흰 칸(윗띠 아래) 안에 '실제 글자 모양' 기준으로 맞춤 → 겹받침(ㄼ 등)이 아래로 삐져나오지 않음
+    const NF=f=>f+'px Dongle, "Noto Sans KR", sans-serif';
+    let fs=150;x.font=NF(fs);
+    const ink=()=>{const m=x.measureText(name),r=x.measureText('깨둥');return {w:m.width,asc:Math.max(m.actualBoundingBoxAscent,r.actualBoundingBoxAscent),desc:Math.max(m.actualBoundingBoxDescent,r.actualBoundingBoxDescent)}};
+    let M=ink();const cw=Math.min(900,Math.max(440,M.w+130)),boxH=tagH-72-34;
+    const k=Math.min(1,(cw-90)/M.w,boxH/(M.asc+M.desc));if(k<1){fs=Math.floor(fs*k);x.font=NF(fs);M=ink()}
+    const nameY=(-tagH/2+72+tagH/2-12)/2+(M.asc-M.desc)/2;   // 흰 칸 가운데에 글자 묶음 가운데
     const cx=OW/2,cy=y0+fpx+gap+tagH/2;
     x.save();x.translate(cx,cy);x.rotate(-2.5*Math.PI/180);x.scale(tagScale,tagScale);
     x.beginPath();x.roundRect(-cw/2,-tagH/2,cw,tagH,42);x.fillStyle='#fff';x.fill();
@@ -1265,7 +1274,7 @@ function compose(dst,q,reuse){
     x.lineWidth=12;x.strokeStyle=deep;x.beginPath();x.roundRect(-cw/2+6,-tagH/2+6,cw-12,tagH-12,36);x.stroke();
     x.textAlign='center';x.textBaseline='middle';
     x.fillStyle=deep;x.font='700 34px "Noto Sans KR", sans-serif';x.fillText('내 이름은',0,-tagH/2+40);
-    x.fillStyle=tagNameShow?'#7b888c':'#1f2a2e';x.font=fs+'px Dongle, "Noto Sans KR", sans-serif';x.fillText(name,0,42);
+    x.fillStyle=tagNameShow?'#7b888c':'#1f2a2e';x.font=NF(fs);x.textBaseline='alphabetic';x.fillText(name,0,nameY);
     x.restore();
   }
   bubbleRect=B?drawBubble(x,B,y0+tpx,headX,y0+C.headCY):null;placeBubHit();
@@ -1481,7 +1490,7 @@ function bubTailDim(){$('bubTail').style.opacity=bubOn?'':'.4';$('bubTail').styl
 $('bubOn').onchange=e=>{bubOn=e.target.checked;bubTailDim();if(!bubOn)closeBubEdit();drawPreview(true)};
 $('tagOn').onchange=e=>{tagOn=e.target.checked;$('tagCols').style.opacity=tagOn?'':'.4';$('tagCols').style.pointerEvents=tagOn?'':'none';drawPreview()};
 document.querySelectorAll('#bubTail .pbtn').forEach(b=>b.onclick=()=>{bubTail=b.dataset.v;document.querySelectorAll('#bubTail .pbtn').forEach(o=>o.setAttribute('aria-pressed',o===b));drawPreview(true)});
-$('resName').addEventListener('input',e=>{charName=e.target.value.trim().slice(0,12);$('charName').value=charName;$('nameTitle').textContent=charName||'깨두';loadTagFonts().then(()=>drawPreview(true))});
+bindName($('resName'),()=>{$('charName').value=charName;$('nameTitle').textContent=charName||'깨두';loadTagFonts().then(()=>drawPreview(true))});
 $('resName').addEventListener('blur',()=>{setName($('resName').value);drawPreview(true)});
 $('resName').addEventListener('keydown',e=>{if(e.key!=='Enter'||e.isComposing)return;e.preventDefault();setName($('resName').value);$('resName').blur();drawPreview(true)});
 let dl=null;
