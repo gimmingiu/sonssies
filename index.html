@@ -12,9 +12,12 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="반려 도깨비">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://gimmingiu.github.io/thesonsie/">
 <meta property="og:title" content="나의 반려 도깨비 만들기">
 <meta property="og:description" content="나만의 반려 도깨비를 꾸미고 이미지로 저장해 보세요.">
-<meta property="og:image" content="og.png">
+<meta property="og:image" content="https://gimmingiu.github.io/thesonsie/og.png">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@400;700&family=Nanum+Gothic+Coding&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
 <style>
@@ -154,6 +157,8 @@ input[type=color][data-on="true"]{box-shadow:0 0 0 2px var(--accent)}
 .pip.cur{height:20px;background:var(--accent);opacity:1}
 .pips[data-sign="n"] .pip.on,.pips[data-sign="n"] .pip.cur{background:var(--neg)}
 .pip.mid.cur{background:var(--fg);opacity:1}
+.plusonly .pip:nth-child(-n+5){opacity:.28}
+.plusonly .sb[data-d="-1"]{opacity:.55}
 @media (prefers-reduced-motion: reduce){.pip,.sb,.ctab{transition:none}}
 /* 꾸미기 패널 맨 아래에 붙어 있는 '완성!' 버튼 */
 .side{display:flex;flex-direction:column;gap:12px;min-width:0}
@@ -162,7 +167,8 @@ input[type=color][data-on="true"]{box-shadow:0 0 0 2px var(--accent)}
 .bigbtn.cta.show{transform:none;opacity:1;pointer-events:auto;transition:transform .32s cubic-bezier(.3,1.45,.5,1),opacity .22s ease}   /* 나타날 때: 뿅 */
 .bigbtn.cta.show:active{transform:scale(.97)}
 @media (prefers-reduced-motion: reduce){.bigbtn.cta{transition:opacity .15s}}
-footer{font:400 12px var(--f-mono);color:var(--muted);text-align:center;letter-spacing:.02em;padding-top:8px}
+footer{font:400 12px var(--f-mono);color:var(--muted);text-align:left;letter-spacing:.02em;padding-top:8px}
+.rfoot{width:100%;grid-column:1/-1;padding-top:6px}
 .bigbtn{width:100%;font:700 17px var(--f-body);letter-spacing:.02em;border:0;border-radius:12px;padding:12px 16px;background:var(--accent);color:var(--accent-ink);cursor:pointer;box-shadow:0 6px 14px -8px var(--accent);transition:transform .08s}
 .bigbtn:active{transform:scale(.97)}
 .bigbtn:disabled{opacity:.6;cursor:default}
@@ -179,6 +185,8 @@ footer{font:400 12px var(--f-mono);color:var(--muted);text-align:center;letter-s
 .rhint{margin:-8px 0 0;font-size:12px;color:var(--muted)}
 .rside{width:100%;max-width:420px;display:flex;flex-direction:column;gap:14px}
 .rside .t{font:500 11px var(--f-body);letter-spacing:.12em;color:var(--muted)}
+.bubhit{position:absolute;touch-action:none;cursor:grab;border-radius:50%;z-index:1}
+.bubhit:active{cursor:grabbing}
 .bubedit{position:absolute;left:5%;right:5%;display:flex;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:5px 5px 5px 4px;box-shadow:0 12px 26px -12px rgba(0,0,0,.45);animation:pop .25s cubic-bezier(.3,1.5,.5,1);z-index:2}
 .bubedit input{flex:1;min-width:0;font:500 16px var(--f-body);color:var(--fg);background:transparent;border:0;padding:8px 8px}
 .bubedit input:focus{outline:none}.bubedit:focus-within{outline:2px solid var(--accent);outline-offset:1px}
@@ -189,7 +197,7 @@ footer{font:400 12px var(--f-mono);color:var(--muted);text-align:center;letter-s
 .ract button{width:100%;font:700 16px var(--f-body);letter-spacing:.01em;padding:13px 10px;border-radius:12px;border:1px solid var(--line);box-shadow:none}
 .ract .bigbtn{border-color:var(--accent)}
 .rnote{font-size:12.5px;color:var(--muted);line-height:1.6;margin:0;min-height:1.6em}
-@media (min-width:760px){.rwrap{grid-template-columns:auto 320px;column-gap:40px}.rcard{grid-column:1;grid-row:1;width:auto;max-width:none;height:min(84vh,860px)}.rhint{grid-column:1;grid-row:2}.rside{grid-column:2;grid-row:1/3}}
+@media (min-width:760px){.rwrap{grid-template-columns:auto 320px;column-gap:40px}.rcard{grid-column:1;grid-row:1;width:auto;max-width:none;height:min(84vh,860px)}.rhint{grid-column:1;grid-row:2}.rside{grid-column:2;grid-row:1/3}.rfoot{grid-row:3}}
 @media (prefers-reduced-motion: reduce){.rcard{animation:none}.bigbtn{transition:none}}
 .note{font-size:13px;color:var(--muted);line-height:1.6;margin:0;max-width:70ch}
 </style>
@@ -214,7 +222,7 @@ footer{font:400 12px var(--f-mono);color:var(--muted);text-align:center;letter-s
       <span class="chip">머리 : 몸 <b id="ratio">2.0 : 1</b></span>
       <span class="chip">상체 : 하체 <b id="ratio2">1 : 1</b></span>
       <span class="chip">질감 <b id="texChip">매트</b></span>
-      <span class="chip">버전 <b>v0.15.0</b></span>
+      <span class="chip">버전 <b>v0.16.0</b></span>
     </div>
   </header>
 
@@ -250,15 +258,20 @@ footer{font:400 12px var(--f-mono);color:var(--muted);text-align:center;letter-s
         <span class="t" style="margin-top:4px">프리셋</span>
         <div class="pbtns" id="presets"></div>
       </div>
-      <details open>
-        <summary>표정</summary>
-        <div class="grp">
-          <div class="pbtns" id="exprs"></div>
-          <div class="row"><div class="rl"><span>눈 모양</span></div><div class="pbtns" role="group" aria-label="눈 모양" id="eyeTypes"></div></div>
-          <div class="row"><div class="rl"><span>입 모양</span></div><div class="pbtns" role="group" aria-label="입 모양" id="mouthTypes"></div></div>
-          <label class="tg" for="blush2">볼터치 <input id="blush2" type="checkbox"></label>
-        </div>
-      </details>
+      <div id="partHold" hidden>
+        <div class="row" id="eyeRow"><div class="rl"><span>모양</span></div><div class="pbtns" role="group" aria-label="눈 모양" id="eyeTypes"></div></div>
+        <div class="row" id="mouthRow"><div class="rl"><span>모양</span></div><div class="pbtns" role="group" aria-label="입 모양" id="mouthTypes"></div></div>
+        <label class="tg" for="blush2" id="blushTg">볼터치 <input id="blush2" type="checkbox"></label>
+        <div class="row" id="blushRow"><div class="rl"><span>볼터치 색</span></div>
+          <div class="colors" id="blushes">
+            <button class="sw" type="button" style="background:#f6b3a9" data-c="#f6b3a9" aria-label="기본 분홍"></button>
+            <button class="sw" type="button" style="background:#ff8c7a" data-c="#ff8c7a" aria-label="코랄"></button>
+            <button class="sw" type="button" style="background:#f0606c" data-c="#f0606c" aria-label="로즈 레드"></button>
+            <button class="sw" type="button" style="background:#ff9a57" data-c="#ff9a57" aria-label="주홍"></button>
+            <button class="sw" type="button" style="background:#d9485f" data-c="#d9485f" aria-label="진한 빨강"></button>
+            <input id="blushPick" type="color" value="#f6b3a9" aria-label="볼터치 색 직접 고르기" title="볼터치 색 직접 고르기">
+          </div></div>
+      </div>
       <div id="groups"></div>
       <details>
         <summary>색 · 질감</summary>
@@ -299,13 +312,14 @@ footer{font:400 12px var(--f-mono);color:var(--muted);text-align:center;letter-s
     </div>
   </div>
 
-  <footer>© 2026 kkaedu. all rights reserved.</footer>
+  <footer>ⓒ 2026 thesonsie. all rights reserved.</footer>
   <p class="note" hidden>몸은 상체·골반·다리·팔·손·발·꼬리가 하나로 이어진 덩어리이고, 손·발·꼬리의 흰색은 같은 덩어리 위에 칠한 색 면이에요. 슬라이더를 끝까지 움직여도 눈·눈썹·코·입은 얼굴 안에서 서로 겹치지 않게, 귀·뿔은 머리에, 팔은 상체에 붙어 있도록 자동으로 제한돼요. 마음에 드는 조합은 ‘설정값 복사’로 대화에 붙여 주세요.</p>
 </div>
 
 <div class="result" id="result" hidden role="dialog" aria-modal="true" aria-label="완성된 도깨비">
   <div class="rwrap">
     <div class="rcard" id="rcard"><canvas id="resCv" width="1080" height="1920" aria-label="저장될 이미지 미리보기. 좌우로 끌어서 각도를 바꿀 수 있어요"></canvas>
+      <div class="bubhit" id="bubHit" hidden aria-label="말풍선: 끌어서 옮기고, 누르면 글을 쓸 수 있어요" role="button" tabindex="0"></div>
       <div class="bubedit" id="bubEdit" hidden>
         <input id="bubText" type="text" maxlength="30" value="반가워!" placeholder="텍스트 입력" aria-label="말풍선 글" autocomplete="off" enterkeyhint="done">
         <span class="cnt" id="bubCnt">4/30</span>
@@ -315,7 +329,19 @@ footer{font:400 12px var(--f-mono);color:var(--muted);text-align:center;letter-s
     <p class="rhint">말풍선을 누르면 글을 쓸 수 있어요</p>
     <div class="rside">
       <span class="t">이름</span>
-      <div class="namerow"><input id="resName" type="text" maxlength="12" aria-label="캐릭터 이름" autocomplete="off" spellcheck="false"></div>
+      <div class="namerow"><input id="resName" type="text" maxlength="12" aria-label="캐릭터 이름" autocomplete="off" spellcheck="false">
+        <button type="button" class="namedice" id="resDice" aria-label="랜덤 이름" title="랜덤 이름">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="4" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="8.5" cy="8.5" r="1.4" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="15.5" cy="8.5" r="1.4" fill="currentColor"/><circle cx="8.5" cy="15.5" r="1.4" fill="currentColor"/></svg>
+        </button></div>
+      <span class="t">이름표 색</span>
+      <div class="colors" id="tagCols">
+        <button class="sw" type="button" data-c="" id="tagAuto" aria-label="기본 (피부색에 맞춘 색)" title="기본"></button>
+        <button class="sw" type="button" style="background:#e0607e" data-c="#e0607e" aria-label="장미"></button>
+        <button class="sw" type="button" style="background:#f09a36" data-c="#f09a36" aria-label="귤"></button>
+        <button class="sw" type="button" style="background:#4f9d69" data-c="#4f9d69" aria-label="초록"></button>
+        <button class="sw" type="button" style="background:#5b6ee0" data-c="#5b6ee0" aria-label="파랑"></button>
+        <input id="tagPick" type="color" value="#2b8599" aria-label="이름표 색 직접 고르기" title="이름표 색 직접 고르기">
+      </div>
       <span class="t">말풍선</span>
       <div class="pbtns">
         <span class="pbtns" role="group" aria-label="말풍선 꼬리" id="bubTail">
@@ -338,6 +364,7 @@ footer{font:400 12px var(--f-mono);color:var(--muted);text-align:center;letter-s
       </div>
       <p class="rnote" id="saveMsg" aria-live="polite"></p>
     </div>
+    <footer class="rfoot">ⓒ 2026 thesonsie. all rights reserved.</footer>
   </div>
 </div>
 
@@ -346,21 +373,22 @@ footer{font:400 12px var(--f-mono);color:var(--muted);text-align:center;letter-s
 (()=>{
 // ---------- 파라미터 정의 ----------
 const GROUPS=[
- ['뿔',[['hornSize','크기',0.5,1.7,1],['hornH','길이',0.4,2,0.75],['hornRound','두께',0,1,0.6],['hornX','간격',0.54,0.8,0.6],['hornTilt','각도',-10,35,8,1]]],
- ['머리',[['headW','너비',0.8,1.25,1],['headH','높이',0.8,1.25,1],['headD','두께',0.75,1.25,1],['headSq','각진 정도',0,1,0.5]]],
- ['눈썹',[['browLen','길이',0.08,0.34,0.19],['browAng','각도',-60,70,50,1],['browThick','두께',0.012,0.05,0.022],['browX','간격',0.1,0.5,0.25],['browY','높이',0.05,0.5,0.24]]],
+ ['뿔',[['hornH','길이',0.4,2,0.75],['hornRound','두께',0,1,0.6],['hornX','간격',0.54,0.8,0.6]]],
+ ['머리',[['headW','너비',0.8,1.25,1],['headH','높이',0.8,1.25,1],['headD','두께',0.75,1.25,1],['headSq','모양',0,1,0.5]]],
+ ['눈썹',[['browLen','길이',0.08,0.34,0.19],['browAng','각도',-40,60,0,1],['browThick','두께',0.012,0.05,0.022],['browY','높이',0.05,0.5,0.24]]],
  ['눈',[['eyeSize','크기',0.5,1.9,1],['eyeX','간격',0.18,0.55,0.33],['eyeY','높이',-0.3,0.25,-0.03]]],
- ['귀',[['earSize','크기',0.6,1.45,1],['earSpread','간격',-0.1,0.12,0],['earY','높이',-0.176,0.084,-0.06]]],
- ['코',[['noseSize','크기',0.5,1.7,1],['noseY','높이',-0.3,0.1,-0.09]]],
+ ['귀',[['earSize','크기',0.6,1.45,1],['earY','높이',-0.176,0.084,-0.06]]],
+ ['코',[['noseSize','크기',0.5,1.7,1],['noseSq','모양',0,1,0.5],['noseY','위치',-0.3,0.1,-0.09]]],
  ['입',[['mouthW','너비',0.5,2.2,1],['mouthCurve','곡률',0,2,1],['mouthY','높이',-0.5,-0.14,-0.324]]],
- ['몸',[['bodyLen','길이',0.6,1.5,1],['lowerRatio','하체 비율',0.3,0.7,0.5],['upperW','상체 너비',0.75,1.4,1],['lowerW','하체 너비',0.75,1.45,1],['bodyD','두께',0.75,1.3,1]]],
+ ['몸',[['bodyLen','길이',0.6,1.5,1],['lowerRatio','허리',0.3,0.7,0.5],['upperW','상체 너비',0.75,1.4,1],['bodyD','두께',0.75,1.3,1]]],
  ['팔',[['armLen','길이',0.6,1.6,0.76],['armThick','두께',0.7,1.6,1.4]]],
- ['다리',[['legSplit','길이',0.15,0.95,0.42]]],
+ ['볼',[['blushY','위치',-0.1,0.1,0],['cheek','볼살',0,1,0]]],
+ ['다리',[['legSplit','길이',0.15,0.95,0.42],['legThick','두께',0.7,1.4,1]]],
  ['꼬리',[['tailSize','크기',0.5,2,1]]],
  ['포즈',[]],
 ];
-const DEF={horns:true,blush:false,tail:true,tex:'smooth',color:'#a9e4f0',eyeType:'dot',mouthType:'smile',sit:false,tuck:false,footSize:2,legGap:0.05,handSize:1,earInnerH:0.6,earInnerW:0.85,tailShape:'round',tailLen:1,tailY:0,tailTilt:15,tailBlend:0.35,armRaiseR:6,armFwdR:0,armRaiseL:6,armFwdL:0,legSwingR:0,legSwingL:0,headPitch:0,headYaw:0,tilt:0};
-const EXPR_KEYS=['eyeType','mouthType','blush'];
+const DEF={hornSize:1,hornTilt:8,browX:0.25,earSpread:0,lowerW:1,blushColor:'#f6b3a9',horns:true,blush:false,tail:true,tex:'smooth',color:'#a9e4f0',eyeType:'dot',mouthType:'smile',sit:false,tuck:false,footSize:2,legGap:0.05,handSize:1,earInnerH:0.6,earInnerW:0.85,tailShape:'round',tailLen:1,tailY:0,tailTilt:15,tailBlend:0.35,armRaiseR:6,armFwdR:0,armRaiseL:6,armFwdL:0,legSwingR:0,legSwingL:0,headPitch:0,headYaw:0,tilt:0};
+const EXPR_KEYS=['eyeType','mouthType','blush'];   // 랜덤에서만 표정 조합으로 씀
 const POSE_KEYS=['tilt','tuck','legSwingR','legSwingL','armRaiseR','armFwdR','armRaiseL','armFwdL','headPitch','headYaw','sit'];
 const POSES={
  '기본':{},
@@ -383,9 +411,9 @@ GROUPS.forEach(([,rows])=>rows.forEach(([k,l,mn,mx,d,st])=>{DEF[k]=d;META[k]={mn
 const P={...DEF};
 
 const PRESETS={
- '깨두':{},
- '꼬마':{headW:1.1,headH:1.05,bodyLen:0.75,upperW:0.92,lowerW:0.95,armLen:0.6,legSplit:0.35,eyeSize:0.9,eyeX:0.36,hornSize:0.8,hornRound:1,earSize:1.1,browLen:0.15},
- '뚱보':{headW:1.2,headD:1.15,headSq:0.25,upperW:1.3,lowerW:1.42,bodyD:1.22,armThick:1.35,handSize:1.2,earSize:1.0,hornSize:1.15,mouthW:1.5,eyeX:0.4,legSplit:0.3,eyeType:'line',mouthType:'flat',eyeSize:1.9,browLen:0.2,browAng:28},
+ '깨두':{browAng:48},
+ '꼬마':{blush:true,browAng:48,headW:1.1,headH:1.05,bodyLen:0.75,upperW:0.92,lowerW:0.95,armLen:0.6,legSplit:0.35,eyeSize:0.9,eyeX:0.36,hornSize:0.8,hornRound:1,earSize:1.1,browLen:0.15},
+ '뚱보':{headW:1.2,headD:1.15,headSq:0.25,upperW:1.3,lowerW:1.42,bodyD:1.22,armThick:1.35,handSize:1.2,earSize:1.0,hornSize:1.15,mouthW:1.5,eyeX:0.4,legSplit:0.3,eyeType:'line',mouthType:'flat',eyeSize:1.9,browLen:0.2,browAng:24},
 };
 
 // ---------- 렌더러 ----------
@@ -536,7 +564,7 @@ function bodyModel(){
   const lRy=Math.max(0.18,(waist-cr)*1.2+0.06)*(1-0.18*swing), lCy=cr+Math.max(0.18,(waist-cr)*1.2+0.06)*0.55+0.07*swing;
   const uRy=(top-waist)*0.8+0.06, uCy=waist+(top-waist)*0.35;
   const bRy=Math.max(0.12,(waist-cr)*0.75+0.06), bCy=cr+bRy*0.95+0.04*swing;
-  const rl0=Math.max(0.08,(Wl*0.9-gap/2)/2), rlT=Math.max(0.09,(Wl*1.0-gap/2)/2), rz0=D*0.8, rzT=D*0.97, legTop=crotch+0.1, legCy=legTop*0.4, legHy=legTop*0.85+0.05;
+  const rl0=Math.max(0.08,(Wl*0.9-gap/2)/2)*P.legThick, rlT=Math.max(0.09,(Wl*1.0-gap/2)/2)*P.legThick, rz0=D*0.8, rzT=D*0.97, legTop=crotch+0.1, legCy=legTop*0.4, legHy=legTop*0.85+0.05;
   const pivY=legTop, pivZ=0.02;
   // 앉기: 몸을 내리고, 앞으로 뻗은 다리 덩어리를 또렷하게
   const drop=sit?crotch0+0.02:0;
@@ -726,7 +754,7 @@ function surfaceNets(f,b0,b1,h,cls){
 }
 let bodyCache={key:'',geo:null,model:null};
 function getBody(h){
-  const keys=['bodyLen','lowerRatio','upperW','lowerW','bodyD','legSplit','legGap','footSize','armLen','armThick','handSize','tail','tailSize','tailLen','tailY','tailTilt','tailBlend','tailShape','armRaiseR','armFwdR','armRaiseL','armFwdL','sit','tuck','headW','headH','headD','headSq','legSwingR','legSwingL','tilt'];
+  const keys=['bodyLen','lowerRatio','upperW','lowerW','bodyD','legSplit','legGap','footSize','armLen','armThick','handSize','tail','tailSize','tailLen','tailY','tailTilt','tailBlend','tailShape','armRaiseR','armFwdR','armRaiseL','armFwdL','sit','tuck','headW','headH','headD','headSq','legSwingR','legSwingL','tilt','legThick'];
   const k=keys.map(x=>P[x]).join('|')+'|'+h;
   if(bodyCache.key===k)return bodyCache;
   const model=bodyModel();
@@ -767,7 +795,14 @@ function build(M,B){
   // 머리와 얼굴·귀·뿔은 목 지점을 축으로 함께 움직이는 그룹(HG)에 담음
   const neckY=hy-hb*0.75, HG=new THREE.Group(), HI=new THREE.Group();
   HG.position.y=neckY;HI.position.y=-neckY;HG.add(HI);g.add(HG);
-  const head=mesh(blob(hwA,hb,0.74*P.headD,e,0.06,72),hm);head.position.y=hy;HI.add(head);
+  const hgeo=blob(hwA,hb,0.74*P.headD,e,0.06,72);
+  // 볼살: 얼굴 아래 양옆을 바깥(앞·옆)으로 통통하게 부풀림
+  if(P.cheek>0){const pa=hgeo.attributes.position,na=hgeo.attributes.normal,amp=0.15*P.cheek,cxk=hwA*0.58,cyk=-hb*0.4;
+    for(let i=0;i<pa.count;i++){const x=pa.getX(i),y=pa.getY(i),nz=na.getZ(i);if(nz<-0.2)continue;
+      const w=Math.exp(-(((Math.abs(x)-cxk)/(hwA*0.3))**2+((y-cyk)/(hb*0.34))**2))*Math.min(1,(nz+0.2)/0.6);
+      if(w<1e-3)continue;pa.setXYZ(i,x+na.getX(i)*amp*w,y+na.getY(i)*amp*w*0.6,pa.getZ(i)+nz*amp*w)}
+    hgeo.computeVertexNormals()}
+  const head=mesh(hgeo,hm);head.position.y=hy;HI.add(head);
   RATIO=(2*hb)/(L-0.08);
   g.updateMatrixWorld(true);
   const ray=new THREE.Raycaster();
@@ -811,9 +846,9 @@ function build(M,B){
     stick(head,E.m,s*ex,hy+ey,E.lift,rz);
     const brow=mesh(capsule(bl,bth),dark);brow.scale.z=0.7;
     stick(head,brow,s*bx,hy+by,0.006,s*ang);
-    if(P.blush)stick(head,mesh(blob(0.11,0.075,0.012,0.9),pink),s*Math.min(faceX,ex+0.22),hy+ey-0.13,0.004);
+    if(P.blush)stick(head,mesh(blob(0.11,0.075,0.012,0.9),pink),s*Math.min(faceX,ex+0.22),hy+ey-0.13+P.blushY,0.004);
   }
-  stick(head,mesh(blob(nhw,nhh,0.055*ns,0.65),white),0,hy+ny,0.025*ns);
+  stick(head,mesh(blob(nhw,nhh,0.055*ns,0.95-0.6*P.noseSq),white),0,hy+ny,0.025*ns);   // 모양: 0 둥근 ↔ 1 각진
   // 입
   const mW=clamp(P.mouthW,0.6,1.7), mt=P.mouthType;
   if(mt==='open'){
@@ -848,8 +883,13 @@ function build(M,B){
   }
   // ---- 뿔 (항상 머리 윗면에 박힘) ----
   if(P.horns){
-    const S=P.hornSize, r0=0.2*S, Ht=0.34*S*P.hornH, k=1.15+1.35*P.hornRound, pts=[], N=40, sink=0.06*S;
-    for(let i=0;i<=N;i++){const t=i/N,flare=1+0.18*Math.pow(1-t,5);const r=r0*Math.pow(Math.max(0,1-Math.pow(t,k)),0.5)*flare;pts.push(new THREE.Vector2(Math.max(r,1e-4),-sink+t*(Ht+sink)))}
+    const S=P.hornSize, r0=0.2*S, Ht=0.34*S*P.hornH, pts=[], N=40, sink=0.06*S;
+    // 몸통은 뿌리(r0)에서 끝 반지름(rc)까지 부드럽게 가늘어지고, 끝은 반지름 rc의 반구 → 길어져도 꼭대기가 뾰족하거나 각지지 않음
+    let rc=r0*(0.4+0.38*P.hornRound);rc=Math.min(rc,(Ht+sink)*0.62);
+    const h0=Math.max(1e-3,Ht+sink-rc);
+    for(let i=0;i<=N;i++){const u=i/N,flare=1+0.18*Math.pow(1-u,5),sm=u*u*(3-2*u);
+      pts.push(new THREE.Vector2((rc+(r0-rc)*(1-sm))*flare,-sink+u*h0))}
+    for(let i=1;i<=24;i++){const a=i/24*Math.PI/2;pts.push(new THREE.Vector2(Math.max(rc*Math.cos(a),1e-4),-sink+h0+rc*Math.sin(a)))}
     const lathe=new THREE.LatheGeometry(pts,48), tilt=P.hornTilt*Math.PI/180;
     for(const s of[-1,1]){
       let cx=s*clamp(P.hornX*hwA,r0*1.1,hwA*0.9-r0*1.15);
@@ -890,7 +930,7 @@ function rebuild(fine=true){
   earMats=[];
   const bump=true;
   const _hy=B.model.L+0.68*P.headH-0.08, _u=B.model.upper;
-  mats={body:maskMat(P.color,1,B.model.mask,bump),head:clay(P.color),white:clay('#f5f9f8'),dark:clay('#1f2629',0.75,false,true),pink:clay('#f6b3a9'),pinkIn:clay('#f08a86',0.8,false,true),sweatMat:clay('#f2fbfd',0.4,false,true)};
+  mats={body:maskMat(P.color,1,B.model.mask,bump),head:clay(P.color),white:clay('#f5f9f8'),dark:clay('#1f2629',0.75,false,true),pink:clay(P.blushColor||'#f6b3a9'),pinkIn:clay('#f08a86',0.8,false,true),sweatMat:clay('#f2fbfd',0.4,false,true)};
   // 귀는 질감 없이 매끈하게 (귓바퀴 라인을 깔끔하게)
   mats.ear=[U=>{const m=maskMat(P.color,2,U,false);earMats.push(m);return m},U=>{const m=maskMat(P.color,2,U,false);earMats.push(m);return m}];
   const n=1;
@@ -944,7 +984,7 @@ setZoom(1);
 // ---------- UI ----------
 const $=id=>document.getElementById(id);
 // 단계식 슬라이더: 모든 항목이 −5 ~ 0(기본값) ~ +5. 0 위·아래 한 칸 크기는 항목마다 따로(기존 조절 범위 유지)
-const unit=(k,d)=>d>0?(META[k].mx-DEF[k])/5:(DEF[k]-META[k].mn)/5;
+const unit=(k,d)=>d>0?(META[k].mx-DEF[k])/5:Math.max(0,DEF[k]-META[k].mn)/5;
 const toVal=(k,st)=>DEF[k]+(st>=0?st*unit(k,1):st*unit(k,-1));
 const stepOf=(k,v)=>{const d=DEF[k],up=unit(k,1),dn=unit(k,-1);let st=v>=d?(up>0?Math.round((v-d)/up):0):(dn>0?-Math.round((d-v)/dn):0);return Math.max(-5,Math.min(5,st))};
 const toStep=k=>stepOf(k,P[k]);
@@ -954,7 +994,7 @@ function renderStep(k){const st=toStep(k),el=$(k),o=$('o_'+k);
   el.setAttribute('aria-valuenow',st);el.setAttribute('aria-valuetext',(st>0?'+':'')+st);el.dataset.sign=sgn(st);
   o.textContent=(st>0?'+':'')+st;o.dataset.sign=sgn(st);
   el.querySelectorAll('.pip').forEach((p,i)=>{const s=i-5;p.classList.toggle('on',st>0?(s>0&&s<st):st<0?(s<0&&s>st):false);p.classList.toggle('cur',s===st)})}
-function setStep(k,st){st=Math.max(-5,Math.min(5,st));const v=toVal(k,st);
+function setStep(k,st){st=Math.max(META[k].mn>=DEF[k]?0:-5,Math.min(5,st));const v=toVal(k,st);
   let on=false;
   if(k==='mouthCurve'&&P.mouthType!=='smile'&&P.mouthType!=='smirk'){P.mouthType='smile';on=true;syncUI()}   // 곡률은 미소 계열 입에 적용
 if(k.startsWith('horn')&&!P.horns){P.horns=true;on=true;const h=$('horns');if(h)h.checked=true}   // 뿔을 끈 상태에서 뿔 값을 만지면 다시 켬
@@ -967,6 +1007,7 @@ function makeRow(k,l,grp){
       <div class="pips" id="${k}" role="slider" tabindex="0" aria-label="${label}" aria-valuemin="-5" aria-valuemax="5">${Array.from({length:11},(_,i)=>`<span class="pip${i===5?' mid':''}"></span>`).join('')}</div>
       <button class="sb" type="button" data-d="1" aria-label="${label} 한 단계 늘리기">›</button></div>`;
     grp.appendChild(r);
+    if(META[k].mn>=DEF[k]){r.classList.add('plusonly');r.querySelector('.pips').setAttribute('aria-valuemin','0')}   // − 쪽 없음
     r.querySelectorAll('.sb').forEach(b=>b.onclick=()=>setStep(k,toStep(k)+(+b.dataset.d)));
     const pips=r.querySelector('.pips');let down=false;
     const at=e=>{const rc=pips.getBoundingClientRect();const i=Math.floor((e.clientX-rc.left)/rc.width*11);setStep(k,Math.max(0,Math.min(10,i))-5)};
@@ -985,6 +1026,9 @@ GROUPS.forEach(([name,rows])=>{
   rows.forEach(([k,l])=>makeRow(k,l,grp));
   if(name==='뿔'){const lab=document.querySelector('label[for="horns"]');if(lab)grp.prepend(lab)}
   if(name==='꼬리'){const lab=document.querySelector('label[for="tail"]');if(lab)grp.prepend(lab)}
+  if(name==='눈')grp.prepend($('eyeRow'));
+  if(name==='입')grp.prepend($('mouthRow'));
+  if(name==='볼'){grp.prepend($('blushRow'));grp.prepend($('blushTg'))}
   if(name==='포즈'){
     const top=document.createElement('div');
     top.innerHTML='<div class="pbtns" id="poses"></div>';
@@ -998,7 +1042,7 @@ GROUPS.forEach(([name,rows])=>{
   tabs.className='ctabs';tabs.setAttribute('role','tablist');tabs.setAttribute('aria-label','커스터마이즈 항목');panes.className='cpanes';
   // 매번 처음부터: 마지막 탭을 기억하지 않고 항상 첫 탭에서 시작
   try{localStorage.removeItem('dk_tab')}catch(e){}
-  const ORDER=['색 · 질감','뿔','머리','눈썹','눈','귀','코','입','표정','몸','팔','다리','꼬리','포즈'];
+  const ORDER=['색 · 질감','뿔','머리','눈썹','눈','귀','코','입','볼','몸','팔','다리','꼬리','포즈'];
   const dets=[...aside.querySelectorAll('details')].sort((a,b)=>ORDER.indexOf(a.querySelector('summary').textContent.trim())-ORDER.indexOf(b.querySelector('summary').textContent.trim()));
   const names=dets.map(d=>d.querySelector('summary').textContent.trim());
   const start=names[0];
@@ -1036,6 +1080,8 @@ function syncUI(){
   document.querySelectorAll('#exprs .pbtn').forEach(b=>{const e=EXPRS[b.textContent];b.setAttribute('aria-pressed',EXPR_KEYS.every(k=>e[k]===P[k]))});
 
   document.querySelectorAll('#poses .pbtn').forEach(b=>{const e=POSES[b.textContent];b.setAttribute('aria-pressed',POSE_KEYS.every(k=>(k in e?e[k]:DEF[k])===P[k]))});
+  document.querySelectorAll('#blushes .sw').forEach(s=>s.setAttribute('aria-pressed',s.dataset.c===P.blushColor));
+  $('blushPick').dataset.on=![...document.querySelectorAll('#blushes .sw')].some(s=>s.dataset.c===P.blushColor);
   $('horns').checked=P.horns;$('blush2').checked=P.blush;$('tail').checked=P.tail;$('pick').value=P.color;
   document.querySelectorAll('#texs .pbtn').forEach(b=>b.setAttribute('aria-pressed',b.dataset.t===P.tex));
   document.querySelectorAll('#colors .sw').forEach(s=>s.setAttribute('aria-pressed',s.dataset.c===P.color));
@@ -1046,7 +1092,6 @@ function syncUI(){
 }
 function apply(obj,full){const keep={tex:P.tex};if(!full){keep.color=P.color;EXPR_KEYS.concat(POSE_KEYS).forEach(k=>keep[k]=P[k])}Object.assign(P,DEF,keep,obj);snapAll();syncUI();rebuild()}
 Object.keys(POSES).forEach(n=>{const b=document.createElement('button');b.className='pbtn';b.textContent=n;b.onclick=()=>{POSE_KEYS.forEach(k=>P[k]=DEF[k]);Object.assign(P,POSES[n]);syncUI();rebuild()};$('poses').appendChild(b)});
-Object.keys(EXPRS).forEach(n=>{const b=document.createElement('button');b.className='pbtn';b.textContent=n;b.onclick=()=>{Object.assign(P,EXPRS[n]);syncUI();rebuild()};$('exprs').appendChild(b)});
 [['eyeTypes','eyeType',[['dot','점'],['happy','웃는눈 ∩'],['content','감은눈 ∪'],['squint','찡그림 > <'],['line','일자눈'],['wide','초롱눈']]],
  ['mouthTypes','mouthType',[['smile','미소'],['smirk','씩 웃음'],['open','벌린입'],['munch','냠냠 ω'],['o','오입'],['flat','일자입']]]].forEach(([box,k,opts])=>
   opts.forEach(([v,l])=>{const b=document.createElement('button');b.type='button';b.className='pbtn';b.dataset.v=v;b.textContent=l;b.onclick=()=>{P[k]=v;syncUI();rebuild()};$(box).appendChild(b)}));
@@ -1062,6 +1107,10 @@ function setViewPressed(a){document.querySelectorAll('#views button').forEach(b=
 document.querySelectorAll('#views button').forEach(b=>b.onclick=()=>{if(b.id==='spinBtn')return;spinning=false;$('spinBtn').setAttribute('aria-pressed',false);const a=parseFloat(b.dataset.a);target=a+Math.round((angle-a)/(2*Math.PI))*2*Math.PI;setViewPressed(b.dataset.a)});
 ['horns','tail'].forEach(k=>$(k).onchange=e=>{P[k]=e.target.checked;syncUI();rebuild()});
 $('blush2').onchange=e=>{P.blush=e.target.checked;syncUI();rebuild()};
+// 볼터치 색: 고르면 볼터치도 함께 켬
+function setBlushColor(c){P.blushColor=c;P.blush=true;syncUI();rebuild()}
+document.querySelectorAll('#blushes .sw').forEach(s=>s.onclick=()=>setBlushColor(s.dataset.c));
+$('blushPick').addEventListener('input',e=>{P.blushColor=e.target.value;P.blush=true;syncUI();soon()});
 Object.keys(TEX).forEach(t=>{const b=document.createElement('button');b.className='pbtn';b.type='button';b.dataset.t=t;b.textContent=TEX[t].name;b.onclick=()=>{P.tex=t;syncUI();rebuild()};$('texs').appendChild(b)});
 $('spinBtn').onclick=()=>{spinning=!spinning;$('spinBtn').setAttribute('aria-pressed',spinning);if(spinning)setViewPressed(null)};
 function setColor(c){P.color=c;syncUI();rebuild()}
@@ -1107,12 +1156,12 @@ function romanize(str){
 const NAMES=['말랑','토실','포실','뚱실','포동','다다','구레','파루','포아','아차','까루','뽀도','꾸루','휘리','소곰','시꾸','디구','또루','디뚜','깡초','덤버',
  '실구디','오미디','망오디','똥구디','쇳디','올미','우루미','고소미','아가지','도티','마딘','타내','올마대','가리대','터대','샹재','수새','더믈','검불','북쇠','모리쇠','곰쇠','매뇌','쟈가둥','흰둥','검둥'];
 let charName='깨두';
-function setName(n){charName=(n||'').trim().slice(0,12)||'깨두';$('charName').value=charName;$('resName').value=charName;$('nameTitle').textContent=charName}
+function setName(n){charName=(n||'').trim().slice(0,12)||'깨두';$('charName').value=charName;$('resName').value=charName;$('nameTitle').textContent=charName;if(!$('result').hidden)loadTagFonts().then(drawPreview)}
 // 주사위: 약 1초 동안 이름이 슬롯머신처럼 빠르게 바뀌다가 느려지며 멈춤
 let rolling=null;
-function rollName(){
+function rollName(d0,inp0){
   let n;do{n=NAMES[Math.floor(Math.random()*NAMES.length)]}while(n===charName&&NAMES.length>1);
-  const d=$('nameDice'),inp=$('charName');
+  const d=d0&&d0.nodeType?d0:$('nameDice'),inp=inp0||$('charName');
   d.classList.remove('roll');void d.offsetWidth;d.classList.add('roll');
   if(rolling)clearTimeout(rolling);
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){setName(n);return}
@@ -1122,7 +1171,7 @@ function rollName(){
     else{rolling=null;inp.classList.remove('shuffling');setName(n);void inp.offsetWidth;inp.classList.add('landed')}};
   tick();
 }
-$('nameDice').onclick=rollName;
+$('nameDice').onclick=()=>rollName();
 $('charName').addEventListener('input',e=>{charName=e.target.value.trim().slice(0,12);$('nameTitle').textContent=charName||'깨두'});
 $('charName').addEventListener('blur',()=>setName($('charName').value));
 // 엔터: 키보드를 내리고, 주사위로 이름이 정해질 때와 같은 '통' 애니메이션
@@ -1130,9 +1179,15 @@ $('charName').addEventListener('keydown',e=>{if(e.key!=='Enter'||e.isComposing)r
   setName(inp.value);inp.blur();inp.classList.remove('landed');void inp.offsetWidth;inp.classList.add('landed')});
 // ---------- 완성 페이지 · 이미지(세로 1080×1920) ----------
 // 피부색에서 명찰 색을 뽑음: 진한 테두리·글씨, 옅은 윗띠
-function tagColors(){const c=new THREE.Color(P.color),h={};c.getHSL(h);
-  const deep=new THREE.Color().setHSL(h.h,Math.min(0.5,h.s*0.7+0.12),0.42),pale=new THREE.Color().setHSL(h.h,Math.min(0.6,h.s*0.8),0.88);
-  return {deep:'#'+deep.getHexString(),pale:'#'+pale.getHexString()}}
+// 이름표 색: 기본은 피부색에서 뽑은 진한 색. '내 이름은' 띠는 테두리 색을 옅게 만든 색
+let tagColor='';
+function autoTagColor(){const c=new THREE.Color(P.color),h={};c.getHSL(h);return '#'+new THREE.Color().setHSL(h.h,Math.min(0.5,h.s*0.7+0.12),0.42).getHexString()}
+function tagColors(){const deep=tagColor||autoTagColor(),h={};new THREE.Color(deep).getHSL(h);
+  const pale=new THREE.Color().setHSL(h.h,Math.min(0.6,h.s*0.85),0.89);
+  return {deep,pale:'#'+pale.getHexString()}}
+function syncTagCols(){const a=$('tagAuto');a.style.background=autoTagColor();
+  document.querySelectorAll('#tagCols .sw').forEach(s=>s.setAttribute('aria-pressed',s.dataset.c===tagColor));
+  const pk=$('tagPick');pk.dataset.on=!!tagColor&&![...document.querySelectorAll('#tagCols .sw')].some(s=>s.dataset.c===tagColor);if(pk.dataset.on==='true')pk.value=tagColor}
 // 캐릭터를 그려 1080×1920 캔버스(dst)에 합성. q=렌더 배율(저장 2, 미리보기 1)
 function compose(dst,q){
   const OW=1080,OH=1920,RH=1660,pr=renderer.getPixelRatio(),ch=Math.max(2.0,charH);
@@ -1141,9 +1196,11 @@ function compose(dst,q){
   chars[0].rotation.y=angle;
   // 캐릭터(뿔 자리~발)와 명찰을 한 묶음으로 보고 위아래 가운데에
   const py=v=>(1-new THREE.Vector3(0,v,0).project(persp).y)/2*RH, tpx=py(charH), fpx=py(-0.05);
-  const tagH=230,gap=110;
-  const B=bubbleLayout(dst.getContext('2d')),bH=B?2*B.b+B.gapB:0;
-  let y0=Math.round((OH-(bH+fpx-tpx+gap+tagH))/2+bH-tpx)+70;   // 전체를 살짝 아래로y0=Math.min(y0,OH-40-tagH-gap-fpx);y0=Math.max(y0,40+bH-tpx);
+  // 캐릭터·이름표 위치는 말풍선 종류·길이와 상관없이 고정 (머리 위에 말풍선 자리를 늘 비워 둠)
+  const tagH=230,gap=190,RES=360;
+  const B=bubbleLayout(dst.getContext('2d'));
+  let y0=Math.round((OH-(RES+fpx-tpx+gap+tagH))/2+RES-tpx)+30;
+  y0=Math.min(y0,OH-70-tagH-gap-fpx);y0=Math.max(y0,40+RES-tpx);
   renderer.render(scene,persp);
   const x=dst.getContext('2d');x.clearRect(0,0,OW,OH);
   if(bgColor){x.fillStyle=bgColor;x.fillRect(0,0,OW,OH)}
@@ -1170,14 +1227,14 @@ function compose(dst,q){
   x.fillStyle=deep;x.font='700 34px "Noto Sans KR", sans-serif';x.fillText('내 이름은',0,-tagH/2+40);
   x.fillStyle='#1f2a2e';x.font=fs+'px Dongle, "Noto Sans KR", sans-serif';x.fillText(name,0,42);
   x.restore();
-  bubbleRect=B?drawBubble(x,B,y0+tpx,headX):null;
+  bubbleRect=B?drawBubble(x,B,y0+tpx,headX):null;placeBubHit();
   // 저작권 표기: 카드 오른쪽 아래에 작게 (배경 밝기에 맞춰 글자색)
   x.save();x.font='400 26px "Nanum Gothic Coding", monospace';x.textAlign='right';x.textBaseline='alphabetic';
-  x.fillStyle=bgColor&&isDark(bgColor)?'rgba(255,255,255,.55)':'rgba(31,42,46,.5)';x.fillText('ⓒ kkaedu',OW-44,OH-44);x.restore();
+  x.fillStyle=bgColor&&isDark(bgColor)?'rgba(255,255,255,.55)':'rgba(31,42,46,.5)';x.fillText('ⓒthesonsie',OW-44,OH-44);x.restore();
 }
 // ---------- 말풍선 ----------
 // 늘 동그라미 또는 타원. 글이 짧으면 동그라미, 길수록 줄을 나눠 너무 납작하지 않은 타원이 되게 고름
-const BUB_MAX=30;let bubText='반가워!',bubTail='talk',bubbleRect=null;
+const BUB_MAX=30;let bubText='반가워!',bubTail='talk',bubbleRect=null,bubOff={x:0,y:0};
 const BUB_FONT=fs=>`${Math.round(fs*1.6)}px Dongle, "Noto Sans KR", sans-serif`;   // 이름과 같은 Dongle (글자가 작게 그려지는 글꼴이라 크게)
 function wrapText(x,t,maxW){
   const out=[];let line='';
@@ -1206,13 +1263,14 @@ function bubbleLayout(x){
     if(!best||sc<best.sc)best={lines,a,b,sc};
   }
   if(!best){const lines=wrapText(x,t,230),tw=Math.max(...lines.map(l=>x.measureText(l).width));best={lines,a:Math.min(500,(tw/2+26)*Math.SQRT2),b:(lines.length*lh/2+14)*Math.SQRT2}}
-  const r1=Math.max(34,Math.min(50,best.b*0.3));
-  const gapB=bubTail==='think'?Math.round(r1*3.9+24):96;
+  const r1=Math.max(26,Math.min(36,best.b*0.24));
+  const gapB=118;   // 기본·생각 꼬리 모두 같은 자리
   return {lines:best.lines,fs,lh,a:best.a,b:best.b,r1,gapB};
 }
 function drawBubble(x,B,headY,headX=540){
   const OW=1080,{a,b}=B;
-  const cx=Math.min(OW-36-a,Math.max(36+a,headX+60)),cy=headY-B.gapB+12-b;
+  // 기본 자리(머리 위 살짝 오른쪽) + 끌어서 옮긴 만큼. 카드 밖으로는 못 나감
+  const cx=Math.min(OW-36-a,Math.max(36+a,headX+60+bubOff.x)),cy=Math.min(1920-60-b,Math.max(36+b,headY-B.gapB+12-b+bubOff.y));
   // 꼬리 방향: 말풍선 가운데 → 머리 위쪽
   let dx=headX-20-cx,dy=headY-cy;const dl=Math.hypot(dx,dy);dx/=dl;dy/=dl;
   const k=1/Math.sqrt((dx/a)**2+(dy/b)**2),P=[cx+dx*k,cy+dy*k],nx=-dy,ny=dx;   // 타원 가장자리 점, 수직 방향
@@ -1245,6 +1303,15 @@ function drawBubble(x,B,headY,headX=540){
   return {x:cx-a,y:cy-b,w:2*a,h:2*b,bottom:cy+b+B.gapB*0.6};
 }
 const resCv=$('resCv');let pv=0;
+function placeBubHit(){const h=$('bubHit');if(!h)return;const b=bubbleRect;h.hidden=!b;if(!b)return;
+  Object.assign(h.style,{left:(b.x/1080*100)+'%',top:(b.y/1920*100)+'%',width:(b.w/1080*100)+'%',height:(b.h/1920*100)+'%'})}
+{const h=$('bubHit');let on=false,sx=0,sy=0,ox=0,oy=0,mv=0;
+ h.addEventListener('pointerdown',e=>{on=true;mv=0;sx=e.clientX;sy=e.clientY;ox=bubOff.x;oy=bubOff.y;h.setPointerCapture(e.pointerId);e.preventDefault()});
+ h.addEventListener('pointermove',e=>{if(!on)return;const r=$('resCv').getBoundingClientRect(),k=1080/r.width,dx=(e.clientX-sx)*k,dy=(e.clientY-sy)*k;
+   mv=Math.max(mv,Math.hypot(e.clientX-sx,e.clientY-sy));if(mv<4)return;bubOff={x:ox+dx,y:oy+dy};drawPreview()});
+ h.addEventListener('pointerup',()=>{if(!on)return;on=false;if(mv<4)openBubEdit()});
+ h.addEventListener('pointercancel',()=>{on=false});
+ h.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openBubEdit()}});}
 function drawPreview(){if(pv)return;pv=requestAnimationFrame(()=>{pv=0;compose(resCv,1);placeBubEdit()})}
 // 말풍선 입력 팝업: 말풍선 바로 아래(꼬리 아래)에 떠서, 쓰는 동안 말풍선이 바뀌는 걸 보면서 입력
 function placeBubEdit(){const e=$('bubEdit');if(e.hidden)return;const b=bubbleRect;
@@ -1253,12 +1320,12 @@ function openBubEdit(){const e=$('bubEdit');e.hidden=false;placeBubEdit();const 
   setTimeout(()=>e.scrollIntoView({block:'nearest',behavior:'smooth'}),250)}
 function closeBubEdit(){$('bubEdit').hidden=true}
 // 구글 폰트는 글자 범위별로 나뉘어 있어서, 그릴 글자를 넘겨 해당 조각을 미리 받아 둠
-async function loadTagFonts(){try{await Promise.all([document.fonts.load('150px Dongle',(charName||'깨두')+bubText),document.fonts.load('700 34px "Noto Sans KR"','내 이름은'+bubText),document.fonts.load('26px "Nanum Gothic Coding"','ⓒ kkaedu')])}catch(_){}}
+async function loadTagFonts(){try{await Promise.all([document.fonts.load('150px Dongle',(charName||'깨두')+bubText),document.fonts.load('700 34px "Noto Sans KR"','내 이름은'+bubText),document.fonts.load('26px "Nanum Gothic Coding"','ⓒthesonsie')])}catch(_){}}
 async function openResult(){
   if($('busy').classList.contains('on'))await new Promise(r=>setTimeout(r,320));
   spinning=false;$('spinBtn').setAttribute('aria-pressed',false);target=angle;
   await loadTagFonts();
-  $('resName').value=charName;$('saveMsg').textContent=dl?'':'이 화면에서는 저장 버튼을 쓸 수 없어요. 화면을 캡처해서 저장해 주세요.';
+  syncTagCols();$('resName').value=charName;$('saveMsg').textContent=dl?'':'이 화면에서는 저장 버튼을 쓸 수 없어요. 화면을 캡처해서 저장해 주세요.';
   $('result').hidden=false;document.body.style.overflow='hidden';
   const card=$('rcard');card.style.animation='none';void card.offsetWidth;card.style.animation='';
   compose(resCv,1);$('backBtn').focus({preventScroll:true});
@@ -1307,6 +1374,9 @@ $('bubText').addEventListener('input',e=>{const v=[...e.target.value];if(v.lengt
 $('bubText').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing){e.preventDefault();e.target.blur();closeBubEdit()}else if(e.key==='Escape'){e.stopPropagation();closeBubEdit()}});
 $('bubDone').addEventListener('pointerdown',e=>e.preventDefault());
 $('bubDone').onclick=()=>{$('bubText').blur();closeBubEdit()};
+document.querySelectorAll('#tagCols .sw').forEach(b=>b.onclick=()=>{tagColor=b.dataset.c;syncTagCols();drawPreview()});
+$('tagPick').addEventListener('input',e=>{tagColor=e.target.value;syncTagCols();drawPreview()});
+$('resDice').onclick=()=>rollName($('resDice'),$('resName'));
 document.querySelectorAll('#bubTail .pbtn').forEach(b=>b.onclick=()=>{bubTail=b.dataset.v;document.querySelectorAll('#bubTail .pbtn').forEach(o=>o.setAttribute('aria-pressed',o===b));drawPreview()});
 $('resName').addEventListener('input',e=>{charName=e.target.value.trim().slice(0,12);$('charName').value=charName;$('nameTitle').textContent=charName||'깨두';loadTagFonts().then(drawPreview)});
 $('resName').addEventListener('blur',()=>{setName($('resName').value);drawPreview()});

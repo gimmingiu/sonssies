@@ -21,4 +21,4 @@
 - 바뀐 파일만 다시 업로드(같은 이름으로 덮어쓰기)하면 1~2분 뒤 반영돼요.
 - 휴대폰에 예전 화면이 남아 있으면 페이지를 한 번 새로고침하면 새 버전으로 바뀌어요.
 
-© 2026 kkaedu. all rights reserved.
+ⓒ 2026 thesonsie. all rights reserved.
