@@ -230,27 +230,27 @@ footer{font:400 12px var(--f-mono);color:var(--muted);text-align:left;letter-spa
   100%{transform:translateY(0) scale(1,1)}}
 /* 귀: 머리보다 한 박자 늦게 따라옴. 뛰어오를 땐 끝이 처지고, 떨어질 땐 떠오르고, 착지해 찌그러질 땐 위로 튕김 */
 @keyframes inEarL{
-  0%{transform:rotate(4deg);animation-timing-function:cubic-bezier(.2,.6,.4,1)}
+  0%{transform:rotate(0deg);animation-timing-function:cubic-bezier(.2,.6,.4,1)}
   12%{transform:rotate(15deg);animation-timing-function:cubic-bezier(.5,0,.5,1)}
   38%{transform:rotate(-13deg);animation-timing-function:cubic-bezier(.5,0,.5,1)}
-  60%{transform:rotate(-4deg);animation-timing-function:cubic-bezier(.5,0,.5,1)}
-  88%{transform:rotate(7deg);animation-timing-function:cubic-bezier(.5,0,.5,1)}
-  100%{transform:rotate(4deg)}}
+  60%{transform:rotate(0deg);animation-timing-function:cubic-bezier(.5,0,.5,1)}
+  88%{transform:rotate(5deg);animation-timing-function:cubic-bezier(.5,0,.5,1)}
+  100%{transform:rotate(0deg)}}
 @keyframes inEarR{
-  0%{transform:rotate(-4deg);animation-timing-function:cubic-bezier(.2,.6,.4,1)}
+  0%{transform:rotate(0deg);animation-timing-function:cubic-bezier(.2,.6,.4,1)}
   12%{transform:rotate(-15deg);animation-timing-function:cubic-bezier(.5,0,.5,1)}
   38%{transform:rotate(13deg);animation-timing-function:cubic-bezier(.5,0,.5,1)}
-  60%{transform:rotate(4deg);animation-timing-function:cubic-bezier(.5,0,.5,1)}
-  88%{transform:rotate(-7deg);animation-timing-function:cubic-bezier(.5,0,.5,1)}
-  100%{transform:rotate(-4deg)}}
+  60%{transform:rotate(0deg);animation-timing-function:cubic-bezier(.5,0,.5,1)}
+  88%{transform:rotate(-5deg);animation-timing-function:cubic-bezier(.5,0,.5,1)}
+  100%{transform:rotate(0deg)}}
 /* 뿔: 단단하니까 같은 방향으로 아주 조금만 */
 @keyframes inHorn{
-  0%{transform:translateY(-.6px);animation-timing-function:cubic-bezier(.2,.6,.4,1)}
+  0%{transform:translateY(0);animation-timing-function:cubic-bezier(.2,.6,.4,1)}
   12%{transform:translateY(-2.5px);animation-timing-function:cubic-bezier(.5,0,.5,1)}
   38%{transform:translateY(2px);animation-timing-function:cubic-bezier(.5,0,.5,1)}
   60%{transform:translateY(.5px);animation-timing-function:cubic-bezier(.5,0,.5,1)}
   88%{transform:translateY(-1px);animation-timing-function:cubic-bezier(.5,0,.5,1)}
-  100%{transform:translateY(-.6px)}}
+  100%{transform:translateY(0)}}
 @media (prefers-reduced-motion: reduce){#intro .ib,#intro .ib img{animation:none}}
 </style>
 <div id="intro" aria-hidden="true"><div class="iz"><div class="ib">
@@ -261,9 +261,14 @@ footer{font:400 12px var(--f-mono);color:var(--muted);text-align:left;letter-spa
   var el=document.getElementById('intro');
   var app=(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
   if(!app&&!/[?&#]intro\b/.test(location.search+location.hash)){el.remove();window.__dkIntroReady=function(){};return}
+  // 시작 화면 이미지(아이폰이 앱을 켤 때 먼저 보여주는 그림)와 같은 자리에 오도록: 상태바 높이의 절반만큼 위로
+  var sb=Math.max(0,(screen.height||innerHeight)-innerHeight);if(sb>0&&sb<80)el.style.paddingBottom=sb+'px';
+  var tc=[].slice.call(document.querySelectorAll('meta[name=theme-color]')),tc0=tc.map(function(m){return m.content});
+  tc.forEach(function(m){m.content='#ffffff'});
+  function restoreTC(){tc.forEach(function(m,i){m.content=tc0[i]})}
   var started=false,iz=el.firstChild,ib=iz.firstChild,T=660,JUMPS=3,OUT=820;
   var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  function done(){if(el.parentNode)el.remove()}
+  function done(){restoreTC();if(el.parentNode)el.remove()}
   // 끝내기: 최소 3번 튄 뒤, 지금 튀는 한 번이 바닥에 닿는 순간 모든 부분(머리·귀·뿔)을 함께 멈추고(브라우저 애니메이션 시간표 기준)
   // 그 순간부터 살짝 작아졌다가 화면 밖까지 커지며 흰 배경이 사라짐 → 중간에 끊기지 않음
   function finish(){

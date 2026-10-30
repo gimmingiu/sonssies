@@ -19,6 +19,9 @@ rep("  try{dl=await window.claude?.use?.('downloads')}catch(e){}",
     }
     const url=URL.createObjectURL(data),a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
     setTimeout(()=>URL.revokeObjectURL(url),4000);return {status:'saved'}}};""")
+# 글꼴 CSS가 첫 화면(인트로)을 막지 않도록 비동기로
+rep('<link href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Gothic+Coding&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">',
+    '<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Gothic+Coding&family=Noto+Sans+KR:wght@500;700&display=swap" onload="this.onload=null;this.rel=\'stylesheet\'"><noscript><link href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Gothic+Coding&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet"></noscript>')
 rep("html,body{background:var(--bg);color:var(--fg)}","html,body{margin:0}\nhtml,body{background:var(--bg);color:var(--fg)}")
 head='''<!doctype html>
 <html lang="ko">
@@ -40,8 +43,8 @@ head='''<!doctype html>
 <meta property="og:description" content="나만의 수호 도깨비를 꾸미고 이미지로 저장해 보세요.">
 <meta property="og:image" content="https://sonssies.com/og.png?v=2">
 <meta name="twitter:card" content="summary_large_image">
-'''
-i=s.index('<div class="wrap">')
+'''+open(os.path.join(ROOT,'splash','links.html'),encoding='utf8').read()
+i=s.index('<!-- 인트로') if '<!-- 인트로' in s else s.index('<div class="wrap">')   # 인트로부터 body에 넣어야 화면이 바로 그려짐
 out=head+s[:i]+'</head>\n<body>\n'+s[i:].rstrip()+'''
 <script>
 if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
