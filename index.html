@@ -212,7 +212,11 @@ input[type=color][data-on="true"]{box-shadow:0 0 0 2px var(--accent)}
 .bigbtn.cta.show{transform:none;opacity:1;pointer-events:auto;transition:transform .32s cubic-bezier(.3,1.45,.5,1),opacity .22s ease}   /* 나타날 때: 뿅 */
 .bigbtn.cta.show:active{transform:scale(.97)}
 @media (prefers-reduced-motion: reduce){.bigbtn.cta{transition:opacity .15s}}
-footer{font:400 12px var(--f-mono);color:var(--muted);text-align:left;letter-spacing:.02em;padding-top:8px}
+footer{font:400 12px var(--f-mono);color:var(--muted);text-align:left;letter-spacing:.02em;padding-top:8px;display:flex;flex-direction:column;gap:4px}
+footer .sns{display:flex;gap:12px}
+.rfoot .sns{justify-content:flex-end}
+footer a{color:inherit;text-decoration:underline;text-underline-offset:3px;text-decoration-color:color-mix(in srgb,currentColor 40%,transparent)}
+footer a:hover{color:var(--fg)}
 .rfoot{width:100%;max-width:420px;grid-column:1/-1;padding-top:6px;text-align:right}
 .bigbtn{width:100%;font:700 17px var(--f-body);letter-spacing:.02em;border:0;border-radius:12px;padding:12px 16px;background:var(--accent);color:var(--accent-ink);cursor:pointer;box-shadow:0 6px 14px -8px var(--accent);transition:transform .08s}
 .bigbtn:active{transform:scale(.97)}
@@ -246,7 +250,7 @@ footer{font:400 12px var(--f-mono);color:var(--muted);text-align:left;letter-spa
 .ract button{width:100%;font:700 16px var(--f-body);letter-spacing:.01em;padding:13px 10px;border-radius:12px;border:1px solid var(--line);box-shadow:none}
 .ract .bigbtn{border-color:var(--accent)}
 .rnote{font-size:12.5px;color:var(--muted);line-height:1.6;margin:0;min-height:1.6em}
-@media (min-width:760px){.rwrap{grid-template-columns:auto 320px;column-gap:40px}.rcard{grid-column:1;grid-row:1;width:auto;max-width:none;height:min(84vh,860px)}.rhint{grid-column:1;grid-row:2}.rside{grid-column:2;grid-row:1}.rfoot{grid-column:2;grid-row:2;max-width:none;padding-top:0;margin-top:-8px;font-size:12px;line-height:inherit}}
+@media (min-width:760px){.rwrap{grid-template-columns:auto 320px;column-gap:40px}.rcard{grid-column:1;grid-row:1;width:auto;max-width:none;height:min(84vh,860px)}.rhint{grid-column:1;grid-row:2}.rside{grid-column:2;grid-row:1}.rfoot{grid-column:1/-1;grid-row:3;max-width:none;padding-top:8px}}
 @media (prefers-reduced-motion: reduce){.rcard{animation:none}.bigbtn{transition:none}}
 .note{font-size:13px;color:var(--muted);line-height:1.6;margin:0;max-width:70ch}
 </style>
@@ -441,7 +445,7 @@ footer{font:400 12px var(--f-mono);color:var(--muted);text-align:left;letter-spa
     </div>
   </div>
 
-  <footer>ⓒ 2026 sonssies. all rights reserved.</footer>
+  <footer><div class="sns"><a href="https://www.instagram.com/sonssies/" target="_blank" rel="noopener">instagram</a><a href="https://twitter.com/sonssies" target="_blank" rel="noopener">twitter</a></div><div class="copy">ⓒ 2026 sonssies. all rights reserved.</div></footer>
   <p class="note" hidden>몸은 상체·골반·다리·팔·손·발·꼬리가 하나로 이어진 덩어리이고, 손·발·꼬리의 흰색은 같은 덩어리 위에 칠한 색 면이에요. 슬라이더를 끝까지 움직여도 눈·눈썹·코·입은 얼굴 안에서 서로 겹치지 않게, 귀·뿔은 머리에, 팔은 상체에 붙어 있도록 자동으로 제한돼요. 마음에 드는 조합은 ‘설정값 복사’로 대화에 붙여 주세요.</p>
 </div>
 
@@ -494,7 +498,7 @@ footer{font:400 12px var(--f-mono);color:var(--muted);text-align:left;letter-spa
       </div>
       <p class="rnote" id="saveMsg" aria-live="polite"></p>
     </div>
-    <footer class="rfoot">ⓒ 2026 sonssies. all rights reserved.</footer>
+    <footer class="rfoot"><div class="sns"><a href="https://www.instagram.com/sonssies/" target="_blank" rel="noopener">instagram</a><a href="https://twitter.com/sonssies" target="_blank" rel="noopener">twitter</a></div><div class="copy">ⓒ 2026 sonssies. all rights reserved.</div></footer>
   </div>
 </div>
 
