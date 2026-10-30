@@ -30,8 +30,8 @@ head='''<!doctype html>
 <meta name="theme-color" content="#e4ebeb" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#141a1c" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icon-192.png?v=2" type="image/png">
-<link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
+<link rel="icon" href="favicon.ico?v=1" sizes="any"><link rel="icon" href="favicon.png?v=1" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=3">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Sonssies">
 <meta property="og:type" content="website">
