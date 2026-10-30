@@ -255,7 +255,7 @@ footer{font:400 12px var(--f-mono);color:var(--muted);text-align:left;letter-spa
 <!-- 인트로(스플래시): 홈 화면 앱으로 열 때만. 주소에 ?intro 를 붙이면 브라우저에서도 보임 -->
 <style>
 #intro{position:fixed;inset:0;z-index:9999;background:#fff;display:grid;place-items:center;overflow:hidden}
-#intro .iz{will-change:transform}
+#intro .iz{will-change:transform;transform-origin:50% 70%}   /* 커질 때 기준점을 가운데보다 아래에 둬서 위쪽으로 확 튀어나오듯 */
 #intro .ib{position:relative;width:165px;aspect-ratio:330/171;transform-origin:50% 100%;animation:inBounce .66s linear infinite;will-change:transform}
 #intro .ib img{position:absolute;inset:0;width:100%;height:100%;display:block;will-change:transform}
 #intro .el{transform-origin:23.34% 59.42%;animation:inEarL .66s linear infinite}
@@ -319,7 +319,7 @@ footer{font:400 12px var(--f-mono);color:var(--muted);text-align:left;letter-spa
     var ct=b.currentTime||0,n=Math.max(JUMPS,Math.floor(ct/T)+1),wait=n*T-ct;
     if(wait<120){n++;wait+=T}           // 바닥이 너무 가까우면 한 번 더 튀고 끝냄
     all.forEach(function(a){a.effect.updateTiming({iterations:n,fill:'forwards'})});
-    iz.animate([{transform:'scale(1)',easing:'cubic-bezier(.3,0,.5,1)'},{transform:'scale(.8)',offset:.3,easing:'cubic-bezier(.65,0,.9,.55)'},{transform:'scale(26)'}],{duration:OUT,delay:wait,fill:'forwards'});
+    iz.animate([{transform:'translateY(0) scale(1)',easing:'cubic-bezier(.3,0,.5,1)'},{transform:'translateY(5px) scale(.8)',offset:.3,easing:'cubic-bezier(.65,0,.9,.55)'},{transform:'translateY(-40px) scale(26)'}],{duration:OUT,delay:wait,fill:'forwards'});
     var f=el.animate([{opacity:1},{opacity:1,offset:.5},{opacity:0}],{duration:OUT,delay:wait,easing:'ease-in',fill:'forwards'});
     f.onfinish=done;setTimeout(done,wait+OUT+500);
   }
