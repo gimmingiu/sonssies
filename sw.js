@@ -1,5 +1,5 @@
 // 오프라인에서도 열리도록: 처음 받은 파일(페이지·3D 엔진·글꼴)을 저장해 두고, 새 버전이 있으면 다음 방문 때 갱신
-const CACHE='sonssies-v5';
+const CACHE='sonssies-v6';
 const CORE=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)));self.skipWaiting()});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim()});

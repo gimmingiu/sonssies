@@ -36,9 +36,9 @@ head='''<!doctype html>
 <meta name="apple-mobile-web-app-title" content="Sonssies">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://sonssies.com/">
-<meta property="og:title" content="Sonssies">
+<meta property="og:title" content="Sonssies - 나의 수호 도깨비 만들기">
 <meta property="og:description" content="나만의 반려 도깨비를 꾸미고 이미지로 저장해 보세요.">
-<meta property="og:image" content="https://sonssies.com/og.png">
+<meta property="og:image" content="https://sonssies.com/og.png?v=2">
 <meta name="twitter:card" content="summary_large_image">
 '''
 i=s.index('<div class="wrap">')
