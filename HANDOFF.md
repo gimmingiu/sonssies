@@ -24,7 +24,7 @@
 2. 문법 확인: `<script>` 안 JS를 떼어 `node --check`
 3. 렌더 확인: `node tools/test_page.js` (필요하면 스크립트를 복사해 특정 탭·포즈를 눌러보는 식으로 확장)
 4. 아티팩트 게시: Artifact 도구로 위 URL에 publish (다른 채팅이므로 먼저 `read`로 읽고, `url` 지정해서 같은 링크 유지. capabilities는 생략해 `downloads` 유지)
-5. 사이트: `python3 tools/build_site.py` → `git commit` → `git push` (1~2분 뒤 Pages 반영)
+5. 사이트: **평소엔 아티팩트에만 반영.** 사용자가 "깃허브에 반영해줘"라고 할 때만 모아서 `python3 tools/build_site.py` → `git commit` → `git push` (1~2분 뒤 Pages 반영)
 6. 사용자에게 변경점 요약 + 확인용 렌더 이미지 전송
 
 ## 4. 디자인 원칙 (사용자가 정한 것)
