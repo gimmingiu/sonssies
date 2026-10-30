@@ -25,7 +25,7 @@ head='''<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>나의 반려 도깨비 만들기</title>
+<title>손씨 커스터마이저</title>
 <meta name="description" content="나만의 반려 도깨비를 꾸미고 이미지로 저장해 보세요.">
 <meta name="theme-color" content="#e4ebeb" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#141a1c" media="(prefers-color-scheme: dark)">
@@ -36,7 +36,7 @@ head='''<!doctype html>
 <meta name="apple-mobile-web-app-title" content="반려 도깨비">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://sonssies.com/">
-<meta property="og:title" content="나의 반려 도깨비 만들기">
+<meta property="og:title" content="손씨 커스터마이저">
 <meta property="og:description" content="나만의 반려 도깨비를 꾸미고 이미지로 저장해 보세요.">
 <meta property="og:image" content="https://sonssies.com/og.png">
 <meta name="twitter:card" content="summary_large_image">
