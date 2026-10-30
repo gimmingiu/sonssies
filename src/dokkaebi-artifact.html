@@ -1215,7 +1215,8 @@ Object.keys(POSES).forEach(n=>{const b=document.createElement('button');b.classN
 Object.keys(PRESETS).forEach(n=>{const b=document.createElement('button');b.className='pbtn';b.textContent=n;b.dataset.preset=n;b.setAttribute('aria-pressed','false');b.onclick=()=>{apply(PRESETS[n],true);setName(n)};$('presets').appendChild(b)});
 const dice=document.createElement('button');dice.className='pbtn dice';dice.textContent='랜덤';
 dice.onclick=()=>{const o={};Object.keys(META).filter(k=>!POSE_KEYS.includes(k)).forEach(k=>{o[k]=toVal(k,Math.floor(Math.random()*9)-4)});
-  o.horns=Math.random()<0.85;POSE_KEYS.forEach(k=>o[k]=DEF[k]);const pn=Object.keys(POSES);Object.assign(o,POSES[pn[Math.floor(Math.random()*pn.length)]]);const en=Object.keys(EXPRS);Object.assign(o,EXPRS[en[Math.floor(Math.random()*en.length)]]);
+  o.horns=Math.random()<0.85;POSE_KEYS.forEach(k=>o[k]=DEF[k]);   // 랜덤은 항상 기본 포즈
+  const en=Object.keys(EXPRS);Object.assign(o,EXPRS[en[Math.floor(Math.random()*en.length)]]);
   rollName();
   o.color='#'+new THREE.Color().setHSL(Math.random(),0.45+Math.random()*0.3,0.74+Math.random()*0.1).getHexString();  // 파스텔 톤 안에서 랜덤 색
   apply(o,true)};
