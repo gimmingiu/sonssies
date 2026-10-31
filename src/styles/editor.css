@@ -32,3 +32,7 @@ details.fine summary{padding:10px 2px;font:700 13px var(--f-body);color:var(--mu
 .colors .sw,.colors input[type=color]{width:44px;height:44px;border-radius:14px;border:3px solid var(--panel);box-shadow:0 0 0 1px var(--line)}
 .colors .sw[aria-pressed="true"],.colors input[type=color][data-on="true"]{box-shadow:0 0 0 2.5px var(--accent)}
 .colors input[type=color]::-webkit-color-swatch{border-radius:10px}
+/* 저장 버튼: 꾸미기 화면 아래 가운데. 맨 아래까지 내려오면 나타남 */
+.savebar{justify-items:center;opacity:0;transform:translateY(14px);pointer-events:none;transition:opacity .28s ease,transform .32s cubic-bezier(.3,1.4,.5,1)}
+.savebar.show{opacity:1;transform:none;pointer-events:auto}
+.savebar .bigbtn{width:auto;min-width:170px;padding:14px 40px}

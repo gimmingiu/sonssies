@@ -44,7 +44,8 @@ function compose(dst,q,reuse){
   let y0=Math.round((OH-(RES+fpx-tpx+gap+tagH))/2+RES-tpx)+(tagOn?40:0);
   y0=Math.min(y0,OH-70-tagH-gap-fpx);y0=Math.max(y0,40+RES-tpx);
   x.clearRect(0,0,OW,OH);
-  if(bgColor){x.fillStyle=bgColor;x.fillRect(0,0,OW,OH)}
+  if(bgColor==='rainbow'){const g=x.createLinearGradient(0,0,OW*0.35,OH);[['#ffb3b3',0],['#ffd59e',.2],['#fff2a1',.38],['#c8f0a6',.56],['#a9dcff',.76],['#d2b8ff',1]].forEach(([c,o])=>g.addColorStop(o,c));x.fillStyle=g;x.fillRect(0,0,OW,OH)}
+  else if(bgColor){x.fillStyle=bgColor;x.fillRect(0,0,OW,OH)}
   x.drawImage(C.img,sx,y0,OW,RH);
   // 명찰: 흰 카드 + 테두리·윗띠, 살짝 기울여 붙인 스티커처럼 (그림자 없음)
   if(tagOn){

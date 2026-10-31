@@ -88,15 +88,14 @@ function syncUI(){
 }
 function apply(obj,full){const keep={tex:P.tex};if(!full){keep.color=P.color;EXPR_KEYS.concat(POSE_KEYS).forEach(k=>keep[k]=P[k])}Object.assign(P,DEF,keep,obj);snapAll();syncUI();rebuild()}
 Object.keys(POSES).forEach(n=>{const b=document.createElement('button');b.className='pbtn';b.textContent=n;b.onclick=()=>{POSE_KEYS.forEach(k=>P[k]=DEF[k]);Object.assign(P,POSES[n]);syncUI();rebuild()};$('poses').appendChild(b)});
-[['eyeTypes','eyeType',[['dot','점'],['happy','웃는눈 ∩'],['content','감은눈 ∪'],['squint','찡그림 > <'],['line','일자눈'],['wide','초롱눈']]],
- ['mouthTypes','mouthType',[['smile','미소'],['smirk','씩 웃음'],['open','벌린입'],['munch','냠냠 ω'],['o','오입'],['flat','일자입']]]].forEach(([box,k,opts])=>
+[['eyeTypes','eyeType',[['dot','똘망'],['happy','히죽'],['content','스르르'],['squint','찡긋'],['line','게슴츠레'],['wide','초롱']]],
+ ['mouthTypes','mouthType',[['flat','알쏭달쏭'],['smile','미소'],['smirk','씰룩'],['munch','야옹'],['puff','냠냠'],['none','없음']]]].forEach(([box,k,opts])=>
   opts.forEach(([v,l])=>{const b=document.createElement('button');b.type='button';b.className='pbtn';b.dataset.v=v;b.textContent=l;b.onclick=()=>{P[k]=v;syncUI();rebuild()};$(box).appendChild(b)}));
 Object.keys(PRESETS).forEach(n=>{const b=document.createElement('button');b.className='pbtn';b.textContent=n;b.dataset.preset=n;b.setAttribute('aria-pressed','false');b.onclick=()=>{apply(PRESETS[n],true);setName(n)};$('presets').appendChild(b)});
 const dice=document.createElement('button');dice.className='pbtn dice';dice.textContent='랜덤';
 dice.onclick=()=>{const o={};Object.keys(META).filter(k=>!POSE_KEYS.includes(k)).forEach(k=>{o[k]=toVal(k,Math.floor(Math.random()*9)-4)});
   o.horns=Math.random()<0.85;POSE_KEYS.forEach(k=>o[k]=DEF[k]);   // 랜덤은 항상 기본 포즈
   const en=Object.keys(EXPRS);Object.assign(o,EXPRS[en[Math.floor(Math.random()*en.length)]]);
-  rollName();
   o.color='#'+new THREE.Color().setHSL(Math.random(),0.45+Math.random()*0.3,0.74+Math.random()*0.1).getHexString();  // 파스텔 톤 안에서 랜덤 색
   apply(o,true)};
 $('presets').appendChild(dice);
@@ -108,14 +107,16 @@ $('blush2').onchange=e=>{P.blush=e.target.checked;syncUI();rebuild()};
 function setBlushColor(c){P.blushColor=c;P.blush=true;syncUI();rebuild()}
 document.querySelectorAll('#blushes .sw').forEach(s=>s.onclick=()=>setBlushColor(s.dataset.c));
 $('blushPick').addEventListener('input',e=>{P.blushColor=e.target.value;P.blush=true;syncUI();soon()});
-Object.keys(TEX).forEach(t=>{const b=document.createElement('button');b.className='pbtn';b.type='button';b.dataset.t=t;b.textContent=TEX[t].name;b.onclick=()=>{P.tex=t;syncUI();rebuild()};$('texs').appendChild(b)});
 $('spinBtn').onclick=()=>{spinning=!spinning;$('spinBtn').setAttribute('aria-pressed',spinning);if(spinning)setViewPressed(null)};
 function setColor(c){P.color=c;syncUI();rebuild()}
 document.querySelectorAll('#colors .sw').forEach(s=>s.onclick=()=>setColor(s.dataset.c));
 // 미리보기 배경색: 비우면 기본(화면 모드에 맞춘 색). 어두운 배경이면 라벨 글자를 밝게
 let bgColor='';
-const isDark=hex=>{const c=new THREE.Color(hex);return 0.2126*c.r+0.7152*c.g+0.0722*c.b<0.45};
-function setBg(c){bgColor=c||'';$('rcard').style.background=bgColor;$('stageBg').style.background=bgColor;stage.style.setProperty('--sfg',bgColor?(isDark(bgColor)?'#eef4f5':'#1f2a2e'):'');syncUI();if(typeof persistSoon==='function')persistSoon();if(!$('result').hidden)drawPreview(true)}
+// 무지개: 특별한 배경 값('rainbow')
+const RAINBOW_CSS='linear-gradient(160deg,#ffb3b3 0%,#ffd59e 20%,#fff2a1 38%,#c8f0a6 56%,#a9dcff 76%,#d2b8ff 100%)';
+const bgCss=c=>c==='rainbow'?RAINBOW_CSS:(c||'');
+const isDark=hex=>{if(!hex||hex==='rainbow')return false;const c=new THREE.Color(hex);return 0.2126*c.r+0.7152*c.g+0.0722*c.b<0.45};
+function setBg(c){bgColor=c||'';$('rcard').style.background=bgCss(bgColor);$('stageBg').style.background=bgCss(bgColor);stage.style.setProperty('--sfg',bgColor?(isDark(bgColor)?'#eef4f5':'#1f2a2e'):'');syncUI();if(typeof persistSoon==='function')persistSoon();if(!$('result').hidden)drawPreview(true)}
 document.querySelectorAll('.bgset .sw').forEach(s=>s.onclick=()=>setBg(s.dataset.bg));
 document.querySelectorAll('.bgpick').forEach(p=>p.addEventListener('input',e=>setBg(e.target.value)));
 $('pick').addEventListener('input',e=>{P.color=e.target.value;syncUI();soon()});

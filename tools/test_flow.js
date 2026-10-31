@@ -1,5 +1,5 @@
 // 손시 전체 흐름 확인 (Playwright, 휴대폰 크기 390×844)
-// 꿈알 깨기 → 기본형 고르기 → 꾸미기(탭·하위 탭·그림 카드·되돌리기) → 이름 → 저장 → 다시 열기 → 메인 → 수정(몸 단계) → 카드 → 배경화면
+// 꿈알 깨기 → 기본형 고르기 → 꾸미기(탭·하위 탭·그림 카드·되돌리기·맨 아래 저장 버튼) → 이름(빈칸·주사위) → 저장 → 다시 열기 → 메인(말풍선·포즈) → 수정(몸·꼬리 단계) → 수정 저장(말풍선) → 배경화면
 // 각 단계에서 화면 이름·눈에 보이는 요소를 검사하고, 페이지 오류가 하나라도 나면 실패로 끝남. 화면은 out_flow/에 저장.
 //
 // 준비(한 번):  npm i three@0.128.0 @fontsource/jua @fontsource/noto-sans-kr @fontsource/nanum-gothic-coding playwright
@@ -34,7 +34,7 @@ const CSS=FONTS.map(([n,w,p])=>`@font-face{font-family:'${n}';font-weight:${w};s
   await p.click('#starts [data-preset="꼬마"]');await p.waitForTimeout(1200);
   await p.click('#eggGo');await p.waitForTimeout(1200);
   await expect('꾸미기 1단계(머리만)','step',()=>!document.getElementById('stabs').hidden);
-  await p.click('#stabs [data-j="3"]');await p.waitForTimeout(6000);
+  await p.click('#stabs [data-j="2"]');await p.waitForTimeout(6000);
   await expect('눈 그림 카드','step',()=>[...document.querySelectorAll('#eyeTypes img')].filter(i=>i.src).length===6);
   await p.click('#eyeTypes [data-v="happy"]');await p.waitForTimeout(1200);
   await p.click('#unUndo');await p.waitForTimeout(1200);
@@ -42,19 +42,32 @@ const CSS=FONTS.map(([n,w,p])=>`@font-face{font-family:'${n}';font-weight:${w};s
   await p.click('.stepbox:not([hidden]) .subtabs button:nth-child(2)');await p.waitForTimeout(1000);
   await expect('하위 탭(눈썹)','step');
   await p.click('#stabs [data-j="4"]');await p.waitForTimeout(800);
-  await p.click('#stepMake');await p.waitForTimeout(1000);
-  await expect('이름 짓기','name');
-  await p.click('#nameDice');await p.waitForTimeout(1500);await p.click('#bgs [data-bg="#f4ecdc"]');
+  await p.evaluate(()=>scrollTo(0,document.documentElement.scrollHeight));await p.waitForTimeout(800);
+  await expect('맨 아래 → 저장 버튼','step',()=>document.getElementById('saveBar').classList.contains('show'));
+  await p.click('#stepSave');await p.waitForTimeout(1000);
+  await expect('이름 짓기(빈칸)','name',()=>document.getElementById('charName').value===''&&document.getElementById('nameLive').textContent==='');
+  await p.click('#saveDoll');await p.waitForTimeout(600);
+  await expect('빈 이름은 저장 안 됨','name');
+  await p.click('#nameDice');await p.waitForTimeout(1500);await p.click('#bgs [data-bg="rainbow"]');await p.waitForTimeout(600);
   await p.reload();await p.waitForTimeout(3000);
-  await expect('이어하기(이름)','name');
+  await expect('이어하기(이름·무지개 배경)','name',()=>document.querySelector('#bgs [data-bg="rainbow"]').getAttribute('aria-pressed')==='true');
   await p.click('#saveDoll');await p.waitForTimeout(1500);
-  await expect('메인','main',()=>!document.getElementById('mbub').hidden);
+  await expect('메인(첫 인사)','main',()=>['반가워!','안녕!'].includes(document.getElementById('mbub').textContent));
+  await p.click('#mainPoses [data-pose="앉기"]');await p.waitForTimeout(1500);
+  await expect('포즈: 앉기','main',()=>document.querySelector('#mainPoses [data-pose="앉기"]').getAttribute('aria-pressed')==='true');
   await p.reload();await p.waitForTimeout(3000);
-  await expect('다시 열기→메인','main');
-  await p.click('#goEdit');await p.waitForTimeout(800);await p.click('#stabs [data-j="7"]');await p.waitForTimeout(1500);
-  await expect('수정: 꼬리(전체 모습)','step',()=>document.querySelectorAll('#stabs button:not([hidden])').length===8);
+  await expect('다시 열기→메인(포즈 유지)','main',()=>document.querySelector('#mainPoses [data-pose="앉기"]').getAttribute('aria-pressed')==='true');
+  await p.click('#goEdit');await p.waitForTimeout(800);await p.click('#stabs [data-j="5"]');await p.waitForTimeout(4000);
+  await expect('수정: 몸·꼬리(전체 모습)','step',()=>document.querySelectorAll('#stabs button:not([hidden])').length===7);
   await p.goBack();await p.waitForTimeout(600);await p.goBack();await p.waitForTimeout(1200);
   await expect('수정 취소→메인','main');
+  await p.click('#goEdit');await p.waitForTimeout(800);await p.click('#stabs [data-j="5"]');await p.waitForTimeout(4000);
+  await p.click('.pcards[data-part="몸"] .tcard:nth-child(3)');await p.waitForTimeout(1500);
+  await p.evaluate(()=>scrollTo(0,document.documentElement.scrollHeight));await p.waitForTimeout(800);
+  await p.click('#stepSave');await p.waitForTimeout(1000);
+  await expect('수정 → 이름(이름 그대로)','name',()=>document.getElementById('charName').value!=='');
+  await p.click('#saveDoll');await p.waitForTimeout(1500);
+  await expect('수정 후 메인(새 모습 멘트)','main',()=>['나 어때?','새로운 기분이야!','어울려?','짠! 달라졌지?'].includes(document.getElementById('mbub').textContent));
   await p.click('#goWall');await p.waitForTimeout(800);
   await expect('배경화면','wall');
   await b.close();

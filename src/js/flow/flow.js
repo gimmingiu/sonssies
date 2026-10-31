@@ -1,22 +1,23 @@
 // ---------- 화면 흐름 (첫 방문: 알 → 시작 고르기 → 꾸미기 8단계 → 이름 → 메인) ----------
 let ST=Save.data();   // 저장 묶음 (src/js/save/save.js)
 const snapDoll=()=>{const o={};Object.keys(P).forEach(k=>{if(!POSE_KEYS.includes(k))o[k]=P[k]});return {p:o,name:charName,bg:bgColor}};
-function loadDoll(d){if(!d)return;Object.assign(P,DEF,d.p||{});POSE_KEYS.forEach(k=>P[k]=DEF[k]);snapAll();setName(d.name||'깨두');setBg(d.bg||'');syncUI();rebuild()}
+function loadDoll(d){if(!d)return;Object.assign(P,DEF,d.p||{});P.tex='smooth';POSE_KEYS.forEach(k=>P[k]=DEF[k]);snapAll();setName(d.name||'');setBg(d.bg||'');syncUI();rebuild()}
 let psT=0;
 function persistSoon(){clearTimeout(psT);psT=setTimeout(()=>{   // 처음 꾸미는 중이면 지금까지를 저장해 두고, 앱을 닫았다 열어도 이어서
   if(ST.done||!ST.hatched)return;const cur=stack[stack.length-1]||{};if(!['egg','step','name'].includes(cur.scr)||(cur.scr==='egg'&&!eggDone))return;
   ST.draft={...snapDoll(),scr:cur.scr,step:cur.step||0};Save.commit()},300)}
-function syncNtag(){const t=$('nameLive');if(!rolling){t.textContent=charName||'깨두';hello(charName)}t.style.color=bgColor?(isDark(bgColor)?'#eef4f5':'#1f2a2e'):''}
+function syncNtag(){const t=$('nameLive');if(!rolling){t.textContent=charName;hello(charName)}t.style.color=bgColor?(isDark(bgColor)?'#eef4f5':'#1f2a2e'):''}
 // '안녕! 나는 ○○야/이야' (받침 있으면 이야)
 function hello(){}
 function afterRebuild(){applyHeadOnly();markCards();syncNtag();persistSoon();undoRecord();if(!$('result').hidden)drawPreview()}
 
-// 꾸미기 8단계: 원래 항목 묶음을 단계별로 모음
+// 꾸미기 7단계(둘씩 묶음): 원래 항목 묶음을 단계별로 모음. 처음 만들 때는 앞의 5단계(얼굴)만, [수정]에서는 7단계 모두
 const GRP={};document.querySelectorAll('#holder details').forEach(d=>{GRP[d.querySelector('summary').textContent.trim()]=d.querySelector('.grp')});
 $('bgRowHold').replaceWith($('bgs').closest('.row'));   // 배경색은 이름 짓기 화면에서
 $('posesRow').appendChild($('poses'));                   // 포즈는 카드 만들기 화면에서
-const STEPS=[['색 · 질감',[['','색 · 질감']]],['머리 · 뿔',[['머리','머리'],['뿔','뿔']]],['귀',[['','귀']]],['눈 · 눈썹',[['눈','눈'],['눈썹','눈썹']]],
-  ['코 · 입 · 볼',[['코','코'],['입','입'],['볼','볼']]],['몸',[['','몸']]],['팔 · 다리',[['팔','팔'],['다리','다리']]],['꼬리',[['','꼬리']]]];
+const STEPS=[['피부 · 머리',[['피부','피부'],['머리','머리']]],['뿔 · 귀',[['뿔','뿔'],['귀','귀']]],['눈 · 눈썹',[['눈','눈'],['눈썹','눈썹']]],
+  ['코 · 입',[['코','코'],['입','입']]],['볼터치 · 볼살',[['볼터치','볼터치'],['볼살','볼살']]],['몸 · 꼬리',[['몸','몸'],['꼬리','꼬리']]],['팔 · 다리',[['팔','팔'],['다리','다리']]]];
+const FACE_STEPS=5;
 const stepEls=STEPS.map(([,parts])=>{const box=document.createElement('div');box.className='stepbox';
   parts.forEach(([sub,g])=>{if(sub){const h=document.createElement('h3');h.className='sub';h.textContent=sub;box.appendChild(h)}if(GRP[g])box.appendChild(GRP[g])});return box});
 stepEls.forEach(e=>{e.hidden=true;$('stepBody').appendChild(e)});   // 모두 문서 안에 두고 지금 단계만 보임(슬라이더 표시가 계속 맞도록)
@@ -25,7 +26,7 @@ $('prog').innerHTML=STEPS.map(()=>'<i></i>').join('');
 // 시작 고르기: 프리셋 3개 + 랜덤
 let startPick='깨두';
 Object.keys(PRESETS).forEach(n=>{const b=document.createElement('button');b.type='button';b.dataset.preset=n;b.style.setProperty('--c',PRESETS[n].color||DEF.color);
-  b.innerHTML='<i></i>'+n;b.onclick=()=>{startPick=n;apply(PRESETS[n],true);setName(n);$('rndBtn').setAttribute('aria-pressed','false');bump(true)};$('starts').appendChild(b)});
+  b.innerHTML='<i></i>'+n;b.onclick=()=>{startPick=n;apply(PRESETS[n],true);$('rndBtn').setAttribute('aria-pressed','false');bump(true)};$('starts').appendChild(b)});
 // 돌려 본 상태에서 기본형을 다시 고르면: 돌며 등장한 뒤 정면을 보게 (등장 시작 때 아주 작아서 방향을 바로 바꿔도 티 나지 않음)
 function toFront(){faceFront();angle=target}
 function bump(spin){if(spin){toFront();bounceT0=0;popT0=spinT0=performance.now()}else{popT0=0;bounceT0=performance.now()}}   // spin: 랜덤처럼 돌며 등장
@@ -43,17 +44,17 @@ function show(st,dir){
   if(hold&&stage.parentNode!==hold)hold.prepend(stage);
   if(prev==='card'&&st.scr!=='card')closeResult();
   if(st.scr==='egg')enterEgg();else leaveEgg();
-  if(st.scr==='step'){const i=st.step||0,N=nSteps();$('stepTitle').textContent=STEPS[i][0];$('stepPrev').disabled=stack.length<=1;stepEls.forEach((e,j)=>e.hidden=j!==i);
+  if(st.scr==='step'){const i=st.step||0,N=nSteps();$('stepTitle').textContent=STEPS[i][0];stepEls.forEach((e,j)=>e.hidden=j!==i);
     $('prog').style.gridTemplateColumns=`repeat(${N},1fr)`;$('prog').querySelectorAll('i').forEach((e,j)=>{e.hidden=j>=N;e.classList.toggle('on',j<=i)});$('pnum').textContent=(i+1)+'/'+N;
-    $('prog').setAttribute('aria-valuemax',N);$('prog').setAttribute('aria-valuenow',i+1);const last=i>=N-1;$('stepNext').hidden=last;$('stepMake').hidden=!last;$('stepMake').textContent=editing?'완료':'생성하기';
-    editorEnter(i,prev!=='step')}
+    $('prog').setAttribute('aria-valuemax',N);$('prog').setAttribute('aria-valuenow',i+1);
+    editorEnter(i,prev!=='step');requestAnimationFrame(saveBarCheck)}
   else if(prev==='step')lookReset();
-  if(st.scr==='name')syncNtag();
+  if(st.scr==='name'){faceFront();angle=target;syncNtag()}   // 이름 짓기는 늘 정면(꾸미기에서 돌려 본 각도를 따라오지 않게)
   if(st.scr==='main'){
     if(editing){editing=false;if(ST.doll)loadDoll(ST.doll)}            // 꾸미다 저장하지 않고 돌아오면 원래대로
-    else if(POSE_KEYS.some(k=>P[k]!==DEF[k])){POSE_KEYS.forEach(k=>P[k]=DEF[k]);syncUI();rebuild()}   // 카드에서 바꾼 포즈는 메인에선 기본으로
+    setPose(ST.pose,false);                                             // 메인에서 고른 포즈
     if(ST.doll)setBg(ST.doll.bg||'');
-    faceFront();sayLine();}
+    faceFront();angle=target;sayLine(sayMood);sayMood='';}
   if(st.scr==='card'){faceFront();angle=target;if(ST.doll)setBg(ST.doll.bg||'');openResult()}
   if(st.scr!=='main')$('mbub').hidden=true;
   layout();scrollTo(0,0);persistSoon();
@@ -76,23 +77,33 @@ document.querySelectorAll('[data-back]').forEach(b=>b.onclick=goBack);
 // 각 화면 버튼
 $('safariGo').onclick=()=>go({scr:'egg'},{replace:true});
 $('eggGo').onclick=()=>go({scr:'step',step:0});   // 뒤로 오면 깨어난 손시·프리셋 화면(알은 다시 안 나옴)
-$('stepPrev').onclick=goBack;
 $('startGo').onclick=()=>go({scr:'step',step:0});
-const nSteps=()=>editing?STEPS.length:5;
-$('stepNext').onclick=()=>{const i=stack[stack.length-1].step||0;go(i<nSteps()-1?{scr:'step',step:i+1}:{scr:'name'})};
-$('stepMake').onclick=()=>go({scr:'name'});
-$('saveDoll').onclick=()=>{setName($('charName').value);ST.doll=snapDoll();ST.done=true;ST.hatched=true;delete ST.draft;Save.commit();editing=false;resetTo({scr:'main'})};
-$('goEdit').onclick=()=>{editing=true;go({scr:'step',step:0})};
+const nSteps=()=>editing?STEPS.length:FACE_STEPS;
+$('stepSave').onclick=()=>go({scr:'name'});
+// 저장 버튼: 꾸미기 화면 맨 아래까지 내려왔을 때 나타남(내용이 짧아 내릴 곳이 없으면 바로 보임)
+function saveBarCheck(){if(scrNow!=='step')return;const end=innerHeight+scrollY>=document.documentElement.scrollHeight-16;$('saveBar').classList.toggle('show',end)}
+addEventListener('scroll',saveBarCheck,{passive:true});addEventListener('resize',saveBarCheck);
+try{new ResizeObserver(saveBarCheck).observe($('stepBody'))}catch(_){}
+// 이름 짓기 → 저장하기. 이름이 비어 있으면 입력칸을 흔들어 알려 줌
+let sayMood='';   // 다음에 메인에 들어갈 때 말풍선 상황(lines.js): 처음 만든 뒤 'first', 수정해서 바뀐 뒤 'edited'
+$('saveDoll').onclick=()=>{setName($('charName').value);
+  if(!charName){const inp=$('charName');inp.classList.remove('nope');void inp.offsetWidth;inp.classList.add('nope');inp.focus();return}
+  const before=ST.done&&ST.doll?JSON.stringify(ST.doll.p):null;
+  ST.doll=snapDoll();sayMood=!ST.done?'first':before!==JSON.stringify(ST.doll.p)?'edited':'';
+  ST.done=true;ST.hatched=true;delete ST.draft;Save.commit();editing=false;resetTo({scr:'main'})};
+$('goEdit').onclick=()=>{editing=true;POSE_KEYS.forEach(k=>P[k]=DEF[k]);syncUI();rebuild();go({scr:'step',step:0})};   // 꾸밀 때는 기본 포즈로
+// 메인 포즈: 기본·차렷·앉기·갸우뚱 (고른 포즈는 저장해 둠)
+function setPose(n,anim){n=POSES[n]?n:'기본';const same=POSE_KEYS.every(k=>P[k]===(k in POSES[n]?POSES[n][k]:DEF[k]));
+  if(ST.pose!==n){ST.pose=n;Save.commit()}
+  document.querySelectorAll('#mainPoses button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.pose===n));
+  if(same)return;POSE_KEYS.forEach(k=>P[k]=DEF[k]);Object.assign(P,POSES[n]);syncUI();rebuild();if(anim)bump()}
+Object.keys(POSES).forEach(n=>{const b=document.createElement('button');b.type='button';b.className='mpose';b.dataset.pose=n;b.textContent=n;b.onclick=()=>setPose(n,true);$('mainPoses').appendChild(b)});
 if($('goCard'))$('goCard').onclick=()=>go({scr:'card'});
 $('goWall').onclick=()=>go({scr:'wall'});
 
-// 메인: 말풍선(들어올 때마다, 누를 때마다 다른 말) + 누르면 통통
-const LINES={morning:['잘 잤어?','좋은 아침!','오늘도 힘내!'],noon:['밥 먹었어?','점심 맛있게 먹어!','배고파…'],evening:['오늘 어땠어?','수고했어!','저녁 먹었어?'],night:['졸려…','잘 자!','꿈에서 만나!'],
-  any:['안녕!','반가워!','보고 싶었어!','나랑 놀자!','헤헤','오늘도 고마워!']};
-let lastLine='',bounceT0=0,popT0=0,spinT0=0;
-function pickLine(){const h=new Date().getHours(),t=h>=5&&h<11?'morning':h>=11&&h<14?'noon':h>=17&&h<22?'evening':h>=22||h<5?'night':'';
-  const pool=(LINES[t]||[]).concat(LINES.any);let x;do{x=pool[Math.floor(Math.random()*pool.length)]}while(x===lastLine&&pool.length>1);return lastLine=x}
-function sayLine(){const b=$('mbub');b.textContent=pickLine();b.hidden=false;b.classList.remove('pop');void b.offsetWidth;b.classList.add('pop')}
+// 메인: 말풍선(들어올 때마다, 누를 때마다 다른 말 · 멘트는 lines.js) + 누르면 통통
+let bounceT0=0,popT0=0,spinT0=0;
+function sayLine(mood){const b=$('mbub');b.textContent=pickLine(mood);b.hidden=false;b.classList.remove('pop');void b.offsetWidth;b.classList.add('pop')}
 {let tx=0,ty=0,tt=0;
  canvas.addEventListener('pointerdown',e=>{tx=e.clientX;ty=e.clientY;tt=performance.now()});
  canvas.addEventListener('pointerup',e=>{const onMain=scrNow==='main',onPick=scrNow==='egg'&&eggDone;if(!onMain&&!onPick)return;   // 누르면 말랑통통(메인에선 말도 바뀜)
@@ -116,6 +127,7 @@ function flowFrame(now){
   c.scale.set(s*sx,s*sy,s*sx);c.position.y=dy;if(spin)c.rotation.y=angle+spin;
   if(scrNow==='main'){const b=$('mbub');if(!b.hidden){const v=new THREE.Vector3(0,(charH+0.12)*s+dy,0).project(persp);
     b.style.left=((v.x+1)/2*stage.clientWidth)+'px';b.style.top=Math.max(58,(1-v.y)/2*stage.clientHeight-4)+'px'}}
+  bodyFade(now);
   if(egg)eggFrame(now);
 }
 

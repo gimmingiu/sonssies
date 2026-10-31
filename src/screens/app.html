@@ -4,7 +4,7 @@
       <div id="partHold" hidden>
         <div class="row" id="eyeRow"><div class="rl"><span>모양</span></div><div class="pbtns" role="group" aria-label="눈 모양" id="eyeTypes"></div></div>
         <div class="row" id="mouthRow"><div class="rl"><span>모양</span></div><div class="pbtns" role="group" aria-label="입 모양" id="mouthTypes"></div></div>
-        <label class="tg" for="blush2" id="blushTg">볼터치 <input id="blush2" type="checkbox"></label>
+        <label class="tg" for="blush2" id="blushTg" hidden>볼터치 <input id="blush2" type="checkbox"></label>
         <div class="row" id="blushRow"><div class="rl"><span>볼터치 색</span></div>
           <div class="colors" id="blushes">
             <button class="sw" type="button" style="background:#f6b3a9" data-c="#f6b3a9" aria-label="기본 분홍"></button>
@@ -17,16 +17,16 @@
       </div>
       <div id="groups"></div>
       <details>
-        <summary>색 · 질감</summary>
+        <summary>피부</summary>
         <div class="grp">
           <div class="row"><div class="rl"><span>배경색</span></div>
             <div class="colors bgset" id="bgs">
-              <button class="sw bgdef" type="button" data-bg="" aria-label="투명 (기본)" title="투명 (기본)"></button>
-              <button class="sw" type="button" style="background:#ffffff" data-bg="#ffffff" aria-label="흰색"></button>
-              <button class="sw" type="button" style="background:#f4ecdc" data-bg="#f4ecdc" aria-label="크림"></button>
-              <button class="sw" type="button" style="background:#26314a" data-bg="#26314a" aria-label="남색"></button>
-              <button class="sw" type="button" style="background:#141414" data-bg="#141414" aria-label="검정"></button>
-              <input id="bgPick" class="bgpick" type="color" value="#c4d1d3" aria-label="배경색 직접 고르기" title="배경색 직접 고르기">
+              <button class="sw bgdef" type="button" data-bg="" aria-label="투명" title="투명"></button>
+              <button class="sw" type="button" style="background:#ffffff" data-bg="#ffffff" aria-label="흰색" title="흰색"></button>
+              <button class="sw" type="button" style="background:#c6eb8f" data-bg="#c6eb8f" aria-label="연두색" title="연두색"></button>
+              <button class="sw" type="button" style="background:#ffb46e" data-bg="#ffb46e" aria-label="주황색" title="주황색"></button>
+              <button class="sw" type="button" style="background:#26314a" data-bg="#26314a" aria-label="곤색" title="곤색"></button>
+              <button class="sw bgrb" type="button" data-bg="rainbow" aria-label="무지개" title="무지개"></button>
             </div>
           </div>
           <div class="row"><div class="rl"><span>피부색</span></div><div class="colors" id="colors">
@@ -37,9 +37,6 @@
             <button class="sw" style="background:#c9b8f0" data-c="#c9b8f0" aria-label="보라"></button>
             <input id="pick" type="color" value="#a9e4f0" aria-label="피부색 직접 고르기" title="피부색 직접 고르기">
           </div></div>
-          <div class="row"><div class="rl"><span>질감</span></div>
-            <div class="pbtns" role="group" aria-label="질감" id="texs"></div>
-          </div>
           <label class="tg" for="horns">뿔 <input id="horns" type="checkbox" checked></label>
           <label class="tg" for="tail">꼬리 <input id="tail" type="checkbox" checked></label>
         </div>
@@ -83,19 +80,19 @@
     <div class="topbar"><div class="prog" id="prog" role="progressbar" aria-valuemin="1" aria-valuemax="8"></div><span class="pnum" id="pnum">1/5</span></div>
     <div class="stagehold" data-size="step"></div>
     <div class="panel"><h2 class="sh" id="stepTitle"></h2><div id="stepBody"></div></div>
-    <div class="bbar three"><button type="button" class="arrb" id="stepPrev" aria-label="이전 단계"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span></span><button type="button" class="arrb" id="stepNext" aria-label="다음 단계"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="bigbtn fit" id="stepMake" hidden>생성하기</button></div>
+    <div class="bbar savebar" id="saveBar"><button type="button" class="bigbtn" id="stepSave">저장</button></div>
   </section>
 
   <!-- 이름 짓기·저장 -->
   <section class="scr" data-scr="name" aria-label="이름 짓기">
-    <div class="topbar"><h1 class="tt">이름을 지어 줘</h1></div>
-    <div class="stagehold" data-size="name"><p class="sname nlive" id="nameLive">깨두</p></div>
+    <div class="topbar"><h1 class="tt">이름 짓기</h1></div>
+    <div class="stagehold" data-size="name"><p class="sname nlive" id="nameLive"></p></div>
     <div class="panel">
       <div class="namerow">
-        <input id="charName" type="text" maxlength="12" value="깨두" aria-label="손시 이름" autocomplete="off" spellcheck="false" enterkeyhint="done">
+        <input id="charName" type="text" maxlength="12" value="" placeholder="이름을 지어주세요." aria-label="손시 이름" autocomplete="off" spellcheck="false" enterkeyhint="done">
         <button type="button" class="namedice" id="nameDice" aria-label="랜덤 이름" title="랜덤 이름"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="4" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="8.5" cy="8.5" r="1.4" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="15.5" cy="8.5" r="1.4" fill="currentColor"/><circle cx="8.5" cy="15.5" r="1.4" fill="currentColor"/></svg></button>
       </div>
-      <p class="hint">띄어쓰기 없이 한글 8자, 영문 12자까지</p>
+      <p class="hint" id="nameHint">한글 최대 8자, 영문 최대 12자<br>띄어쓰기 및 특수문자 입력은 안 돼요.</p>
       <div class="row" id="bgRowHold"></div>
     </div>
     <div class="bbar three"><button type="button" class="arrb" data-back aria-label="이전"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span></span><button type="button" class="bigbtn fit" id="saveDoll">저장하기</button></div>
@@ -124,6 +121,7 @@
     </div>
     </header>
     <div class="stagehold" data-size="main"><div class="mbub" id="mbub" hidden></div><button type="button" class="editb" id="goEdit">수정</button></div>
+    <div class="mposes" id="mainPoses" role="group" aria-label="포즈"></div>
     <div class="mbtns one">
       <button type="button" class="mbtn" id="goWall"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 15l4-4 3 3 2-2 3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>배경화면 만들기</button>
     </div>

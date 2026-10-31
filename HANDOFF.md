@@ -25,8 +25,12 @@ src/
   js/ui/               controls(슬라이더·색·프리셋), name(이름·주사위), stats(누적 통계)
   js/card/             compose(카드 이미지), bubble(말풍선), page(카드 화면), save-image(이미지 저장), stickers(이모티콘)
   js/save/save.js      ★ 저장 창구. 손시 데이터는 전부 여기로 읽고 씀 (지금은 기기 저장 → 나중에 서버 저장으로 이 파일만 교체)
-  js/flow/             flow(화면 이동·메인·뒤로가기), editor-camera(부위별 카메라·머리만 보이기) · editor-tabs(아이콘 탭·하위 탭) ·
-                       editor-undo(되돌리기) · editor-thumbs(눈·입 그림 카드) · editor(꾸미기 들어올 때), egg-art(꿈알 그림, 자동 생성) · egg(꿈알), init(시작 화면 정하기)
+  js/flow/             lines(메인 말풍선 멘트: 처음·수정 후·시간대·언제든 — 새 멘트는 여기에만), flow(화면 이동·메인·포즈·저장 버튼·뒤로가기),
+                       editor-camera(부위별 카메라·몸통 서서히 보이기/숨기기) · editor-tabs(아이콘 탭 7개·하위 탭) · editor-undo(되돌리기) ·
+                       editor-thumbs(눈·입 그림 카드) · editor-cards(나머지 부위 프리셋 카드·카드 그림 구도) · editor(꾸미기 들어올 때),
+                       egg-art(꿈알 그림, 자동 생성) · egg(꿈알), init(시작 화면 정하기)
+                       꾸미기 단계: 피부·머리 / 뿔·귀 / 눈·눈썹 / 코·입 / 볼터치·볼살 (처음 만들 때 = 여기까지, 머리만) / 몸·꼬리 / 팔·다리 ([수정]에서만)
+                       카메라: 끌기 옆=돌리기, 위아래=화면 옮기기(꾸미기만), 두 손가락=확대·옮기기. 부위 이동은 camTo(천천히 시작·멈춤)
   js/dev/hooks.js      테스트용 창구(window.__dk*): 아이콘·인트로 그림 뽑을 때 씀
   (js/game/, js/auth/  앞으로 추가: 게임 규칙(꿈빛·덩이·꿈열매), 로그인)
 ```

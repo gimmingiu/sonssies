@@ -1,13 +1,13 @@
 // ---------- 이름 ----------
 const NAMES=['말랑','토실','포실','뚱실','포동','다다','구레','파루','포아','아차','까루','뽀도','꾸루','휘리','소곰','시꾸','디구','또루','디뚜','깡초','덤버',
  '실구디','오미디','망오디','똥구디','쇳디','올미','우루미','고소미','아가지','도티','마딘','타내','올마대','가리대','터대','샹재','수새','더믈','검불','북쇠','모리쇠','곰쇠','매뇌','쟈가둥','흰둥','검둥'];
-let charName='깨두';
-// 이름 규칙: 띄어쓰기 없음 · 최소 1자 · 최대 한글 8자 / 영문 12자 (영문·숫자 1칸, 그 밖의 글자 1.5칸, 합 12칸까지)
-function cleanName(v){let u=0,out='';for(const ch of (v||'').replace(/\s+/g,'')){const w=/[\x21-\x7e]/.test(ch)?1:1.5;if(u+w>12)break;u+=w;out+=ch}return out}
+let charName='';   // 처음 만들 때는 빈칸: 직접 입력하거나 주사위를 굴려야 정해짐
+// 이름 규칙: 한글·영문·숫자만(띄어쓰기·특수문자 안 됨) · 최대 한글 8자 / 영문 12자 (영문·숫자 1칸, 한글 1.5칸, 합 12칸까지)
+function cleanName(v){let u=0,out='';for(const ch of (v||'').replace(/[^가-힣ㄱ-ㅎㅏ-ㅣA-Za-z0-9]/g,'')){const w=/[\x21-\x7e]/.test(ch)?1:1.5;if(u+w>12)break;u+=w;out+=ch}return out}
 function bindName(inp,after){const fix=()=>{const c=cleanName(inp.value);if(c!==inp.value)inp.value=c;charName=c;after()};
   inp.addEventListener('input',e=>{if(e.isComposing)return;fix()});inp.addEventListener('compositionend',fix);
   inp.addEventListener('keydown',e=>{if(e.key===' '&&!e.isComposing)e.preventDefault()})}
-function setName(n){charName=cleanName(n)||'깨두';$('charName').value=charName;$('resName').value=charName;$('nameTitle').textContent=charName;syncNtag();persistSoon();if(!$('result').hidden)loadTagFonts().then(()=>drawPreview(true))}
+function setName(n){charName=cleanName(n);$('charName').value=charName;$('resName').value=charName;$('nameTitle').textContent=charName;syncNtag();persistSoon();if(!$('result').hidden)loadTagFonts().then(()=>drawPreview(true))}
 // 주사위: 약 1초 동안 이름이 슬롯머신처럼 빠르게 바뀌다가 느려지며 멈춤
 let rolling=null;
 // 이름표 '통' 착지: 입력칸의 land 애니메이션과 같은 곡선(0.92 → 1.06 → 1)
@@ -29,7 +29,7 @@ function rollName(d0,inp0){
   tick();
 }
 $('nameDice').onclick=()=>rollName();
-bindName($('charName'),()=>{$('nameTitle').textContent=charName||'깨두';$('nameLive').textContent=charName||'깨두'});
+bindName($('charName'),()=>{$('nameTitle').textContent=charName;$('nameLive').textContent=charName});
 $('charName').addEventListener('blur',()=>setName($('charName').value));
 // 엔터: 키보드를 내리고, 주사위로 이름이 정해질 때와 같은 '통' 애니메이션
 $('charName').addEventListener('keydown',e=>{if(e.key!=='Enter'||e.isComposing)return;e.preventDefault();const inp=$('charName');

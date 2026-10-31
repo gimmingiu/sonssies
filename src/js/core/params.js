@@ -9,12 +9,13 @@ const GROUPS=[
  ['입',[['mouthW','너비',0.5,2.2,1],['mouthCurve','곡률',0,2,1],['mouthY','높이',-0.5,-0.14,-0.324]]],
  ['몸',[['bodyLen','길이',0.6,1.5,1],['upperW','너비',0.75,1.4,1],['bodyD','두께',0.75,1.3,1],['lowerRatio','허리',0.3,0.7,0.5]]],
  ['팔',[['armLen','길이',0.6,1.6,0.76],['armThick','두께',0.7,1.6,1.4]]],
- ['볼',[['blushY','위치',-0.1,0.1,0],['cheek','볼살',0,1,0]]],
+ ['볼터치',[['blushY','위치',-0.1,0.1,0]]],
+ ['볼살',[['cheek','볼살',0,1,0]]],
  ['다리',[['legSplit','길이',0.15,0.95,0.42],['legThick','두께',0.7,1.4,1]]],
- ['꼬리',[['tailSize','크기',0.5,1,1],['tailW','너비',1,1.8,1]]],
+ ['꼬리',[['tailSize','크기',0.5,1.5,1],['tailW','너비',1,1.8,1]]],
  ['포즈',[]],
 ];
-const DEF={browAsym:0,handPose:'',tailSq:0,hornSize:1,hornTilt:8,browX:0.25,earSpread:0,lowerW:1,blushColor:'#f6b3a9',horns:true,blush:false,tail:true,tex:'smooth',color:'#a9e4f0',eyeType:'dot',mouthType:'smile',sit:false,tuck:false,footSize:2,legGap:0.05,handSize:1,earInnerH:0.6,earInnerW:0.85,tailShape:'round',tailLen:1,tailY:0,tailTilt:15,tailBlend:0.35,armRaiseR:6,armFwdR:0,armRaiseL:6,armFwdL:0,legSwingR:0,legSwingL:0,headPitch:0,headYaw:0,tilt:0};
+const DEF={browAsym:0,handPose:'',tailSq:0,hornSize:1,hornTilt:8,browX:0.25,earSpread:0,lowerW:1,blushColor:'#f6b3a9',blushType:'clay',horns:true,blush:false,tail:true,tex:'smooth',color:'#a9e4f0',eyeType:'dot',mouthType:'smile',sit:false,tuck:false,footSize:2,legGap:0.05,handSize:1,earInnerH:0.6,earInnerW:0.85,tailShape:'round',tailLen:1,tailY:0,tailTilt:15,tailBlend:0.35,armRaiseR:6,armFwdR:0,armRaiseL:6,armFwdL:0,legSwingR:0,legSwingL:0,headPitch:0,headYaw:0,tilt:0};
 const EXPR_KEYS=['eyeType','mouthType','blush'];   // 랜덤에서만 표정 조합으로 씀
 const POSE_KEYS=['tilt','tuck','legSwingR','legSwingL','armRaiseR','armFwdR','armRaiseL','armFwdL','headPitch','headYaw','sit'];
 const POSES={
@@ -25,12 +26,12 @@ const POSES={
 };
 const EXPRS={
  '기본':{eyeType:'dot',mouthType:'smile',blush:false},
- '웃음':{eyeType:'happy',mouthType:'open',blush:true},
+ '웃음':{eyeType:'happy',mouthType:'smile',blush:true},
  '뿌듯':{eyeType:'content',mouthType:'smirk',blush:true},
- '신남':{eyeType:'squint',mouthType:'open',blush:true},
- '냠냠':{eyeType:'squint',mouthType:'munch',blush:true},
+ '신남':{eyeType:'squint',mouthType:'munch',blush:true},
+ '냠냠':{eyeType:'squint',mouthType:'puff',blush:true},
  '당황':{eyeType:'dot',mouthType:'flat',blush:true},
- '놀람':{eyeType:'wide',mouthType:'o',blush:false},
+ '놀람':{eyeType:'wide',mouthType:'none',blush:false},
  '졸림':{eyeType:'line',mouthType:'flat',blush:false},
 };
 const META={};
