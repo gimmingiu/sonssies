@@ -375,6 +375,17 @@ body{padding:0;margin:0;min-height:100dvh}
 
 .note{font-size:13px;color:var(--muted);line-height:1.6;margin:0;max-width:70ch}
 
+/* 이름 짓기: 안내 글자는 누르면 사라짐, 이름 없이 저장하면 흔들림 */
+#charName::placeholder{color:var(--muted);opacity:.8;font-size:18px}
+#charName:focus::placeholder{color:transparent}
+#charName.nope{animation:nope .4s ease;border-color:var(--neg)}
+@keyframes nope{0%,100%{transform:none}20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(2px)}}
+#nameHint{line-height:1.6}
+/* 메인 포즈 */
+.mposes{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.mpose{font:700 14px var(--f-body);color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:10px 4px;cursor:pointer;transition:transform .08s}
+.mpose:active{transform:scale(.95)}
+.mpose[aria-pressed="true"]{border-color:var(--accent);color:var(--accent);box-shadow:0 0 0 1.5px var(--accent);background:color-mix(in srgb,var(--accent) 10%,var(--panel))}
 /* 꿈알(그림 12장): 미리보기 자리 위에 겹쳐 놓음. 바닥(그림 높이 80%)을 축으로 통통 튀고 찌그러짐 */
 .eggart{position:absolute;inset:0;z-index:8;display:grid;place-items:center;overflow:visible;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;outline:none;--glow:0}
 /* 그림이 칸보다 커도 칸 가운데에 오도록 절대 위치(정사각형이라 margin %도 너비 기준으로 같음) */
@@ -426,6 +437,10 @@ details.fine summary{padding:10px 2px;font:700 13px var(--f-body);color:var(--mu
 .colors .sw,.colors input[type=color]{width:44px;height:44px;border-radius:14px;border:3px solid var(--panel);box-shadow:0 0 0 1px var(--line)}
 .colors .sw[aria-pressed="true"],.colors input[type=color][data-on="true"]{box-shadow:0 0 0 2.5px var(--accent)}
 .colors input[type=color]::-webkit-color-swatch{border-radius:10px}
+/* 저장 버튼: 꾸미기 화면 아래 가운데. 맨 아래까지 내려오면 나타남 */
+.savebar{justify-items:center;opacity:0;transform:translateY(14px);pointer-events:none;transition:opacity .28s ease,transform .32s cubic-bezier(.3,1.4,.5,1)}
+.savebar.show{opacity:1;transform:none;pointer-events:auto}
+.savebar .bigbtn{width:auto;min-width:170px;padding:14px 40px}
 </style>
 </head>
 <body>
@@ -515,7 +530,7 @@ details.fine summary{padding:10px 2px;font:700 13px var(--f-body);color:var(--mu
       <div id="partHold" hidden>
         <div class="row" id="eyeRow"><div class="rl"><span>모양</span></div><div class="pbtns" role="group" aria-label="눈 모양" id="eyeTypes"></div></div>
         <div class="row" id="mouthRow"><div class="rl"><span>모양</span></div><div class="pbtns" role="group" aria-label="입 모양" id="mouthTypes"></div></div>
-        <label class="tg" for="blush2" id="blushTg">볼터치 <input id="blush2" type="checkbox"></label>
+        <label class="tg" for="blush2" id="blushTg" hidden>볼터치 <input id="blush2" type="checkbox"></label>
         <div class="row" id="blushRow"><div class="rl"><span>볼터치 색</span></div>
           <div class="colors" id="blushes">
             <button class="sw" type="button" style="background:#f6b3a9" data-c="#f6b3a9" aria-label="기본 분홍"></button>
@@ -528,15 +543,15 @@ details.fine summary{padding:10px 2px;font:700 13px var(--f-body);color:var(--mu
       </div>
       <div id="groups"></div>
       <details>
-        <summary>색 · 질감</summary>
+        <summary>피부</summary>
         <div class="grp">
           <div class="row"><div class="rl"><span>배경색</span></div>
             <div class="colors bgset" id="bgs">
-              <button class="sw bgdef" type="button" data-bg="" aria-label="투명 (기본)" title="투명 (기본)"></button>
-              <button class="sw" type="button" style="background:#ffffff" data-bg="#ffffff" aria-label="흰색"></button>
-              <button class="sw" type="button" style="background:#f4ecdc" data-bg="#f4ecdc" aria-label="크림"></button>
-              <button class="sw" type="button" style="background:#26314a" data-bg="#26314a" aria-label="남색"></button>
-              <button class="sw" type="button" style="background:#141414" data-bg="#141414" aria-label="검정"></button>
+              <button class="sw bgdef" type="button" data-bg="" aria-label="투명" title="투명"></button>
+              <button class="sw" type="button" style="background:#ffffff" data-bg="#ffffff" aria-label="흰색" title="흰색"></button>
+              <button class="sw" type="button" style="background:#c6eb8f" data-bg="#c6eb8f" aria-label="연두색" title="연두색"></button>
+              <button class="sw" type="button" style="background:#ffb46e" data-bg="#ffb46e" aria-label="주황색" title="주황색"></button>
+              <button class="sw" type="button" style="background:#26314a" data-bg="#26314a" aria-label="곤색" title="곤색"></button>
               <input id="bgPick" class="bgpick" type="color" value="#c4d1d3" aria-label="배경색 직접 고르기" title="배경색 직접 고르기">
             </div>
           </div>
@@ -548,9 +563,6 @@ details.fine summary{padding:10px 2px;font:700 13px var(--f-body);color:var(--mu
             <button class="sw" style="background:#c9b8f0" data-c="#c9b8f0" aria-label="보라"></button>
             <input id="pick" type="color" value="#a9e4f0" aria-label="피부색 직접 고르기" title="피부색 직접 고르기">
           </div></div>
-          <div class="row"><div class="rl"><span>질감</span></div>
-            <div class="pbtns" role="group" aria-label="질감" id="texs"></div>
-          </div>
           <label class="tg" for="horns">뿔 <input id="horns" type="checkbox" checked></label>
           <label class="tg" for="tail">꼬리 <input id="tail" type="checkbox" checked></label>
         </div>
@@ -594,19 +606,19 @@ details.fine summary{padding:10px 2px;font:700 13px var(--f-body);color:var(--mu
     <div class="topbar"><div class="prog" id="prog" role="progressbar" aria-valuemin="1" aria-valuemax="8"></div><span class="pnum" id="pnum">1/5</span></div>
     <div class="stagehold" data-size="step"></div>
     <div class="panel"><h2 class="sh" id="stepTitle"></h2><div id="stepBody"></div></div>
-    <div class="bbar three"><button type="button" class="arrb" id="stepPrev" aria-label="이전 단계"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span></span><button type="button" class="arrb" id="stepNext" aria-label="다음 단계"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="bigbtn fit" id="stepMake" hidden>생성하기</button></div>
+    <div class="bbar savebar" id="saveBar"><button type="button" class="bigbtn" id="stepSave">저장</button></div>
   </section>
 
   <!-- 이름 짓기·저장 -->
   <section class="scr" data-scr="name" aria-label="이름 짓기">
-    <div class="topbar"><h1 class="tt">이름을 지어 줘</h1></div>
-    <div class="stagehold" data-size="name"><p class="sname nlive" id="nameLive">깨두</p></div>
+    <div class="topbar"><h1 class="tt">이름 짓기</h1></div>
+    <div class="stagehold" data-size="name"><p class="sname nlive" id="nameLive"></p></div>
     <div class="panel">
       <div class="namerow">
-        <input id="charName" type="text" maxlength="12" value="깨두" aria-label="손시 이름" autocomplete="off" spellcheck="false" enterkeyhint="done">
+        <input id="charName" type="text" maxlength="12" value="" placeholder="이름을 지어주세요." aria-label="손시 이름" autocomplete="off" spellcheck="false" enterkeyhint="done">
         <button type="button" class="namedice" id="nameDice" aria-label="랜덤 이름" title="랜덤 이름"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="4" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="8.5" cy="8.5" r="1.4" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="15.5" cy="8.5" r="1.4" fill="currentColor"/><circle cx="8.5" cy="15.5" r="1.4" fill="currentColor"/></svg></button>
       </div>
-      <p class="hint">띄어쓰기 없이 한글 8자, 영문 12자까지</p>
+      <p class="hint" id="nameHint">한글 최대 8자, 영문 최대 12자<br>띄어쓰기 및 특수문자 입력은 안 돼요.</p>
       <div class="row" id="bgRowHold"></div>
     </div>
     <div class="bbar three"><button type="button" class="arrb" data-back aria-label="이전"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span></span><button type="button" class="bigbtn fit" id="saveDoll">저장하기</button></div>
@@ -635,6 +647,7 @@ details.fine summary{padding:10px 2px;font:700 13px var(--f-body);color:var(--mu
     </div>
     </header>
     <div class="stagehold" data-size="main"><div class="mbub" id="mbub" hidden></div><button type="button" class="editb" id="goEdit">수정</button></div>
+    <div class="mposes" id="mainPoses" role="group" aria-label="포즈"></div>
     <div class="mbtns one">
       <button type="button" class="mbtn" id="goWall"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 15l4-4 3 3 2-2 3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>배경화면 만들기</button>
     </div>
@@ -740,12 +753,13 @@ const GROUPS=[
  ['입',[['mouthW','너비',0.5,2.2,1],['mouthCurve','곡률',0,2,1],['mouthY','높이',-0.5,-0.14,-0.324]]],
  ['몸',[['bodyLen','길이',0.6,1.5,1],['upperW','너비',0.75,1.4,1],['bodyD','두께',0.75,1.3,1],['lowerRatio','허리',0.3,0.7,0.5]]],
  ['팔',[['armLen','길이',0.6,1.6,0.76],['armThick','두께',0.7,1.6,1.4]]],
- ['볼',[['blushY','위치',-0.1,0.1,0],['cheek','볼살',0,1,0]]],
+ ['볼터치',[['blushY','위치',-0.1,0.1,0]]],
+ ['볼살',[['cheek','볼살',0,1,0]]],
  ['다리',[['legSplit','길이',0.15,0.95,0.42],['legThick','두께',0.7,1.4,1]]],
- ['꼬리',[['tailSize','크기',0.5,1,1],['tailW','너비',1,1.8,1]]],
+ ['꼬리',[['tailSize','크기',0.5,1.5,1],['tailW','너비',1,1.8,1]]],
  ['포즈',[]],
 ];
-const DEF={browAsym:0,handPose:'',tailSq:0,hornSize:1,hornTilt:8,browX:0.25,earSpread:0,lowerW:1,blushColor:'#f6b3a9',horns:true,blush:false,tail:true,tex:'smooth',color:'#a9e4f0',eyeType:'dot',mouthType:'smile',sit:false,tuck:false,footSize:2,legGap:0.05,handSize:1,earInnerH:0.6,earInnerW:0.85,tailShape:'round',tailLen:1,tailY:0,tailTilt:15,tailBlend:0.35,armRaiseR:6,armFwdR:0,armRaiseL:6,armFwdL:0,legSwingR:0,legSwingL:0,headPitch:0,headYaw:0,tilt:0};
+const DEF={browAsym:0,handPose:'',tailSq:0,hornSize:1,hornTilt:8,browX:0.25,earSpread:0,lowerW:1,blushColor:'#f6b3a9',blushType:'clay',horns:true,blush:false,tail:true,tex:'smooth',color:'#a9e4f0',eyeType:'dot',mouthType:'smile',sit:false,tuck:false,footSize:2,legGap:0.05,handSize:1,earInnerH:0.6,earInnerW:0.85,tailShape:'round',tailLen:1,tailY:0,tailTilt:15,tailBlend:0.35,armRaiseR:6,armFwdR:0,armRaiseL:6,armFwdL:0,legSwingR:0,legSwingL:0,headPitch:0,headYaw:0,tilt:0};
 const EXPR_KEYS=['eyeType','mouthType','blush'];   // 랜덤에서만 표정 조합으로 씀
 const POSE_KEYS=['tilt','tuck','legSwingR','legSwingL','armRaiseR','armFwdR','armRaiseL','armFwdL','headPitch','headYaw','sit'];
 const POSES={
@@ -756,12 +770,12 @@ const POSES={
 };
 const EXPRS={
  '기본':{eyeType:'dot',mouthType:'smile',blush:false},
- '웃음':{eyeType:'happy',mouthType:'open',blush:true},
+ '웃음':{eyeType:'happy',mouthType:'smile',blush:true},
  '뿌듯':{eyeType:'content',mouthType:'smirk',blush:true},
- '신남':{eyeType:'squint',mouthType:'open',blush:true},
- '냠냠':{eyeType:'squint',mouthType:'munch',blush:true},
+ '신남':{eyeType:'squint',mouthType:'munch',blush:true},
+ '냠냠':{eyeType:'squint',mouthType:'puff',blush:true},
  '당황':{eyeType:'dot',mouthType:'flat',blush:true},
- '놀람':{eyeType:'wide',mouthType:'o',blush:false},
+ '놀람':{eyeType:'wide',mouthType:'none',blush:false},
  '졸림':{eyeType:'line',mouthType:'flat',blush:false},
 };
 const META={};
@@ -1168,24 +1182,36 @@ function build(M,B){
   const neckY=hy-hb*0.75, HG=new THREE.Group(), HI=new THREE.Group();
   HG.position.y=neckY;HI.position.y=-neckY;HG.add(HI);g.add(HG);
   const hgeo=blob(hwA,hb,0.74*P.headD,e,0.06,72);
-  // 볼살: 얼굴 아래 양옆을 바깥(앞·옆)으로 통통하게 부풀림
-  if(P.cheek>0){const pa=hgeo.attributes.position,na=hgeo.attributes.normal,amp=0.15*P.cheek,cxk=hwA*0.58,cyk=-hb*0.4;
-    for(let i=0;i<pa.count;i++){const x=pa.getX(i),y=pa.getY(i),nz=na.getZ(i);if(nz<-0.2)continue;
-      const wy=Math.exp(-(((y-cyk)/(hb*0.46))**2)), wx=0.62+0.38*Math.exp(-(((Math.abs(x)-cxk)/(hwA*0.32))**2)), side=Math.exp(-((Math.max(0,Math.abs(x)-hwA*0.82)/(hwA*0.18))**2));
-      const w=wy*wx*side*Math.min(1,(nz+0.2)/0.6);   // 가운데(입·턱)도 62%만큼, 볼은 가장 크게
-      if(w<1e-3)continue;pa.setXYZ(i,x+na.getX(i)*amp*w,y+na.getY(i)*amp*w*0.6,pa.getZ(i)+nz*amp*w)}
+  // 볼살: 얼굴 아래 양옆을 바깥(앞·옆)으로 통통하게 부풀림. 입 '냠냠'(ㅡ( 입)은 괄호 쪽 볼을 동그랗게 더 부풀림(음식을 머금은 모습)
+  const puff=P.mouthType==='puff';
+  if(P.cheek>0||puff){const pa=hgeo.attributes.position,na=hgeo.attributes.normal,amp=0.26*P.cheek,cxk=hwA*0.58,cyk=-hb*0.4;
+    const pyk=clamp(P.mouthY*P.headH,-hb*0.8,-hb*0.1)+hb*0.02,pxk=hwA*0.5;
+    for(let i=0;i<pa.count;i++){const x=pa.getX(i),y=pa.getY(i),nz=na.getZ(i),fz=Math.max(0,Math.min(1,(nz+0.45)/0.6));if(fz<=0)continue;   // 뒤쪽으로 갈수록 부드럽게 0(뒤통수에 턱이 지지 않게)
+      let w=0;
+      if(amp>0){const wy=y<cyk?1:Math.exp(-(((y-cyk)/(hb*0.42))**2)), wx=0.82+0.18*Math.exp(-(((Math.abs(x)-cxk)/(hwA*0.32))**2)), side=Math.exp(-((Math.max(0,Math.abs(x)-hwA*0.82)/(hwA*0.18))**2));
+        w=amp*wy*wx*side*fz}   // 볼부터 턱까지 아래쪽 얼굴 전체가 통통하게(턱 가운데도 82%)
+      if(puff&&x>0){const r=Math.hypot((x-pxk)/(hwA*0.3),(y-pyk)/(hb*0.3));w+=0.11*Math.exp(-r*r)*fz}   // 'ㅡ(' 쪽 볼만 볼록
+      if(w<1e-4)continue;pa.setXYZ(i,x+na.getX(i)*w,y+na.getY(i)*w*(na.getY(i)<0?0.9:0.6),pa.getZ(i)+nz*w)}
     hgeo.computeVertexNormals()}
-  const head=mesh(hgeo,hm);head.position.y=hy;HI.add(head);
+  const head=mesh(hgeo,hm);head.position.y=hy;head.userData.part='head';HI.add(head);
   RATIO=(2*hb)/(L-0.08);
   g.updateMatrixWorld(true);
   const ray=new THREE.Raycaster();
+  let TAG='';   // 지금 붙이는 부위 이름(수정한 부위만 움직이는 모션에서 찾을 때 씀)
   function stick(target,m,x,y,lift=0,rotZ=0){
+    if(!m.userData.part)m.userData.part=TAG;
     ray.set(new THREE.Vector3(x,y,6),new THREE.Vector3(0,0,-1));
     const h=ray.intersectObject(target)[0];if(!h)return false;
     const n=h.face.normal.clone().transformDirection(target.matrixWorld);
     m.position.copy(h.point).addScaledVector(n,lift);
     m.lookAt(h.point.clone().addScaledVector(n,3));m.rotateZ(rotZ);HI.add(m);return true;
   }
+  // 얼굴 면에 착 붙는 얇은 조각(번짐 볼터치용): 격자 점마다 앞에서 얼굴로 쏘아 맞은 자리에 붙임
+  function patch(target,x,y,w,h,mat){
+    const geo=new THREE.PlaneGeometry(w,h,12,12),pa=geo.attributes.position;
+    for(let i=0;i<pa.count;i++){const px=x+pa.getX(i),py=y+pa.getY(i);ray.set(new THREE.Vector3(px,py,6),new THREE.Vector3(0,0,-1));const hit=ray.intersectObject(target)[0];
+      if(hit){const n=hit.face.normal.clone().transformDirection(target.matrixWorld);const q=hit.point.clone().addScaledVector(n,0.004);pa.setXYZ(i,q.x,q.y,q.z)}else pa.setXYZ(i,px,py,-1)}
+    geo.computeVertexNormals();const m=new THREE.Mesh(geo,mat);m.renderOrder=2;m.userData.part=TAG;HI.add(m);return m}
   // ---- 얼굴 (항상 얼굴 영역 안, 서로 겹치지 않게 제한) ----
   const faceTop=hb*0.78, faceBot=-hb*0.8, faceX=hwA*0.72;
   const ns=P.noseSize, nhw=0.125*ns, nhh=0.083*ns;
@@ -1216,13 +1242,23 @@ function build(M,B){
     let rz=0;
     if(P.eyeType==='content')rz=Math.PI;
     if(P.eyeType==='squint'&&s>0)rz=Math.PI;
-    stick(head,E.m,s*ex,hy+ey,E.lift,rz);
+    TAG='eye';stick(head,E.m,s*ex,hy+ey,E.lift,rz);TAG='brow';
     const brow=mesh(capsule(bl,bth),dark);brow.scale.z=0.7;
     const asy=s>0?(P.browAsym||0):0;stick(head,brow,s*bx,hy+by+0.07*asy/25,0.006,s*ang-asy*Math.PI/180);
-    if(P.blush)stick(head,mesh(blob(0.11,0.075,0.012,0.9),pink),s*Math.min(faceX,ex+0.22),hy+ey-0.13+P.blushY,0.004);
+    TAG='blush';if(P.blush){const bx0=s*Math.min(faceX,ex+0.22),by0=hy+ey-0.13+P.blushY,bt=P.blushType;
+      if(bt==='hatch'){for(let j=-1;j<=1;j++){const c=mesh(capsule(0.1,0.015),pink);c.scale.z=0.7;stick(head,c,bx0+j*0.05,by0,0.005,1.05)}}   // 빗금 세 줄
+      else if(bt==='freckle'){}   // 주근깨는 코를 붙인 뒤(아래)
+      else if(bt==='blur')patch(head,bx0,by0,0.36,0.27,blurMat(P.blushColor));   // 볼에 번지듯 물든 볼터치
+      else stick(head,mesh(blob(0.11,0.075,0.012,0.9),pink),bx0,by0,0.004)}
   }
-  stick(head,mesh(blob(nhw,nhh,0.055*ns,0.95-0.6*P.noseSq),white),0,hy+ny,0.025*ns);   // 모양: 0 둥근 ↔ 1 각진
+  const noseM=mesh(blob(nhw,nhh,0.055*ns,0.95-0.6*P.noseSq),white);stick(head,noseM,0,hy+ny,0.025*ns);   // 모양: 0 둥근 ↔ 1 각진
+  // 주근깨: 양 볼에 동그랗게 모인 점. 색은 피부색보다 조금 진하게
+  TAG='blush';
+  if(P.blush&&P.blushType==='freckle'){
+    const dots=freckleDots(Math.min(faceX,ex+0.22),ey-0.13+P.blushY,0.075),fm=freckleMat(P.color);
+    dots.forEach(([x,y,r])=>stick(head,mesh(blob(r,r,0.006,0.9),fm),x,hy+y,0.003))}
   // 입
+  TAG='mouth';
   const mW=clamp(P.mouthW,0.6,1.7), mt=P.mouthType;
   if(mt==='open'){
     const oh=0.075*Math.sqrt(mW), ow=0.055*mW, gO=new THREE.Group();
@@ -1233,13 +1269,20 @@ function build(M,B){
     stick(head,mesh(blob(0.03*Math.sqrt(mW),0.038*Math.sqrt(mW),0.018,0.95),dark),0,hy+my-0.01,0.006);
   }else if(mt==='flat'){
     const c=mesh(capsule(0.075*mW,tr),dark);c.scale.z=0.7;stick(head,c,0,hy+my,0.004);
-  }else if(mt==='munch'){
-    const gM=new THREE.Group(),r2=0.024*mW;
-    for(const k of[-1,1]){const st=arcStroke(r2,tr,Math.PI*0.9,dark);st.rotation.z=Math.PI;st.position.x=k*r2;gM.add(st)}
-    stick(head,gM,0,hy+my,0.004);
+  }else if(mt==='munch'){   // 야옹: 코 밑에서 짧게 내려온 뒤 양옆으로 갈라지는 'ㅅ'(人)자 입
+    const L=0.085*Math.sqrt(mW),a=1.03,top=ny-nhh*0.7,ay=ny-nhh-0.04,st=mesh(capsule(top-ay+tr,tr),dark);st.scale.z=0.7;
+    stick(head,st,0,hy+(top+ay)/2,0.004,Math.PI/2);
+    for(const k of[-1,1]){const c=mesh(capsule(L,tr),dark);c.scale.z=0.7;
+      stick(head,c,k*Math.sin(a)*(L/2-tr*0.5),hy+ay-Math.cos(a)*(L/2-tr*0.5),0.004,-k*(Math.PI/2-a))}
+  }else if(mt==='puff'){   // 냠냠: 'ㅡ(' 모양(입에 먹을 것을 담고 있는 표현)
+    const lw=0.085*mW,c=mesh(capsule(lw,tr),dark);c.scale.z=0.7;stick(head,c,-0.02,hy+my,0.004);
+    const R=0.05,arc=Math.PI*0.62,gP=new THREE.Group(),tor=mesh(new THREE.TorusGeometry(R,tr,12,28,arc),dark);tor.rotation.z=Math.PI-arc/2;tor.scale.z=0.75;gP.add(tor);
+    for(const an of[Math.PI-arc/2,Math.PI+arc/2]){const cap=mesh(new THREE.SphereGeometry(tr,12,10),dark);cap.scale.z=0.75;cap.position.set(R*Math.cos(an),R*Math.sin(an),0);gP.add(cap)}
+    stick(head,gP,-0.02+lw/2+R*1.15,hy+my,0.004);
+  }else if(mt==='none'){
   }else{
     const sm=curveMouth(R,tr,P.mouthCurve,dark);
-    if(mt==='smirk')stick(head,sm,0.02,hy+my,0.004,0.35);else stick(head,sm,0,hy+my,0.004,0);
+    if(mt==='smirk')stick(head,sm,0.06,hy+my,0.004,0.35);else stick(head,sm,0,hy+my,0.004,0);   // 씩 웃음은 가운데에서 살짝 오른쪽(화면 기준)
   }
   // ---- 귀 (항상 머리 옆면에 붙음) ----
   for(const s of[-1,1]){
@@ -1287,6 +1330,22 @@ function build(M,B){
   return g;
 }
 
+
+// 볼터치 재질(종류·색마다 하나씩 만들어 두고 다시 씀)
+const BL_MATS={};
+const BLUR_TEX=(()=>{const cv=document.createElement('canvas');cv.width=cv.height=128;const x=cv.getContext('2d'),g=x.createRadialGradient(64,64,0,64,64,64);
+  g.addColorStop(0,'#fff');g.addColorStop(0.35,'#ddd');g.addColorStop(0.75,'#444');g.addColorStop(1,'#000');x.fillStyle=g;x.fillRect(0,0,128,128);return new THREE.CanvasTexture(cv)})();
+function blurMat(hex){const k='b'+hex;return BL_MATS[k]||(BL_MATS[k]=new THREE.MeshStandardMaterial({color:lin(hex),roughness:0.9,metalness:0,transparent:true,opacity:0.85,alphaMap:BLUR_TEX,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2}))}
+// 주근깨 색: 피부와 같은 색 계열에서 조금만 진하게(명도·채도 차이가 크지 않게)
+function freckleHex(skin){const c=new THREE.Color(skin),h={};c.getHSL(h);c.setHSL(h.h,Math.min(1,h.s*0.92+0.02),Math.max(0.15,h.l-0.13));return '#'+c.getHexString()}
+function freckleMat(skin){const hx=freckleHex(skin),k='f'+hx;return BL_MATS[k]||(BL_MATS[k]=clay(hx,0.85,false,true))}
+// 주근깨 점 자리: 볼 위에 동그랗게(해바라기씨 배열로 고르게 + 살짝 흔듦). 반대쪽은 거울 자리에서 아주 조금만 어긋나게(대칭 95% · 비대칭 5%)
+function freckleDots(cx,cy,R){
+  let seed=7;const rnd=()=>{seed=(seed*16807)%2147483647;return (seed-1)/2147483646};
+  const n=10,half=[],out=[],G=Math.PI*(3-Math.sqrt(5));
+  for(let i=0;i<n;i++){const r=R*Math.sqrt((i+0.5)/n),a=i*G+0.4;half.push([cx+Math.cos(a)*r*1.15+(rnd()-0.5)*0.012,cy+Math.sin(a)*r*0.85+(rnd()-0.5)*0.012,0.0115+rnd()*0.0035])}
+  for(const s of[-1,1])half.forEach(([x,y,r])=>{const j=s>0?0.006:0;out.push([s*(x+(rnd()-0.5)*j),y+(rnd()-0.5)*j,r*(s>0?0.92+rnd()*0.16:1)])});
+  return out}
 // ---------- 카메라 / 배치 ----------
 // 기본 몸 길이·머리 높이로 선 깨두의 키(뿔 자리 포함). 카메라 거리는 이 키 기준으로 고정하고, 이보다 큰 손시만 그만큼 물러남
 const REF_H=0.78*1+2*0.68*1-0.08+0.3;
@@ -1299,8 +1358,11 @@ function layout(){
   renderer.setSize(w,h,false);
   const ch=frameH();   // 카메라는 기본 키(깨두) 기준으로 고정 → 작은 손시는 작게 보임. 더 큰 손시만 물러남
   persp.aspect=asp;let d=(asp<1?10.5:8.2)*ch/2.2;const need=(Math.max(charW,2.6)*0.5*1.18)/(Math.tan(persp.fov*Math.PI/360)*asp);if(need>d)d=need;
-  const sh=stage.parentNode&&stage.parentNode.dataset?stage.parentNode.dataset.size:'';const tyK=0.46;
-  camBase={d,y:ch*0.8,ty:ch*tyK};placePersp();persp.updateProjectionMatrix();
+  const sh=stage.parentNode&&stage.parentNode.dataset?stage.parentNode.dataset.size:'';const tyK=sh==='main'?0.63:0.46;   // 메인은 손시가 박스 아래쪽에 서 있게(시선을 조금 위로)
+  camBase={d,y:ch*0.8,ty:ch*tyK,sh:0};placePersp();persp.updateProjectionMatrix();
+  // 메인: 발 아래 남는 여백의 절반만큼 손시를 더 아래로(화면 크기와 상관없이 같은 비율). 시선과 카메라를 함께 내려서 각도는 그대로
+  if(sh==='main'){persp.updateMatrixWorld(true);const v=new THREE.Vector3(0,0,0).project(persp),gap=h-(1-v.y)/2*h,visH=2*persp.position.distanceTo(new THREE.Vector3(0,camBase.ty,0))*Math.tan(persp.fov*Math.PI/360);
+    camBase.sh=gap/2/h*visH;placePersp()}
 }
 function dispose(o){o.traverse(m=>{if(m.geometry&&!m.userData.keep)m.geometry.dispose();if(m.material&&m.material.type==='ShadowMaterial')m.material.dispose()})}
 let mats=null,earMats=[],depthOnly=null;
@@ -1330,7 +1392,22 @@ function rebuild(fine=true){
 let camBase={d:8,y:1.8,ty:1},zoom=1,zoomT=1;
 // 시선 높이: 꾸미기에서 고치는 부위(얼굴 등)로 카메라가 옮겨 갈 때 focusK(0~1)만큼 focusH 쪽으로
 let focusK=0,focusKT=0,focusH=0;
-function placePersp(){const z=zoom;let ty=camBase.ty+(z-1)*0.18*camBase.ty;if(focusK>1e-3)ty+=(focusH-ty)*focusK;persp.position.set(0,ty+(camBase.y-camBase.ty)/z,camBase.d/z);persp.lookAt(0,ty,0)}
+// 화면 옮기기(꾸미기에서 확대한 뒤 끌어서 보고 싶은 부위를 가운데로): 시선을 옆·위아래로 panX·panY만큼
+let panX=0,panY=0;
+function placePersp(){const z=zoom;let ty=camBase.ty+(z-1)*0.18*camBase.ty;if(focusK>1e-3)ty+=(focusH-ty)*focusK;ty+=panY+(camBase.sh||0);persp.position.set(panX,ty+(camBase.y-camBase.ty)/z,camBase.d/z);persp.lookAt(panX,ty,0)}
+function panBy(dx,dy){const k=2*(camBase.d/zoom)*Math.tan(persp.fov*Math.PI/360)/Math.max(1,stage.clientHeight);
+  panX=clamp(panX-dx*k,-charW*0.55,charW*0.55);panY=clamp(panY+dy*k,-charH*0.75,charH*0.75);placePersp()}
+// 부위로 옮겨 갈 때: 각도·확대·시선·화면 위치를 한꺼번에 천천히 시작해서 천천히 멈추게(툭 튀지 않게)
+let camTw=null;
+const easeIO=t=>t<0.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+function camTo(o,dur=700){
+  camTw={t0:performance.now(),dur,f:{a:angle,z:zoom,k:focusK,h:focusH,x:panX,y:panY},t:{a:o.a,z:o.z,k:o.k,h:o.h,x:0,y:0}};
+  if(focusK<1e-3)camTw.f.h=o.h;   // 시선을 옮기지 않던 상태면 높이는 바로 목표로(움직임은 k가 맡음)
+  target=o.a;zoomT=o.z;focusKT=o.k;focusH=o.h;setZoom(o.z)}
+function camStop(){if(!camTw)return;camTw=null;target=angle;zoomT=zoom;focusKT=focusK}
+function camStep(now){const T=camTw,u=Math.min(1,(now-T.t0)/T.dur),e=easeIO(u),L=(a,b)=>a+(b-a)*e;
+  angle=L(T.f.a,T.t.a);zoom=L(T.f.z,T.t.z);focusK=L(T.f.k,T.t.k);focusH=L(T.f.h,T.t.h);panX=L(T.f.x,T.t.x);panY=L(T.f.y,T.t.y);placePersp();
+  if(u>=1)camTw=null}
 const ZMIN=0.6,ZMAX=3;
 // 슬라이더 위치(0~1): 아래 절반 = 60~100%, 위 절반 = 100~300% (각각 로그 비율) → 100%가 정확히 가운데
 const zT=z=>z<=1?0.5*Math.log(z/ZMIN)/Math.log(1/ZMIN):0.5+0.5*Math.log(z)/Math.log(ZMAX);
@@ -1338,23 +1415,31 @@ const zFromT=t=>t<=0.5?ZMIN*Math.pow(1/ZMIN,t/0.5):Math.pow(ZMAX,(t-0.5)/0.5);
 function setZoom(z){zoomT=Math.max(ZMIN,Math.min(ZMAX,z));const pc=Math.round(zoomT*100),zv=document.getElementById('zVal');if(zv)zv.textContent=pc+'%';
   const t=zT(zoomT),th=document.getElementById('zThumb');if(th){th.style.top=`calc(6px + ${(1-t).toFixed(4)} * (100% - 12px))`;document.getElementById('zFill').style.height=`calc(${t.toFixed(4)} * (100% - 12px))`;document.getElementById('zTrack').setAttribute('aria-valuenow',pc)}}
 function frame(){
-  if(mode==='rot'&&chars[0]){if(spinning&&!dragging)target+=0.006;angle+=(target-angle)*0.12;chars[0].rotation.y=angle;
+  if(mode==='rot'&&chars[0]&&camTw){camStep(performance.now());chars[0].rotation.y=angle}
+  else if(mode==='rot'&&chars[0]){if(spinning&&!dragging)target+=0.006;angle+=(target-angle)*0.12;chars[0].rotation.y=angle;
     if(Math.abs(zoomT-zoom)>1e-4||Math.abs(focusKT-focusK)>1e-3){zoom+=(zoomT-zoom)*0.14;focusK+=(focusKT-focusK)*0.14;placePersp()}}
   flowFrame(performance.now());
   if(stage.offsetParent!==null&&!thumbBusy)renderer.render(scene,persp);requestAnimationFrame(frame);   // 미리보기가 안 보이는 화면에선 그리지 않음(배터리)
   if(chars[0]&&!frame.ok){frame.ok=1;window.__dkIntroReady&&window.__dkIntroReady()}
 }
-let dragging=false,lastX=0;const ptrs=new Map();let pinch0=0,zoom0=1;
-canvas.addEventListener('pointerdown',e=>{if(mode!=='rot')return;ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});canvas.setPointerCapture(e.pointerId);
-  if(ptrs.size===2){const [a,b]=[...ptrs.values()];pinch0=Math.hypot(a.x-b.x,a.y-b.y);zoom0=zoomT;dragging=false}
-  else{dragging=true;lastX=e.clientX;canvas.style.cursor='grabbing'}});
+let dragging=false,lastX=0,lastY=0,sx=0,sy=0,axis=null;const ptrs=new Map();let pinch0=0,zoom0=1,mid0=null;
+// 끌기: 옆으로 = 돌리기, 위아래로 = 화면 옮기기(꾸미기 화면에서만). 처음 움직인 방향으로 정해짐. 두 손가락 = 확대·축소 + 화면 옮기기
+const canPan=()=>typeof scrNow!=='undefined'&&scrNow==='step';
+const midOf=()=>{const [a,b]=[...ptrs.values()];return {x:(a.x+b.x)/2,y:(a.y+b.y)/2}};
+canvas.addEventListener('pointerdown',e=>{if(mode!=='rot')return;camStop();ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});canvas.setPointerCapture(e.pointerId);
+  if(ptrs.size===2){const [a,b]=[...ptrs.values()];pinch0=Math.hypot(a.x-b.x,a.y-b.y);zoom0=zoomT;mid0=midOf();dragging=false}
+  else{dragging=true;lastX=sx=e.clientX;lastY=sy=e.clientY;axis=null;canvas.style.cursor='grabbing'}});
 canvas.addEventListener('pointermove',e=>{if(!ptrs.has(e.pointerId))return;ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
-  if(ptrs.size===2&&pinch0>0){const [a,b]=[...ptrs.values()];setZoom(zoom0*Math.hypot(a.x-b.x,a.y-b.y)/pinch0);return}
-  if(!dragging)return;target+=(e.clientX-lastX)*0.012;lastX=e.clientX;setViewPressed(null)});
-const end=e=>{ptrs.delete(e.pointerId);if(ptrs.size<2)pinch0=0;if(ptrs.size===0){dragging=false;canvas.style.cursor=''}else if(ptrs.size===1){const p=[...ptrs.values()][0];lastX=p.x;dragging=true}};
+  if(ptrs.size===2&&pinch0>0){const [a,b]=[...ptrs.values()];const z=zoom0*Math.hypot(a.x-b.x,a.y-b.y)/pinch0;setZoom(z);zoom=zoomT;
+    const m=midOf();if(canPan())panBy(m.x-mid0.x,m.y-mid0.y);mid0=m;placePersp();return}
+  if(!dragging)return;
+  if(!axis){if(Math.hypot(e.clientX-sx,e.clientY-sy)<6)return;axis=canPan()&&Math.abs(e.clientY-sy)>Math.abs(e.clientX-sx)*1.1?'y':'x'}
+  if(axis==='x'){target+=(e.clientX-lastX)*0.012;setViewPressed(null)}else panBy(0,e.clientY-lastY);
+  lastX=e.clientX;lastY=e.clientY});
+const end=e=>{ptrs.delete(e.pointerId);if(ptrs.size<2)pinch0=0;if(ptrs.size===0){dragging=false;canvas.style.cursor=''}else if(ptrs.size===1){const p=[...ptrs.values()][0];lastX=sx=p.x;lastY=sy=p.y;axis=null;dragging=true}};
 canvas.addEventListener('pointerup',end);canvas.addEventListener('pointercancel',end);
-canvas.addEventListener('wheel',e=>{if(mode!=='rot')return;e.preventDefault();setZoom(zoomT*Math.exp(-e.deltaY*0.0015))},{passive:false});
-canvas.addEventListener('dblclick',()=>{if(mode==='rot')setZoom(1)});
+canvas.addEventListener('wheel',e=>{if(mode!=='rot')return;e.preventDefault();camStop();setZoom(zoomT*Math.exp(-e.deltaY*0.0015))},{passive:false});
+canvas.addEventListener('dblclick',()=>{if(mode!=='rot')return;camStop();setZoom(1);panX=panY=0;placePersp()});
 // +/−: 지금 값이 어디든 5% 단위 칸으로 이동 (102% → + → 105%, − → 100%)
 const zStep=d=>{const p=Math.round(zoomT*1000)/10;setZoom((d>0?(Math.floor(p/5+1e-6)+1):(Math.ceil(p/5-1e-6)-1))*5/100)};
 document.getElementById('zIn').onclick=()=>zStep(1);
@@ -1457,15 +1542,14 @@ function syncUI(){
 }
 function apply(obj,full){const keep={tex:P.tex};if(!full){keep.color=P.color;EXPR_KEYS.concat(POSE_KEYS).forEach(k=>keep[k]=P[k])}Object.assign(P,DEF,keep,obj);snapAll();syncUI();rebuild()}
 Object.keys(POSES).forEach(n=>{const b=document.createElement('button');b.className='pbtn';b.textContent=n;b.onclick=()=>{POSE_KEYS.forEach(k=>P[k]=DEF[k]);Object.assign(P,POSES[n]);syncUI();rebuild()};$('poses').appendChild(b)});
-[['eyeTypes','eyeType',[['dot','점'],['happy','웃는눈 ∩'],['content','감은눈 ∪'],['squint','찡그림 > <'],['line','일자눈'],['wide','초롱눈']]],
- ['mouthTypes','mouthType',[['smile','미소'],['smirk','씩 웃음'],['open','벌린입'],['munch','냠냠 ω'],['o','오입'],['flat','일자입']]]].forEach(([box,k,opts])=>
+[['eyeTypes','eyeType',[['dot','똘망'],['happy','히죽'],['content','스르르'],['squint','찡긋'],['line','게슴츠레'],['wide','초롱']]],
+ ['mouthTypes','mouthType',[['flat','알쏭달쏭'],['smile','미소'],['smirk','씰룩'],['munch','야옹'],['puff','냠냠'],['none','없음']]]].forEach(([box,k,opts])=>
   opts.forEach(([v,l])=>{const b=document.createElement('button');b.type='button';b.className='pbtn';b.dataset.v=v;b.textContent=l;b.onclick=()=>{P[k]=v;syncUI();rebuild()};$(box).appendChild(b)}));
 Object.keys(PRESETS).forEach(n=>{const b=document.createElement('button');b.className='pbtn';b.textContent=n;b.dataset.preset=n;b.setAttribute('aria-pressed','false');b.onclick=()=>{apply(PRESETS[n],true);setName(n)};$('presets').appendChild(b)});
 const dice=document.createElement('button');dice.className='pbtn dice';dice.textContent='랜덤';
 dice.onclick=()=>{const o={};Object.keys(META).filter(k=>!POSE_KEYS.includes(k)).forEach(k=>{o[k]=toVal(k,Math.floor(Math.random()*9)-4)});
   o.horns=Math.random()<0.85;POSE_KEYS.forEach(k=>o[k]=DEF[k]);   // 랜덤은 항상 기본 포즈
   const en=Object.keys(EXPRS);Object.assign(o,EXPRS[en[Math.floor(Math.random()*en.length)]]);
-  rollName();
   o.color='#'+new THREE.Color().setHSL(Math.random(),0.45+Math.random()*0.3,0.74+Math.random()*0.1).getHexString();  // 파스텔 톤 안에서 랜덤 색
   apply(o,true)};
 $('presets').appendChild(dice);
@@ -1477,14 +1561,14 @@ $('blush2').onchange=e=>{P.blush=e.target.checked;syncUI();rebuild()};
 function setBlushColor(c){P.blushColor=c;P.blush=true;syncUI();rebuild()}
 document.querySelectorAll('#blushes .sw').forEach(s=>s.onclick=()=>setBlushColor(s.dataset.c));
 $('blushPick').addEventListener('input',e=>{P.blushColor=e.target.value;P.blush=true;syncUI();soon()});
-Object.keys(TEX).forEach(t=>{const b=document.createElement('button');b.className='pbtn';b.type='button';b.dataset.t=t;b.textContent=TEX[t].name;b.onclick=()=>{P.tex=t;syncUI();rebuild()};$('texs').appendChild(b)});
 $('spinBtn').onclick=()=>{spinning=!spinning;$('spinBtn').setAttribute('aria-pressed',spinning);if(spinning)setViewPressed(null)};
 function setColor(c){P.color=c;syncUI();rebuild()}
 document.querySelectorAll('#colors .sw').forEach(s=>s.onclick=()=>setColor(s.dataset.c));
 // 미리보기 배경색: 비우면 기본(화면 모드에 맞춘 색). 어두운 배경이면 라벨 글자를 밝게
 let bgColor='';
-const isDark=hex=>{const c=new THREE.Color(hex);return 0.2126*c.r+0.7152*c.g+0.0722*c.b<0.45};
-function setBg(c){bgColor=c||'';$('rcard').style.background=bgColor;$('stageBg').style.background=bgColor;stage.style.setProperty('--sfg',bgColor?(isDark(bgColor)?'#eef4f5':'#1f2a2e'):'');syncUI();if(typeof persistSoon==='function')persistSoon();if(!$('result').hidden)drawPreview(true)}
+const bgCss=c=>c||'';
+const isDark=hex=>{if(!hex)return false;const c=new THREE.Color(hex);return 0.2126*c.r+0.7152*c.g+0.0722*c.b<0.45};
+function setBg(c){bgColor=c||'';$('rcard').style.background=bgCss(bgColor);$('stageBg').style.background=bgCss(bgColor);stage.style.setProperty('--sfg',bgColor?(isDark(bgColor)?'#eef4f5':'#1f2a2e'):'');syncUI();if(typeof persistSoon==='function')persistSoon();if(!$('result').hidden)drawPreview(true)}
 document.querySelectorAll('.bgset .sw').forEach(s=>s.onclick=()=>setBg(s.dataset.bg));
 document.querySelectorAll('.bgpick').forEach(p=>p.addEventListener('input',e=>setBg(e.target.value)));
 $('pick').addEventListener('input',e=>{P.color=e.target.value;syncUI();soon()});
@@ -1521,13 +1605,13 @@ function romanize(str){
 // ---------- 이름 ----------
 const NAMES=['말랑','토실','포실','뚱실','포동','다다','구레','파루','포아','아차','까루','뽀도','꾸루','휘리','소곰','시꾸','디구','또루','디뚜','깡초','덤버',
  '실구디','오미디','망오디','똥구디','쇳디','올미','우루미','고소미','아가지','도티','마딘','타내','올마대','가리대','터대','샹재','수새','더믈','검불','북쇠','모리쇠','곰쇠','매뇌','쟈가둥','흰둥','검둥'];
-let charName='깨두';
-// 이름 규칙: 띄어쓰기 없음 · 최소 1자 · 최대 한글 8자 / 영문 12자 (영문·숫자 1칸, 그 밖의 글자 1.5칸, 합 12칸까지)
-function cleanName(v){let u=0,out='';for(const ch of (v||'').replace(/\s+/g,'')){const w=/[\x21-\x7e]/.test(ch)?1:1.5;if(u+w>12)break;u+=w;out+=ch}return out}
+let charName='';   // 처음 만들 때는 빈칸: 직접 입력하거나 주사위를 굴려야 정해짐
+// 이름 규칙: 한글·영문·숫자만(띄어쓰기·특수문자 안 됨) · 최대 한글 8자 / 영문 12자 (영문·숫자 1칸, 한글 1.5칸, 합 12칸까지)
+function cleanName(v){let u=0,out='';for(const ch of (v||'').replace(/[^가-힣ㄱ-ㅎㅏ-ㅣA-Za-z0-9]/g,'')){const w=/[\x21-\x7e]/.test(ch)?1:1.5;if(u+w>12)break;u+=w;out+=ch}return out}
 function bindName(inp,after){const fix=()=>{const c=cleanName(inp.value);if(c!==inp.value)inp.value=c;charName=c;after()};
   inp.addEventListener('input',e=>{if(e.isComposing)return;fix()});inp.addEventListener('compositionend',fix);
   inp.addEventListener('keydown',e=>{if(e.key===' '&&!e.isComposing)e.preventDefault()})}
-function setName(n){charName=cleanName(n)||'깨두';$('charName').value=charName;$('resName').value=charName;$('nameTitle').textContent=charName;syncNtag();persistSoon();if(!$('result').hidden)loadTagFonts().then(()=>drawPreview(true))}
+function setName(n){charName=cleanName(n);$('charName').value=charName;$('resName').value=charName;$('nameTitle').textContent=charName;syncNtag();persistSoon();if(!$('result').hidden)loadTagFonts().then(()=>drawPreview(true))}
 // 주사위: 약 1초 동안 이름이 슬롯머신처럼 빠르게 바뀌다가 느려지며 멈춤
 let rolling=null;
 // 이름표 '통' 착지: 입력칸의 land 애니메이션과 같은 곡선(0.92 → 1.06 → 1)
@@ -1549,7 +1633,7 @@ function rollName(d0,inp0){
   tick();
 }
 $('nameDice').onclick=()=>rollName();
-bindName($('charName'),()=>{$('nameTitle').textContent=charName||'깨두';$('nameLive').textContent=charName||'깨두'});
+bindName($('charName'),()=>{$('nameTitle').textContent=charName;$('nameLive').textContent=charName});
 $('charName').addEventListener('blur',()=>setName($('charName').value));
 // 엔터: 키보드를 내리고, 주사위로 이름이 정해질 때와 같은 '통' 애니메이션
 $('charName').addEventListener('keydown',e=>{if(e.key!=='Enter'||e.isComposing)return;e.preventDefault();const inp=$('charName');
@@ -1850,7 +1934,7 @@ window.__dkApply=o=>apply(o,true);
 window.__dkHead=(px=1024,headOnly=true,span=1.6,dy=0,layer='')=>{   // 정면 머리 렌더(아이콘·파비콘·인트로용). layer: ''=전부, 'base'=귀·뿔 뺀 머리, 'ear-1'/'ear1'/'horn'=그 부분만
   const c=chars[0],HG=c.userData.HG;angle=0;c.rotation.y=0;c.updateMatrixWorld(true);
   const vis=c.children.map(o=>o.visible);if(headOnly)c.children.forEach(o=>{o.visible=(o===HG)});
-  const tv=[];if(layer)HG.traverse(o=>{if(!o.isMesh)return;tv.push([o,o.visible]);let pt=null,q=o;while(q&&q!==HG){if(q.userData.part){pt=q.userData.part;break}q=q.parent}o.visible=layer==='base'?!pt:pt===layer});
+  const tv=[];if(layer)HG.traverse(o=>{if(!o.isMesh)return;tv.push([o,o.visible]);let pt=null,q=o;while(q&&q!==HG){if(/^(ear|horn)/.test(q.userData.part||'')){pt=q.userData.part;break}q=q.parent}o.visible=layer==='base'?!pt:pt===layer});
   const hv=new THREE.Vector3();HG.getWorldPosition(hv);hv.y+=0.68*P.headH*0.75+dy;
   const pr=renderer.getPixelRatio(),fov=persp.fov,asp=persp.aspect,pos=persp.position.clone(),q=persp.quaternion.clone();
   renderer.setPixelRatio(1);renderer.setSize(px,px,false);persp.aspect=1;persp.fov=10;
@@ -1859,6 +1943,7 @@ window.__dkHead=(px=1024,headOnly=true,span=1.6,dy=0,layer='')=>{   // 정면 �
   tv.forEach(([o,v])=>{o.visible=v});c.children.forEach((o,i)=>{o.visible=vis[i]});persp.fov=fov;persp.aspect=asp;persp.position.copy(pos);persp.quaternion.copy(q);persp.updateProjectionMatrix();
   renderer.setPixelRatio(pr);layout();return u};
 window.__dkChar=(q=1)=>{angle=0;return renderChar(q).img.toDataURL('image/png')};
+window.__dkFeet=()=>{const v=new THREE.Vector3(0,0,0).project(persp);return {feet:(1-v.y)/2*stage.clientHeight,h:stage.clientHeight}};   // 발끝이 미리보기 박스 위에서 몇 px인지
 const resCv=$('resCv');let pv=0;
 function placeBubHit(){const h=$('bubHit');if(!h)return;const b=bubbleRect;h.hidden=!b;if(!b)return;
   Object.assign(h.style,{left:(b.x/1080*100)+'%',top:(b.y/1920*100)+'%',width:(b.w/1080*100)+'%',height:(b.h/1920*100)+'%'})}
@@ -1995,25 +2080,47 @@ const Save=(()=>{
     clear(){data=migrate({});if(dry)return;try{localStorage.removeItem(KEY)}catch(e){}},
   };
 })();
+// ---------- 말풍선 멘트 ----------
+// 상황별로 묶어 둠. 새 멘트는 여기 목록에만 더하면 됨(새 상황을 만들면 pickLine에서 언제 쓸지 정함).
+//   first   처음 만들고 메인에 왔을 때 (반드시 이 중 하나)
+//   edited  [수정]에서 모양을 바꾸고 저장한 뒤 메인에 왔을 때 (반드시 이 중 하나)
+//   morning·noon·evening·night  시간대 멘트 (그 시간에만 섞여 나옴)
+//   any     언제든 나오는 멘트
+const LINES={
+  first:['반가워!','안녕!'],
+  edited:['나 어때?','새로운 기분이야!','어울려?','짠! 달라졌지?'],
+  morning:['잘 잤어?','좋은 아침!','오늘도 힘내!'],
+  noon:['밥 먹었어?','점심 맛있게 먹어!','배고파…'],
+  evening:['오늘 어땠어?','수고했어!','저녁 먹었어?'],
+  night:['졸려…','잘 자!','꿈에서 만나!'],
+  any:['안녕!','반가워!','보고 싶었어!','나랑 놀자!','헤헤','오늘도 고마워!'],
+};
+const lineTime=h=>h>=5&&h<11?'morning':h>=11&&h<14?'noon':h>=17&&h<22?'evening':h>=22||h<5?'night':'';
+let lastLine='';
+// mood가 있으면(처음 만든 뒤·수정한 뒤) 그 묶음에서만, 없으면 지금 시간대 + 언제든 멘트에서. 바로 앞과 같은 말은 피함
+function pickLine(mood){
+  const pool=mood&&LINES[mood]?LINES[mood]:(LINES[lineTime(new Date().getHours())]||[]).concat(LINES.any);
+  let x;do{x=pool[Math.floor(Math.random()*pool.length)]}while(x===lastLine&&pool.length>1);return lastLine=x}
 // ---------- 화면 흐름 (첫 방문: 알 → 시작 고르기 → 꾸미기 8단계 → 이름 → 메인) ----------
 let ST=Save.data();   // 저장 묶음 (src/js/save/save.js)
 const snapDoll=()=>{const o={};Object.keys(P).forEach(k=>{if(!POSE_KEYS.includes(k))o[k]=P[k]});return {p:o,name:charName,bg:bgColor}};
-function loadDoll(d){if(!d)return;Object.assign(P,DEF,d.p||{});POSE_KEYS.forEach(k=>P[k]=DEF[k]);snapAll();setName(d.name||'깨두');setBg(d.bg||'');syncUI();rebuild()}
+function loadDoll(d){if(!d)return;Object.assign(P,DEF,d.p||{});P.tex='smooth';POSE_KEYS.forEach(k=>P[k]=DEF[k]);snapAll();setName(d.name||'');setBg(d.bg||'');syncUI();rebuild()}
 let psT=0;
 function persistSoon(){clearTimeout(psT);psT=setTimeout(()=>{   // 처음 꾸미는 중이면 지금까지를 저장해 두고, 앱을 닫았다 열어도 이어서
   if(ST.done||!ST.hatched)return;const cur=stack[stack.length-1]||{};if(!['egg','step','name'].includes(cur.scr)||(cur.scr==='egg'&&!eggDone))return;
   ST.draft={...snapDoll(),scr:cur.scr,step:cur.step||0};Save.commit()},300)}
-function syncNtag(){const t=$('nameLive');if(!rolling){t.textContent=charName||'깨두';hello(charName)}t.style.color=bgColor?(isDark(bgColor)?'#eef4f5':'#1f2a2e'):''}
+function syncNtag(){const t=$('nameLive');if(!rolling){t.textContent=charName;hello(charName)}t.style.color=bgColor?(isDark(bgColor)?'#eef4f5':'#1f2a2e'):''}
 // '안녕! 나는 ○○야/이야' (받침 있으면 이야)
 function hello(){}
-function afterRebuild(){syncNtag();persistSoon();undoRecord();if(!$('result').hidden)drawPreview()}
+function afterRebuild(){applyHeadOnly();markCards();syncNtag();persistSoon();undoRecord();if(!$('result').hidden)drawPreview()}
 
-// 꾸미기 8단계: 원래 항목 묶음을 단계별로 모음
+// 꾸미기 7단계(둘씩 묶음): 원래 항목 묶음을 단계별로 모음. 처음 만들 때는 앞의 5단계(얼굴)만, [수정]에서는 7단계 모두
 const GRP={};document.querySelectorAll('#holder details').forEach(d=>{GRP[d.querySelector('summary').textContent.trim()]=d.querySelector('.grp')});
 $('bgRowHold').replaceWith($('bgs').closest('.row'));   // 배경색은 이름 짓기 화면에서
 $('posesRow').appendChild($('poses'));                   // 포즈는 카드 만들기 화면에서
-const STEPS=[['색 · 질감',[['','색 · 질감']]],['머리 · 뿔',[['머리','머리'],['뿔','뿔']]],['귀',[['','귀']]],['눈 · 눈썹',[['눈','눈'],['눈썹','눈썹']]],
-  ['코 · 입 · 볼',[['코','코'],['입','입'],['볼','볼']]],['몸',[['','몸']]],['팔 · 다리',[['팔','팔'],['다리','다리']]],['꼬리',[['','꼬리']]]];
+const STEPS=[['피부 · 머리',[['피부','피부'],['머리','머리']]],['뿔 · 귀',[['뿔','뿔'],['귀','귀']]],['눈 · 눈썹',[['눈','눈'],['눈썹','눈썹']]],
+  ['코 · 입',[['코','코'],['입','입']]],['볼터치 · 볼살',[['볼터치','볼터치'],['볼살','볼살']]],['몸 · 꼬리',[['몸','몸'],['꼬리','꼬리']]],['팔 · 다리',[['팔','팔'],['다리','다리']]]];
+const FACE_STEPS=5;
 const stepEls=STEPS.map(([,parts])=>{const box=document.createElement('div');box.className='stepbox';
   parts.forEach(([sub,g])=>{if(sub){const h=document.createElement('h3');h.className='sub';h.textContent=sub;box.appendChild(h)}if(GRP[g])box.appendChild(GRP[g])});return box});
 stepEls.forEach(e=>{e.hidden=true;$('stepBody').appendChild(e)});   // 모두 문서 안에 두고 지금 단계만 보임(슬라이더 표시가 계속 맞도록)
@@ -2022,7 +2129,7 @@ $('prog').innerHTML=STEPS.map(()=>'<i></i>').join('');
 // 시작 고르기: 프리셋 3개 + 랜덤
 let startPick='깨두';
 Object.keys(PRESETS).forEach(n=>{const b=document.createElement('button');b.type='button';b.dataset.preset=n;b.style.setProperty('--c',PRESETS[n].color||DEF.color);
-  b.innerHTML='<i></i>'+n;b.onclick=()=>{startPick=n;apply(PRESETS[n],true);setName(n);$('rndBtn').setAttribute('aria-pressed','false');bump(true)};$('starts').appendChild(b)});
+  b.innerHTML='<i></i>'+n;b.onclick=()=>{startPick=n;apply(PRESETS[n],true);$('rndBtn').setAttribute('aria-pressed','false');bump(true)};$('starts').appendChild(b)});
 // 돌려 본 상태에서 기본형을 다시 고르면: 돌며 등장한 뒤 정면을 보게 (등장 시작 때 아주 작아서 방향을 바로 바꿔도 티 나지 않음)
 function toFront(){faceFront();angle=target}
 function bump(spin){if(spin){toFront();bounceT0=0;popT0=spinT0=performance.now()}else{popT0=0;bounceT0=performance.now()}}   // spin: 랜덤처럼 돌며 등장
@@ -2040,19 +2147,22 @@ function show(st,dir){
   if(hold&&stage.parentNode!==hold)hold.prepend(stage);
   if(prev==='card'&&st.scr!=='card')closeResult();
   if(st.scr==='egg')enterEgg();else leaveEgg();
-  if(st.scr==='step'){const i=st.step||0,N=nSteps();$('stepTitle').textContent=STEPS[i][0];$('stepPrev').disabled=stack.length<=1;stepEls.forEach((e,j)=>e.hidden=j!==i);
+  if(st.scr==='step'){const i=st.step||0,N=nSteps();$('stepTitle').textContent=STEPS[i][0];stepEls.forEach((e,j)=>e.hidden=j!==i);
     $('prog').style.gridTemplateColumns=`repeat(${N},1fr)`;$('prog').querySelectorAll('i').forEach((e,j)=>{e.hidden=j>=N;e.classList.toggle('on',j<=i)});$('pnum').textContent=(i+1)+'/'+N;
-    $('prog').setAttribute('aria-valuemax',N);$('prog').setAttribute('aria-valuenow',i+1);const last=i>=N-1;$('stepNext').hidden=last;$('stepMake').hidden=!last;$('stepMake').textContent=editing?'완료':'생성하기';
-    editorEnter(i,prev!=='step')}
+    $('prog').setAttribute('aria-valuemax',N);$('prog').setAttribute('aria-valuenow',i+1);
+    editorEnter(i,prev!=='step');requestAnimationFrame(saveBarCheck)}
   else if(prev==='step')lookReset();
-  if(st.scr==='name')syncNtag();
+  if(st.scr==='name'){faceFront();angle=target;syncNtag()}   // 이름 짓기는 늘 정면(꾸미기에서 돌려 본 각도를 따라오지 않게)
   if(st.scr==='main'){
     if(editing){editing=false;if(ST.doll)loadDoll(ST.doll)}            // 꾸미다 저장하지 않고 돌아오면 원래대로
-    else if(POSE_KEYS.some(k=>P[k]!==DEF[k])){POSE_KEYS.forEach(k=>P[k]=DEF[k]);syncUI();rebuild()}   // 카드에서 바꾼 포즈는 메인에선 기본으로
+    setPose(ST.pose,false);                                             // 메인에서 고른 포즈
     if(ST.doll)setBg(ST.doll.bg||'');
-    faceFront();sayLine();}
+    faceFront();angle=target;
+    if(enterSpin){enterSpin=false;const m=sayMood;$('mbub').hidden=true;bounceT0=0;popT0=spinT0=performance.now();clearTimeout(sayT);sayT=setTimeout(()=>{if(scrNow==='main')sayLine(m)},980)}   // 돌며 등장이 끝나면 말풍선 뿅
+    else sayLine(sayMood);
+    sayMood='';}
   if(st.scr==='card'){faceFront();angle=target;if(ST.doll)setBg(ST.doll.bg||'');openResult()}
-  if(st.scr!=='main')$('mbub').hidden=true;
+  if(st.scr!=='main'){$('mbub').hidden=true;clearTimeout(sayT)}
   layout();scrollTo(0,0);persistSoon();
 }
 function faceFront(){spinning=false;$('spinBtn').setAttribute('aria-pressed',false);target=Math.round(angle/(2*Math.PI))*2*Math.PI;setViewPressed('0')}
@@ -2073,23 +2183,33 @@ document.querySelectorAll('[data-back]').forEach(b=>b.onclick=goBack);
 // 각 화면 버튼
 $('safariGo').onclick=()=>go({scr:'egg'},{replace:true});
 $('eggGo').onclick=()=>go({scr:'step',step:0});   // 뒤로 오면 깨어난 손시·프리셋 화면(알은 다시 안 나옴)
-$('stepPrev').onclick=goBack;
 $('startGo').onclick=()=>go({scr:'step',step:0});
-const nSteps=()=>editing?STEPS.length:5;
-$('stepNext').onclick=()=>{const i=stack[stack.length-1].step||0;go(i<nSteps()-1?{scr:'step',step:i+1}:{scr:'name'})};
-$('stepMake').onclick=()=>go({scr:'name'});
-$('saveDoll').onclick=()=>{setName($('charName').value);ST.doll=snapDoll();ST.done=true;ST.hatched=true;delete ST.draft;Save.commit();editing=false;resetTo({scr:'main'})};
-$('goEdit').onclick=()=>{editing=true;go({scr:'step',step:0})};
+const nSteps=()=>editing?STEPS.length:FACE_STEPS;
+$('stepSave').onclick=()=>go({scr:'name'});
+// 저장 버튼: 꾸미기 화면 맨 아래까지 내려왔을 때 나타남(내용이 짧아 내릴 곳이 없으면 바로 보임)
+function saveBarCheck(){if(scrNow!=='step')return;const end=innerHeight+scrollY>=document.documentElement.scrollHeight-16;$('saveBar').classList.toggle('show',end)}
+addEventListener('scroll',saveBarCheck,{passive:true});addEventListener('resize',saveBarCheck);
+try{new ResizeObserver(saveBarCheck).observe($('stepBody'))}catch(_){}
+// 이름 짓기 → 저장하기. 이름이 비어 있으면 입력칸을 흔들어 알려 줌
+let sayMood='',enterSpin=false;   // enterSpin: 이름 짓고 저장한 뒤 메인에서 돌며 등장   // 다음에 메인에 들어갈 때 말풍선 상황(lines.js): 처음 만든 뒤 'first', 수정해서 바뀐 뒤 'edited'
+$('saveDoll').onclick=()=>{setName($('charName').value);
+  if(!charName){const inp=$('charName');inp.classList.remove('nope');void inp.offsetWidth;inp.classList.add('nope');inp.focus();return}
+  const before=ST.done&&ST.doll?JSON.stringify(ST.doll.p):null;
+  ST.doll=snapDoll();sayMood=!ST.done?'first':before!==JSON.stringify(ST.doll.p)?'edited':'';
+  ST.done=true;ST.hatched=true;delete ST.draft;Save.commit();editing=false;enterSpin=true;resetTo({scr:'main'})};
+$('goEdit').onclick=()=>{editing=true;POSE_KEYS.forEach(k=>P[k]=DEF[k]);syncUI();rebuild();go({scr:'step',step:0})};   // 꾸밀 때는 기본 포즈로
+// 메인 포즈: 기본·차렷·앉기·갸우뚱 (고른 포즈는 저장해 둠)
+function setPose(n,anim){n=POSES[n]?n:'기본';const same=POSE_KEYS.every(k=>P[k]===(k in POSES[n]?POSES[n][k]:DEF[k]));
+  if(ST.pose!==n){ST.pose=n;Save.commit()}
+  document.querySelectorAll('#mainPoses button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.pose===n));
+  if(same)return;POSE_KEYS.forEach(k=>P[k]=DEF[k]);Object.assign(P,POSES[n]);syncUI();rebuild();if(anim)bump()}
+Object.keys(POSES).forEach(n=>{const b=document.createElement('button');b.type='button';b.className='mpose';b.dataset.pose=n;b.textContent=n;b.onclick=()=>setPose(n,true);$('mainPoses').appendChild(b)});
 if($('goCard'))$('goCard').onclick=()=>go({scr:'card'});
 $('goWall').onclick=()=>go({scr:'wall'});
 
-// 메인: 말풍선(들어올 때마다, 누를 때마다 다른 말) + 누르면 통통
-const LINES={morning:['잘 잤어?','좋은 아침!','오늘도 힘내!'],noon:['밥 먹었어?','점심 맛있게 먹어!','배고파…'],evening:['오늘 어땠어?','수고했어!','저녁 먹었어?'],night:['졸려…','잘 자!','꿈에서 만나!'],
-  any:['안녕!','반가워!','보고 싶었어!','나랑 놀자!','헤헤','오늘도 고마워!']};
-let lastLine='',bounceT0=0,popT0=0,spinT0=0;
-function pickLine(){const h=new Date().getHours(),t=h>=5&&h<11?'morning':h>=11&&h<14?'noon':h>=17&&h<22?'evening':h>=22||h<5?'night':'';
-  const pool=(LINES[t]||[]).concat(LINES.any);let x;do{x=pool[Math.floor(Math.random()*pool.length)]}while(x===lastLine&&pool.length>1);return lastLine=x}
-function sayLine(){const b=$('mbub');b.textContent=pickLine();b.hidden=false;b.classList.remove('pop');void b.offsetWidth;b.classList.add('pop')}
+// 메인: 말풍선(들어올 때마다, 누를 때마다 다른 말 · 멘트는 lines.js) + 누르면 통통
+let bounceT0=0,popT0=0,spinT0=0,bounceK=1,sayT=0;
+function sayLine(mood){const b=$('mbub');b.textContent=pickLine(mood);b.hidden=false;b.classList.remove('pop');void b.offsetWidth;b.classList.add('pop')}
 {let tx=0,ty=0,tt=0;
  canvas.addEventListener('pointerdown',e=>{tx=e.clientX;ty=e.clientY;tt=performance.now()});
  canvas.addEventListener('pointerup',e=>{const onMain=scrNow==='main',onPick=scrNow==='egg'&&eggDone;if(!onMain&&!onPick)return;   // 누르면 말랑통통(메인에선 말도 바뀜)
@@ -2109,40 +2229,59 @@ function flowFrame(now){
   let s=1,dy=0,sx=1,sy=1,spin=0;
   if(popT0){const t=Math.min(1,(now-popT0)/(spinT0?900:750));s=t<0.5?0.15+0.97*Math.sin(t/0.5*Math.PI/2):1.12-0.12*Math.sin((t-0.5)/0.5*Math.PI/2);if(t>=1){popT0=0;s=1}}
   if(spinT0){const t=Math.min(1,(now-spinT0)/900),e=1-Math.pow(1-t,3);spin=(1-e)*Math.PI*2;if(t>=1)spinT0=0}
-  if(bounceT0){const t=(now-bounceT0)/BOUNCE_MS;if(t>=1)bounceT0=0;else{const b=bounceAt(t);dy=b.dy;sy=1+b.q;sx=1-b.q*0.55}}
+  if(bounceT0){const t=(now-bounceT0)/BOUNCE_MS;if(t>=1){bounceT0=0;bounceK=1}else{const b=bounceAt(t);dy=b.dy*bounceK;sy=1+b.q*bounceK;sx=1-b.q*0.55*bounceK}}
   c.scale.set(s*sx,s*sy,s*sx);c.position.y=dy;if(spin)c.rotation.y=angle+spin;
   if(scrNow==='main'){const b=$('mbub');if(!b.hidden){const v=new THREE.Vector3(0,(charH+0.12)*s+dy,0).project(persp);
     b.style.left=((v.x+1)/2*stage.clientWidth)+'px';b.style.top=Math.max(58,(1-v.y)/2*stage.clientHeight-4)+'px'}}
+  bodyFade(now);partWiggle(now);
   if(egg)eggFrame(now);
 }
 
 // ---------- 꾸미기 화면 도구 ----------
 // ① 고치는 부위로 카메라 자동 이동 ② 미리보기 아래 아이콘 탭(단계 바로 가기) ③ 되돌리기·다시하기·처음으로
-// ④ 눈·입 모양을 손시 얼굴 그림 카드로 고르기(+ 세부 조정 접기) ⑤ 묶인 단계 안의 하위 탭
+// ④ 부위별 그림 카드로 고르기(+ 세부 조정 접기) ⑤ 묶인 단계 안의 하위 탭
 let thumbBusy=false;
 
-// ── 단계·하위 항목별 카메라 (a: 돌린 각도, z: 확대, f: 시선을 얼마나 옮길지, h: 어디로 'head' 얼굴 / 'top' 머리 위 / 'low' 다리)
-const VIEW={'색 · 질감':{a:0,z:1,f:0},'머리':{a:0,z:1.3,f:.6,h:'head'},'뿔':{a:-.35,z:1.55,f:.85,h:'top'},'귀':{a:-.75,z:1.45,f:.7,h:'head'},
-  '눈':{a:0,z:1.95,f:.9,h:'eye'},'눈썹':{a:0,z:1.95,f:.9,h:'eye'},'코':{a:0,z:1.95,f:.9,h:'face'},'입':{a:0,z:1.95,f:.9,h:'face'},'볼':{a:-.25,z:1.85,f:.9,h:'face'},
-  '몸':{a:-.3,z:1.05,f:0},'팔':{a:-.45,z:1.15,f:.4,h:'mid'},'다리':{a:-.35,z:1.2,f:.6,h:'low'},'꼬리':{a:Math.PI*.82,z:1.2,f:.5,h:'mid'}};
+// ── 부위별 카메라 (a: 돌린 각도, z: 확대, f: 시선을 얼마나 옮길지, h: 어디로 'head' 얼굴 / 'top' 머리 위 / 'low' 다리)
+const FACE_VIEW={a:0,z:1.5,f:.92,h:'head'};
+const VIEW={'피부':FACE_VIEW,'머리':FACE_VIEW,'뿔':{a:0,z:1.55,f:.85,h:'top'},'귀':{a:0,z:1.5,f:.7,h:'head'},
+  '눈':{a:0,z:1.95,f:.9,h:'eye'},'눈썹':{a:0,z:1.95,f:.9,h:'eye'},'코':{a:0,z:1.95,f:.9,h:'face'},'입':{a:0,z:1.95,f:.9,h:'face'},
+  '볼터치':{a:0,z:1.85,f:.9,h:'face'},'볼살':{a:0,z:1.75,f:.9,h:'face'},
+  '몸':{a:0,z:1.05,f:0},'꼬리':{a:Math.PI,z:1.2,f:.5,h:'mid'},'팔':{a:-.45,z:1.15,f:.4,h:'mid'},'다리':{a:-.35,z:1.2,f:.6,h:'low'}};
 function partY(h){   // 시선이 향할 높이(손시 위치 기준)
   const c=chars[0];if(!c)return camBase.ty;const HG=c.userData.HG,v=new THREE.Vector3();HG?HG.getWorldPosition(v):v.set(0,charH*0.6,0);
   const hc=v.y+0.68*P.headH*0.75;
   return h==='head'?hc:h==='top'?hc+0.68*P.headH*0.55:h==='eye'?hc+0.02:h==='face'?hc-0.12:h==='mid'?charH*0.3:h==='low'?0.28:camBase.ty}
-// 얼굴 단계(색·질감 ~ 코·입·볼)는 처음 만들 때든 수정할 때든 얼굴(머리) 위주로 크게 보여 줌. 몸·팔다리·꼬리만 전체 모습
-const FACE_VIEW={a:0,z:1.5,f:.92,h:'head'};
-const FACE_PARTS=['색 · 질감','머리','귀','눈','눈썹','코','입','볼','뿔'];
 function lookAtPart(name){
-  let v=VIEW[name]||VIEW['색 · 질감'];
-  if(name==='색 · 질감'||name==='머리')v=FACE_VIEW;
-  else if(FACE_PARTS.includes(name)&&v.z<FACE_VIEW.z)v={...v,z:FACE_VIEW.z};   // 뿔·귀도 얼굴 크기 그대로 각도만
-  spinning=false;$('spinBtn').setAttribute('aria-pressed',false);
-  target=v.a+Math.round((angle-v.a)/(2*Math.PI))*2*Math.PI;setViewPressed(null);
-  setZoom(v.z);focusH=partY(v.h);focusKT=v.f||0;
+  const v=VIEW[name]||FACE_VIEW;
+  spinning=false;$('spinBtn').setAttribute('aria-pressed',false);setViewPressed(null);
+  camTo({a:v.a+Math.round((angle-v.a)/(2*Math.PI))*2*Math.PI,z:v.z,k:v.f||0,h:partY(v.h)});
 }
-function lookReset(){setZoom(1);focusKT=0}
+function lookReset(){camStop();setZoom(1);focusKT=0;panX=panY=0;placePersp();setHeadOnly(false,true)}
 
-// ── 하위 탭: 묶인 단계(머리·뿔, 눈·눈썹, 코·입·볼, 팔·다리)는 한 번에 하나만 보여 줌
+// 머리만 보이기: 얼굴 단계(피부·머리 ~ 볼·볼살)에서는 몸통을 숨기고 머리통만 보여 줌.
+// 처음 만들 때 고칠 게 적어 보이게(이탈 방지). 몸·꼬리·팔·다리는 다 만든 뒤 [수정]의 세부 단계에서.
+// 얼굴 단계 ↔ 몸 단계를 오갈 때 몸통은 툭 나타나지 않고 서서히 나타나고 사라짐
+let headOnly=false,bodyA=1,bodyFrom=1,bodyT0=0;const BODY_MS=520;
+function setHeadOnly(on,now){if(on===headOnly&&!now)return;headOnly=on;
+  if(now||!chars[0]){bodyA=on?0:1;bodyT0=0}else{bodyFrom=bodyA;bodyT0=performance.now()}applyHeadOnly()}
+function applyHeadOnly(){const c=chars[0];if(!c||thumbBusy)return;const HG=c.userData.HG,a=bodyA;
+  c.children.forEach(o=>{if(o!==HG)o.visible=a>0.001});
+  if(typeof mats!=='undefined'&&mats&&mats.body){const m=mats.body,tr=a<0.999;if(m.transparent!==tr){m.transparent=tr;m.needsUpdate=true}m.opacity=a;m.depthWrite=a>0.5}}
+function bodyFade(now){if(!bodyT0)return;const u=Math.min(1,(now-bodyT0)/BODY_MS),e=easeIO(u),to=headOnly?0:1;bodyA=bodyFrom+(to-bodyFrom)*e;if(u>=1){bodyA=to;bodyT0=0}applyHeadOnly()}
+
+// ── 고친 부위만 말랑: 카드로 바꾸면 그 부위만 살짝 눌렸다 늘었다 잦아듦(머리 모양·볼살은 머리통, 몸 쪽·피부·되돌리기는 손시 전체를 작게)
+const PART_TAG={'피부':'all','머리':'HG','볼살':'HG','뿔':'horn','귀':'ear','눈':'eye','눈썹':'brow','코':'nose','입':'mouth','볼터치':'blush','몸':'all','꼬리':'all','팔':'all','다리':'all'};
+let wig=null;const WIG_MS=680;
+function partBump(name){const tag=PART_TAG[name]||'all';
+  if(tag==='all'){popT0=0;bounceK=0.65;bounceT0=performance.now();return}
+  wigEnd();wig={tag,t0:performance.now()}}
+function wigTargets(){const c=chars[0];if(!c||!wig)return [];if(wig.tag==='HG')return [c.userData.HG];const out=[];c.traverse(o=>{const p=o.userData.part;if(p&&p.startsWith(wig.tag))out.push(o)});return out}
+function wigEnd(){wigTargets().forEach(o=>{if(o.userData.bs)o.scale.copy(o.userData.bs)});wig=null}
+function partWiggle(now){if(!wig||thumbBusy)return;const u=(now-wig.t0)/WIG_MS;if(u>=1){wigEnd();return}
+  const f=0.15*Math.exp(-4.5*u)*Math.sin(2*Math.PI*1.7*u);   // 처음엔 살짝 커졌다(늘어남) 작아지며 잦아듦
+  wigTargets().forEach(o=>{if(!o.userData.bs)o.userData.bs=o.scale.clone();const b=o.userData.bs;o.scale.set(b.x*(1-f*0.5),b.y*(1+f),b.z*(1-f*0.5))})}
+// ── 하위 탭: 단계마다 묶인 두 부위는 한 번에 하나만 보여 줌
 const subOf=[];   // 단계별 지금 보고 있는 하위 항목 이름
 stepEls.forEach((box,i)=>{
   const parts=STEPS[i][1];subOf[i]=parts[0][0]||parts[0][1];
@@ -2158,18 +2297,17 @@ stepEls.forEach((box,i)=>{
 function showSub(i,name){subOf[i]=name;const box=stepEls[i];
   box.querySelectorAll('section[data-sub]').forEach(s=>s.hidden=s.dataset.sub!==name);
   box.querySelectorAll('.subtabs button').forEach(b=>b.setAttribute('aria-selected',b.textContent===name));
-  if(name==='눈'||name==='입')makeThumbs(name==='눈'?'eyeType':'mouthType')}
+  if(name==='눈'||name==='입')makeThumbs(name==='눈'?'eyeType':'mouthType');else partCards(name)}
 
 // ── 아이콘 탭 (미리보기 바로 아래, 지금 단계 표시 + 눌러서 이동)
-const ICONS=[   // 색, 머리·뿔, 귀, 눈·눈썹, 코·입·볼, 몸, 팔·다리, 꼬리 (24칸, 둥근 선)
+const ICONS=[   // 피부·머리, 뿔·귀, 눈·눈썹, 코·입, 볼터치·볼살, 몸·꼬리, 팔·다리 (24칸, 둥근 선)
  '<path d="M12 3c3.5 4 6 7 6 10a6 6 0 0 1-12 0c0-3 2.5-6 6-10Z"/>',
  '<rect x="4.5" y="8" width="15" height="12" rx="5"/><path d="M8 8.4 9 4l2.3 4M16 8.4 15 4l-2.3 4"/>',
- '<path d="M14 4.5a5.5 5.5 0 0 0-5.5 5.5v2.5c0 1.6-1.5 2.3-1.5 4a3.5 3.5 0 0 0 6.6 1.6c.6-1.2 1.4-2 2.6-2.8A5.5 5.5 0 0 0 14 4.5Z"/><path d="M12 10a2 2 0 0 1 4 0"/>',
  '<path d="M2.5 12S6 6.5 12 6.5 21.5 12 21.5 12 18 17.5 12 17.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="2.6"/>',
- '<path d="M7 12.5c1.3 2.2 3 3.2 5 3.2s3.7-1 5-3.2"/><circle cx="12" cy="8" r="1.6"/><circle cx="5" cy="14.5" r="1.4"/><circle cx="19" cy="14.5" r="1.4"/>',
- '<rect x="6" y="5" width="12" height="15" rx="5.5"/><path d="M6 13h12"/>',
- '<path d="M8 20v-5.5M16 20v-5.5M5 11.5 8 9h8l3 2.5"/><rect x="7.5" y="6" width="9" height="9" rx="3.5"/>',
- '<path d="M5 18c5 0 8-2 9-6s3-6 5.5-6"/><circle cx="19.5" cy="6" r="1.8"/>'];
+ '<circle cx="12" cy="8.5" r="2.2"/><path d="M6.5 13.8c1.4 2.6 3.3 3.8 5.5 3.8s4.1-1.2 5.5-3.8"/>',
+ '<circle cx="12" cy="12" r="8.5"/><path d="M6.5 14.5l1.5-2M8.8 15l1.5-2M14 15l1.5-2M16.3 15.5l1.5-2"/>',
+ '<rect x="5" y="4.5" width="11" height="15.5" rx="5.2"/><path d="M16 15.5c2.6 0 3.6-1.6 3.6-3.6"/>',
+ '<path d="M8 20v-5.5M16 20v-5.5M5 11.5 8 9h8l3 2.5"/><rect x="7.5" y="6" width="9" height="9" rx="3.5"/>'];
 {const bar=document.createElement('div');bar.className='stabs';bar.id='stabs';bar.setAttribute('role','tablist');bar.setAttribute('aria-label','꾸미기 단계');
  STEPS.forEach(([name],j)=>{const b=document.createElement('button');b.type='button';b.setAttribute('role','tab');b.setAttribute('aria-label',name);b.title=name;b.dataset.j=j;
    b.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[j]}</svg>`;
@@ -2182,7 +2320,7 @@ const snapP=()=>{const o={};Object.keys(P).forEach(k=>{if(!POSE_KEYS.includes(k)
 function undoStart(){UNDO.list=[snapP()];UNDO.i=0;UNDO.base=UNDO.list[0];undoUI()}
 function undoRecord(){if(UNDO.mute||scrNow!=='step'||UNDO.i<0)return;clearTimeout(UNDO.t);UNDO.t=setTimeout(()=>{const s=snapP();if(s===UNDO.list[UNDO.i])return;
   UNDO.list=UNDO.list.slice(0,UNDO.i+1);UNDO.list.push(s);if(UNDO.list.length>60)UNDO.list.shift();UNDO.i=UNDO.list.length-1;undoUI()},380)}
-function undoApply(s){UNDO.mute=true;Object.assign(P,JSON.parse(s));snapAll();syncUI();rebuild();UNDO.mute=false;bump()}
+function undoApply(s){UNDO.mute=true;Object.assign(P,JSON.parse(s));snapAll();syncUI();rebuild();UNDO.mute=false;partBump('all')}
 function undoUI(){$('unUndo').disabled=UNDO.i<=0;$('unRedo').disabled=UNDO.i>=UNDO.list.length-1;$('unReset').disabled=snapP()===UNDO.base}
 {const box=document.createElement('div');box.className='undos';
  const ic={unUndo:['되돌리기','<path d="M9 7 4.5 11.5 9 16"/><path d="M5 11.5h9a5 5 0 0 1 0 10h-2"/>'],unRedo:['다시하기','<path d="m15 7 4.5 4.5L15 16"/><path d="M19 11.5h-9a5 5 0 0 0 0 10h2"/>'],
@@ -2196,13 +2334,13 @@ function undoUI(){$('unUndo').disabled=UNDO.i<=0;$('unRedo').disabled=UNDO.i>=UN
 
 // ── 눈·입 모양 그림 카드: 지금 손시 얼굴에 각 모양을 씌워 그림(색·모양이 바뀌면 다시 그림)
 const THUMB={eyeType:{sig:'',url:{}},mouthType:{sig:'',url:{}}};
-function faceShot(px){   // 정면 얼굴만 작게 찍기 (화면 카메라·크기는 그대로 되돌림)
+function faceShot(px,span=1.25,dy=-0.06){   // 정면 얼굴(머리)만 작게 찍기 (화면 카메라·크기는 그대로 되돌림). span: 찍는 폭
   const c=chars[0],HG=c.userData.HG,rot=c.rotation.y,sc=c.scale.clone(),py=c.position.y;c.rotation.y=0;c.scale.setScalar(1);c.position.y=0;c.updateMatrixWorld(true);
   const vis=c.children.map(o=>o.visible);c.children.forEach(o=>{o.visible=(o===HG)});
-  const hv=new THREE.Vector3();HG.getWorldPosition(hv);hv.y+=0.68*P.headH*0.75-0.06;
+  const hv=new THREE.Vector3();HG.getWorldPosition(hv);hv.y+=0.68*P.headH*0.75+dy;
   const pr=renderer.getPixelRatio(),fov=persp.fov,asp=persp.aspect,pos=persp.position.clone(),q=persp.quaternion.clone();
   renderer.setPixelRatio(1);renderer.setSize(px,px,false);persp.aspect=1;persp.fov=10;
-  const d=1.25/2/Math.tan(5*Math.PI/180);persp.position.set(0,hv.y,hv.z+d);persp.lookAt(0,hv.y,hv.z);persp.updateProjectionMatrix();
+  const d=span/2/Math.tan(5*Math.PI/180);persp.position.set(0,hv.y,hv.z+d);persp.lookAt(0,hv.y,hv.z);persp.updateProjectionMatrix();
   renderer.render(scene,persp);const u=renderer.domElement.toDataURL('image/png');
   c.children.forEach((o,i)=>{o.visible=vis[i]});c.rotation.y=rot;c.scale.copy(sc);c.position.y=py;persp.fov=fov;persp.aspect=asp;persp.position.copy(pos);persp.quaternion.copy(q);persp.updateProjectionMatrix();
   renderer.setPixelRatio(pr);layout();return u}
@@ -2213,22 +2351,99 @@ function makeThumbs(k){clearTimeout(thumbT);thumbT=setTimeout(()=>{
   if(T.sig===sig)return;T.sig=sig;
   const keep=P[k],opts=[...box.querySelectorAll('[data-v]')].map(b=>b.dataset.v);
   thumbBusy=true;UNDO.mute=true;
-  try{opts.forEach(v=>{P[k]=v;rebuild(true);T.url[v]=faceShot(176)})}finally{P[k]=keep;rebuild(true);thumbBusy=false;UNDO.mute=false}
+  try{opts.forEach(v=>{P[k]=v;rebuild(true);T.url[v]=faceShot(176)})}finally{P[k]=keep;rebuild(true);thumbBusy=false;UNDO.mute=false;applyHeadOnly()}
   box.querySelectorAll('[data-v]').forEach(b=>{const im=b.querySelector('img');if(im&&T.url[b.dataset.v])im.src=T.url[b.dataset.v]})},120)}
 // 눈·입 모양 버튼을 그림 카드로 바꾸고, 슬라이더는 '세부 조정' 아래로 접음
 [['eyeTypes','eyeRow'],['mouthTypes','mouthRow']].forEach(([id,row])=>{
   const box=$(id);box.classList.add('tcards');
   box.querySelectorAll('.pbtn').forEach(b=>{const t=b.textContent.replace(/\s*[∩∪><ω]+.*$/,'').trim();b.classList.add('tcard');b.innerHTML=`<img alt=""><span>${t}</span>`});
+  box.querySelectorAll('[data-v]').forEach(b=>b.addEventListener('click',()=>partBump(id==='eyeTypes'?'눈':'입')));   // 고른 부위만 말랑
   const r=$(row),grp=r.parentNode,fine=document.createElement('details');fine.className='fine';fine.innerHTML='<summary>세부 조정</summary><div class="fine-in"></div>';
   [...grp.children].filter(el=>el!==r&&el.classList.contains('row')).forEach(el=>fine.querySelector('.fine-in').appendChild(el));
   grp.appendChild(fine);
 });
 
+// ── 부위별 프리셋 그림 카드 (눈·입 모양 카드처럼). 누르면 그 부위 값이 한 번에 바뀌고, 슬라이더는 '세부 조정'에 접어 둠
+// 카드 값 v: 실제 값(슬라이더 항목은 S(키, 칸)로 −5~+5 칸을 적음). 적지 않은 슬라이더 항목은 기본값(0칸)으로 돌아감.
+// base: 그 부위 카드 모두에 깔리는 값(예: 뿔 카드는 뿔 켜기). shot: 카드 그림 구도
+const S=(k,st)=>toVal(k,st);
+const PART_CARDS={
+ '머리':{shot:'head',items:[['보통',{}],['넓쭉',{headW:S('headW',4),headH:S('headH',-2)}],['길쭉',{headW:S('headW',-3),headH:S('headH',4)}],
+   ['동글',{headSq:S('headSq',-5)}],['네모',{headSq:S('headSq',5)}],['큼직',{headW:S('headW',3),headH:S('headH',3),headD:S('headD',2)}]]},
+ '뿔':{shot:'head',base:{horns:true},items:[['보통',{}],['짧뚱',{hornH:S('hornH',-3)}],['굵직',{hornRound:S('hornRound',4)}],
+   ['길쭉',{hornH:S('hornH',4)}],['넓쭉',{hornX:S('hornX',5)}],['없음',{horns:false}]]},
+ '귀':{shot:'ear',items:[['보통',{}],['앙증',{earSize:S('earSize',-4)}],['큼직',{earSize:S('earSize',4)}],
+   ['쫑긋',{earY:S('earY',4)}],['작은쫑긋',{earSize:S('earSize',-4),earY:S('earY',4)}],['큰쫑긋',{earSize:S('earSize',4),earY:S('earY',4)}]]},
+ // 보통·짧둥·굵직은 깨두 눈썹(비스듬히) 바탕
+ '눈썹':{shot:'face',items:[['보통',{browAng:48,browLen:0.124,browThick:0.016}],['짧둥',{browAng:48,browLen:S('browLen',-5),browThick:0.016}],
+   ['굵직',{browAng:48,browLen:0.124,browThick:S('browThick',2)}],['겁쟁이',{browAng:S('browAng',-3)}],['순둥이',{}],['고집쟁이',{browThick:S('browThick',3)}]]},
+ // 깨두 코(기본) = 네모 계열
+ '코':{shot:'face',items:[['네모',{}],['작은네모',{noseSize:S('noseSize',-3)}],['큰네모',{noseSize:S('noseSize',3)}],
+   ['동글',{noseSq:S('noseSq',-5)}],['작은동글',{noseSq:S('noseSq',-5),noseSize:S('noseSize',-3)}],['큰동글',{noseSq:S('noseSq',-5),noseSize:S('noseSize',3)}]]},
+ '볼터치':{shot:'cheek',items:[['꾸러기',{blush:true,blushType:'clay',blushColor:'#f6b3a9'}],['데헷',{blush:true,blushType:'hatch',blushColor:'#f0607c'}],
+   ['개구쟁이',{blush:true,blushType:'freckle'}],['수줍',{blush:true,blushType:'blur',blushColor:'#ffa3a3'}],['발그레',{blush:true,blushType:'blur',blushColor:'#ff6a3d'}],['없음',{blush:false}]]},
+ '볼살':{shot:'cheek',items:[['빵빵',{cheek:S('cheek',5)}],['통통',{cheek:S('cheek',3)}],['없음',{}]]},
+ '몸':{shot:'body',base:{lowerW:1},items:[['깨두',{}],['꼬마',{bodyLen:0.6,upperW:0.92,lowerW:0.95}],['꼼디',{upperW:1.3,lowerW:1.42,bodyD:1.22}]]},
+ '팔':{shot:'body',items:[['보통',{}],['짧뚱',{armLen:S('armLen',-4)}],['길쭉',{armLen:S('armLen',4)}]]},
+ '다리':{shot:'body',items:[['보통',{}],['짧뚱',{legSplit:S('legSplit',-4)}],['길쭉',{legSplit:S('legSplit',4)}]]},
+ '꼬리':{shot:'tail',base:{tail:true},items:[['보통',{}],['앙증',{tailSize:S('tailSize',-4)}],['큼직',{tailSize:S('tailSize',4)}]]},
+};
+const groupKeys=name=>{const g=GROUPS.find(([n])=>n===name);return g?g[1].map(r=>r[0]):[]};
+const cardVals=(name,it)=>{const v={};groupKeys(name).forEach(k=>v[k]=DEF[k]);return Object.assign(v,PART_CARDS[name].base||{},it[1])};
+const sameVal=(k,a,b)=>k in META?stepOf(k,a)===stepOf(k,b):typeof a==='number'&&typeof b==='number'?Math.abs(a-b)<1e-6:a===b;
+function cardMatch(name,it){const v=cardVals(name,it);return Object.keys(v).every(k=>sameVal(k,P[k],v[k]))}
+function cardSet(name,it){const v=cardVals(name,it);Object.keys(v).forEach(k=>P[k]=k in META?toVal(k,stepOf(k,v[k])):v[k])}
+function cardApply(name,it){cardSet(name,it);syncUI();rebuild();partBump(name)}
+function markCards(){document.querySelectorAll('.pcards').forEach(box=>{const name=box.dataset.part,set=PART_CARDS[name];
+  box.querySelectorAll('.tcard').forEach((b,i)=>b.setAttribute('aria-pressed',cardMatch(name,set.items[i])))})}
+// 카드 만들기: 각 부위 묶음 맨 위에 카드, 원래 있던 슬라이더·스위치는 '세부 조정' 안으로
+Object.entries(PART_CARDS).forEach(([name,set])=>{
+  const grp=GRP[name];if(!grp)return;
+  const box=document.createElement('div');box.className='pbtns tcards pcards';box.dataset.part=name;box.setAttribute('role','group');box.setAttribute('aria-label',name+' 모양');
+  set.items.forEach(it=>{const b=document.createElement('button');b.type='button';b.className='pbtn tcard';b.innerHTML=`<img alt=""><span>${it[0]}</span>`;
+    b.onclick=()=>cardApply(name,it);box.appendChild(b)});
+  const fine=document.createElement('details');fine.className='fine';fine.innerHTML='<summary>세부 조정</summary><div class="fine-in"></div>';
+  [...grp.children].forEach(el=>fine.querySelector('.fine-in').appendChild(el));
+  grp.append(box,fine);
+});
+// 카드 그림 찍기: 손시를 rotY만큼 돌려 aim(c)가 돌려준 점을 가운데에 두고, 폭 span만큼 찍음(화면 카메라·모습은 그대로 되돌림)
+function aimShot(px,rotY,span,aim,onlyHead){
+  const c=chars[0],HG=c.userData.HG,rot=c.rotation.y,sc=c.scale.clone(),py=c.position.y;c.rotation.y=rotY||0;c.scale.setScalar(1);c.position.y=0;c.updateMatrixWorld(true);
+  const vis=c.children.map(o=>o.visible);c.children.forEach(o=>{o.visible=!onlyHead||o===HG});
+  const mb=mats.body;if(mb.transparent||mb.opacity<1){mb.transparent=false;mb.opacity=1;mb.depthWrite=true;mb.needsUpdate=true}
+  const f=aim(c),pr=renderer.getPixelRatio(),fov=persp.fov,asp=persp.aspect,pos=persp.position.clone(),q=persp.quaternion.clone();
+  renderer.setPixelRatio(1);renderer.setSize(px,px,false);persp.aspect=1;persp.fov=10;
+  const d=span/2/Math.tan(5*Math.PI/180);persp.position.set(f.x,f.y,f.z+d);persp.lookAt(f);persp.updateProjectionMatrix();
+  renderer.render(scene,persp);const u=renderer.domElement.toDataURL('image/png');
+  c.children.forEach((o,i)=>{o.visible=vis[i]});c.rotation.y=rot;c.scale.copy(sc);c.position.y=py;persp.fov=fov;persp.aspect=asp;persp.position.copy(pos);persp.quaternion.copy(q);persp.updateProjectionMatrix();
+  renderer.setPixelRatio(pr);layout();return u}
+const headC=c=>{const v=new THREE.Vector3();c.userData.HG.getWorldPosition(v);v.y+=0.68*P.headH*0.75;return v};
+function bodyShot(px){const span=Math.max(charH*0.92,charW)*1.02;return aimShot(px,0,span,()=>new THREE.Vector3(0,charH*0.47,0),false)}
+// 귀: 오른쪽 귀만 크게(얼굴은 잘림). 높이는 기본 귀 자리로 고정해서 '위로' 붙은 귀는 위로 보임
+function earShot(px){return aimShot(px,-0.5,1.3,c=>{let ear=null;c.traverse(o=>{if(o.userData.part==='ear1')ear=o});
+  const v=ear?new THREE.Box3().setFromObject(ear).getCenter(new THREE.Vector3()):headC(c);v.y=headC(c).y+DEF.earY*P.headH;return v},true)}
+// 꼬리: 바로 뒤에서 꼬리 둘레를 크게
+function tailShot(px){return aimShot(px,Math.PI,0.95,c=>{const body=c.children[0],g=body.geometry,pa=g.attributes.position,tl=g.attributes.aTail,v=new THREE.Vector3();let n=0;
+  if(tl)for(let i=0;i<pa.count;i++)if(tl.getX(i)>0.5){v.x+=pa.getX(i);v.y+=pa.getY(i);v.z+=pa.getZ(i);n++}
+  if(n){v.multiplyScalar(1/n);v.x=0;body.localToWorld(v)}else v.set(0,charH*0.22,0.3);v.y+=0.05;return v},false)}
+const SHOT={head:()=>faceShot(176,2.15,0.08),face:()=>faceShot(176),cheek:()=>faceShot(176,1.7,-0.05),ear:()=>earShot(176),body:()=>bodyShot(200),tail:()=>tailShot(200)};
+// 카드 그림: 그 부위만 바꾼 지금 손시를 찍음. 다른 값이 바뀌면 다시 그림
+const CARD_SIG={};let cardT=0;
+function partCards(name){const set=PART_CARDS[name];if(!set)return;markCards();clearTimeout(cardT);cardT=setTimeout(()=>{
+  const keys=[...new Set(set.items.flatMap(it=>Object.keys(cardVals(name,it))))];
+  const sig=JSON.stringify(Object.keys(P).filter(x=>!keys.includes(x)&&!POSE_KEYS.includes(x)).map(x=>P[x]));
+  if(CARD_SIG[name]===sig)return;CARD_SIG[name]=sig;
+  const keep={};keys.forEach(k=>keep[k]=P[k]);const urls=[];
+  thumbBusy=true;UNDO.mute=true;
+  try{set.items.forEach(it=>{cardSet(name,it);rebuild(!['body','tail'].includes(set.shot));urls.push(SHOT[set.shot]())})}
+  finally{Object.assign(P,keep);rebuild(true);thumbBusy=false;UNDO.mute=false;applyHeadOnly()}
+  $('app').querySelectorAll(`.pcards[data-part="${name}"] img`).forEach((im,i)=>{if(urls[i])im.src=urls[i]})},120)}
 // 꾸미기 화면에 들어올 때·단계가 바뀔 때 (flow의 show에서 부름)
 function editorEnter(i,fresh){
+  setHeadOnly(i<FACE_STEPS);
   if(fresh)undoStart();else undoUI();
   const N=nSteps();document.querySelectorAll('#stabs button').forEach((b,j)=>{b.hidden=j>=N;b.setAttribute('aria-selected',j===i);b.classList.toggle('done',j<i)});
-  const parts=STEPS[i][1];if(parts.length>1)showSub(i,subOf[i]);
+  const parts=STEPS[i][1];if(parts.length>1)showSub(i,subOf[i]);else partCards(parts[0][1]);
   lookAtPart(parts.length>1?subOf[i]:parts[0][1]);
 }
 // 꿈알 12단계 그림 (tools/egg_assets.py가 assets/dreamegg/out의 PNG로 만듦 — 직접 고치지 말 것)
@@ -2352,7 +2567,7 @@ function sparks(){
 }
 // 시작 화면 정하기
 (function initFlow(){
-  setName('깨두');
+  setName('');
   let st=[];
   if(Save.dry){   // ?egg 테스트: 저장된 손시는 불러 두되(다 깨면 그 손시가 나옴) 알부터 시작
     const d=ST.done&&ST.doll?ST.doll:ST.draft;if(d)loadDoll(d);
@@ -2361,7 +2576,7 @@ function sparks(){
   else if(ST.hatched){
     const d=ST.draft;if(d)loadDoll(d);
     eggDone=true;st=[{scr:'egg'}];
-    if(d&&(d.scr==='step'||d.scr==='name')){const k=d.scr==='name'?4:Math.min(4,d.step||0);for(let i=0;i<=k;i++)st.push({scr:'step',step:i});if(d.scr==='name')st.push({scr:'name'})}
+    if(d&&(d.scr==='step'||d.scr==='name')){const k=d.scr==='name'?FACE_STEPS-1:Math.min(FACE_STEPS-1,d.step||0);for(let i=0;i<=k;i++)st.push({scr:'step',step:i});if(d.scr==='name')st.push({scr:'name'})}
   }else{
     const iOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
     let top=true;try{top=window.top===window}catch(_){top=false}
