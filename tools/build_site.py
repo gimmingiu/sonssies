@@ -29,7 +29,7 @@ head='''<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Sonssies</title>
-<meta name="description" content="나만의 수호 도깨비를 꾸미고 이미지로 저장해 보세요.">
+<meta name="description" content="나만의 손시를 깨우고, 삶의 여정을 함께 나아가 보세요.">
 <meta name="theme-color" content="#e4ebeb" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#141a1c" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.webmanifest">
@@ -39,8 +39,8 @@ head='''<!doctype html>
 <meta name="apple-mobile-web-app-title" content="Sonssies">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://sonssies.com/">
-<meta property="og:title" content="Sonssies - 나의 수호 도깨비 만들기">
-<meta property="og:description" content="나만의 수호 도깨비를 꾸미고 이미지로 저장해 보세요.">
+<meta property="og:title" content="Sonssies - 영혼의 단짝, 손시 만들기">
+<meta property="og:description" content="나만의 손시를 깨우고, 삶의 여정을 함께 나아가 보세요.">
 <meta property="og:image" content="https://sonssies.com/og.png?v=3">
 <meta name="twitter:card" content="summary_large_image">
 '''+open(os.path.join(ROOT,'splash','links.html'),encoding='utf8').read()
