@@ -57,9 +57,31 @@ function hatch(){
   setTimeout(()=>{if(egg)egg.box.hidden=true;hatchedUI(true);layout();if(chars[0])chars[0].visible=false;ST.hatched=true;Save.commit()},IN+40);
   // 빛이 걷히면서 손시가 '뿅'
   setTimeout(()=>{if(chars[0])chars[0].visible=true;spinT0=0;bounceT0=0;popT0=performance.now();
-    const a=f.animate([{opacity:1},{opacity:0}],{duration:OUT,easing:'ease-out',fill:'forwards'});a.onfinish=()=>f.remove()},IN+HOLD);
+    const a=f.animate([{opacity:1},{opacity:0}],{duration:OUT,easing:'ease-out',fill:'forwards'});a.onfinish=()=>f.remove();setTimeout(sparks,250)},IN+HOLD);
   // ?egg 테스트에서 이미 만든 손시가 있으면, 깨어나는 모습을 잠깐 보여 준 뒤 메인으로 돌아감
   if(Save.dry&&ST.done&&ST.doll)setTimeout(()=>{if(scrNow==='egg')resetTo({scr:'main'})},IN+HOLD+OUT+2200);
 }
 
 
+
+// 등장 뒤 빛 알갱이: 손시 몸에서 퍼져 나가며 위로 살짝 떠오르다 스르르 사라짐
+function sparks(){
+  if(matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const hold=$('app').querySelector('.stagehold[data-size="egg"]');if(!hold)return;
+  const W=stage.clientWidth,H=stage.clientHeight,R=Math.min(W,H);
+  const v=new THREE.Vector3(0,charH*0.44,0).project(persp),cx=(v.x+1)/2*W,cy=(1-v.y)/2*H;
+  const lay=document.createElement('div');lay.className='sparks';hold.appendChild(lay);
+  for(let i=0;i<28;i++){
+    const d=document.createElement('i'),sz=9+Math.random()*16;d.style.setProperty('--s',sz.toFixed(1)+'px');lay.appendChild(d);
+    const a=Math.random()*Math.PI*2,r0=R*(0.05+Math.random()*0.12),r1=R*(0.3+Math.random()*0.32);
+    const x0=cx+Math.cos(a)*r0,y0=cy+Math.sin(a)*r0*0.8,x1=cx+Math.cos(a)*r1,y1=cy+Math.sin(a)*r1*0.75-R*(0.06+Math.random()*0.1);
+    const xm=x0+(x1-x0)*0.45,ym=y0+(y1-y0)*0.45,dur=2300+Math.random()*1400,del=Math.random()*450;
+    d.animate([
+      {transform:`translate(${x0}px,${y0}px) scale(.3)`,opacity:0},
+      {transform:`translate(${xm}px,${ym}px) scale(1)`,opacity:1,offset:.25},
+      {transform:`translate(${x0+(x1-x0)*.7}px,${y0+(y1-y0)*.7}px) scale(.85)`,opacity:.55,offset:.55},
+      {transform:`translate(${x0+(x1-x0)*.85}px,${y0+(y1-y0)*.85}px) scale(.8)`,opacity:.9,offset:.72},
+      {transform:`translate(${x1}px,${y1}px) scale(.5)`,opacity:0}],{duration:dur,delay:del,easing:'cubic-bezier(.2,.65,.35,1)',fill:'both'});
+  }
+  setTimeout(()=>lay.remove(),4400);
+}

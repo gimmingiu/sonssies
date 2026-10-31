@@ -98,9 +98,9 @@ function sayLine(){const b=$('mbub');b.textContent=pickLine();b.hidden=false;b.c
 const BOUNCE_MS=1150;
 function bounceAt(t){
   const T0=0.09,T1=0.50;   // 웅크림 끝 · 착지 시점(비율)
-  if(t<T0)return {dy:0,q:-0.11*Math.sin(Math.PI*t/T0)};
-  if(t<T1){const a=(t-T0)/(T1-T0);return {dy:0.5*Math.sin(Math.PI*a),q:0.17*Math.sin(Math.PI*a)*(1-a)+0.07*Math.pow(a,6)}}
-  const u=(t-T1)/(1-T1);return {dy:0,q:-0.17*Math.exp(-4.2*u)*Math.cos(2*Math.PI*2.3*u)*(1-u*0.15)};
+  if(t<T0)return {dy:0,q:-0.08*Math.sin(Math.PI*t/T0)};
+  if(t<T1){const a=(t-T0)/(T1-T0);return {dy:0.5*Math.sin(Math.PI*a),q:0.13*Math.sin(Math.PI*a)*(1-a)}}   // 착지 순간 모양이 0이 되게(갑자기 찌그러지지 않게)
+  const u=(t-T1)/(1-T1);return {dy:0,q:-0.12*Math.exp(-4*u)*Math.sin(2*Math.PI*1.6*u)};   // 부드럽게 눌렸다 살짝 늘었다 잦아듦
 }
 // 매 프레임: 등장(알에서 나올 때)·통통 튀기·말풍선 위치·알 흔들림
 function flowFrame(now){
