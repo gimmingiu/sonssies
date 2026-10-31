@@ -245,6 +245,7 @@ body{padding:0;margin:0;min-height:100dvh}
 .sparks{position:absolute;inset:0;pointer-events:none;z-index:7}
 .sparks i{position:absolute;left:0;top:0;width:var(--s);height:var(--s);margin:calc(var(--s)/-2) 0 0 calc(var(--s)/-2);border-radius:50%;opacity:0;will-change:transform,opacity;
   background:radial-gradient(circle,#ffffff 0,#fffbe8 28%,rgba(255,221,128,.75) 52%,rgba(255,221,128,0) 72%);filter:drop-shadow(0 0 4px rgba(255,236,170,.9))}
+.sparks i.st{border-radius:0;background:linear-gradient(#fffdf0,#ffe596);clip-path:polygon(50% 0,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0 50%,39% 39%)}   /* 네 갈래 반짝이 */
 .pickbox{display:flex;flex-direction:column;gap:10px}
 .pickbox[hidden]{display:none}
 .pickbox .bigbtn{font-size:16px;padding:14px 12px;border-radius:14px}
