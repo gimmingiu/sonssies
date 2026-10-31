@@ -2078,8 +2078,13 @@ function partY(h){   // 시선이 향할 높이(손시 위치 기준)
   const c=chars[0];if(!c)return camBase.ty;const HG=c.userData.HG,v=new THREE.Vector3();HG?HG.getWorldPosition(v):v.set(0,charH*0.6,0);
   const hc=v.y+0.68*P.headH*0.75;
   return h==='head'?hc:h==='top'?hc+0.68*P.headH*0.55:h==='eye'?hc+0.02:h==='face'?hc-0.12:h==='mid'?charH*0.3:h==='low'?0.28:camBase.ty}
+// 얼굴 단계(색·질감 ~ 코·입·볼)는 처음 만들 때든 수정할 때든 얼굴(머리) 위주로 크게 보여 줌. 몸·팔다리·꼬리만 전체 모습
+const FACE_VIEW={a:0,z:1.5,f:.92,h:'head'};
+const FACE_PARTS=['색 · 질감','머리','귀','눈','눈썹','코','입','볼','뿔'];
 function lookAtPart(name){
-  const v=VIEW[name]||VIEW['색 · 질감'];
+  let v=VIEW[name]||VIEW['색 · 질감'];
+  if(name==='색 · 질감'||name==='머리')v=FACE_VIEW;
+  else if(FACE_PARTS.includes(name)&&v.z<FACE_VIEW.z)v={...v,z:FACE_VIEW.z};   // 뿔·귀도 얼굴 크기 그대로 각도만
   spinning=false;$('spinBtn').setAttribute('aria-pressed',false);
   target=v.a+Math.round((angle-v.a)/(2*Math.PI))*2*Math.PI;setViewPressed(null);
   setZoom(v.z);focusH=partY(v.h);focusKT=v.f||0;
