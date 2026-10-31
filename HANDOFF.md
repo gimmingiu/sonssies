@@ -17,7 +17,7 @@
 ```
 src/
   page.html            뼈대. `@@include 경로` 줄이 해당 파일 내용으로 바뀜 (포함 순서 = 실행 순서)
-  styles/main.css      디자인 전체
+  styles/              디자인: base(색·글꼴 토큰) · controls(공통 부품) · card(카드 화면) · screens(단계별 화면) · egg(꿈알) · editor(꾸미기 도구)
   intro/intro.html     홈 화면 앱 인트로(점프하는 손시 머리)
   screens/             화면 HTML: app.html(알·꾸미기·이름·메인·배경화면), stage.html(3D 미리보기), card.html(카드 만들기)
   js/core/             params.js(슬라이더·프리셋·포즈 정의), boot.js(초기 손시)
@@ -25,7 +25,8 @@ src/
   js/ui/               controls(슬라이더·색·프리셋), name(이름·주사위), stats(누적 통계)
   js/card/             compose(카드 이미지), bubble(말풍선), page(카드 화면), save-image(이미지 저장), stickers(이모티콘)
   js/save/save.js      ★ 저장 창구. 손시 데이터는 전부 여기로 읽고 씀 (지금은 기기 저장 → 나중에 서버 저장으로 이 파일만 교체)
-  js/flow/             flow(화면 이동·메인·뒤로가기), egg(꿈알), init(시작 화면 정하기)
+  js/flow/             flow(화면 이동·메인·뒤로가기), editor-camera(부위별 카메라·머리만 보이기) · editor-tabs(아이콘 탭·하위 탭) ·
+                       editor-undo(되돌리기) · editor-thumbs(눈·입 그림 카드) · editor(꾸미기 들어올 때), egg-art(꿈알 그림, 자동 생성) · egg(꿈알), init(시작 화면 정하기)
   js/dev/hooks.js      테스트용 창구(window.__dk*): 아이콘·인트로 그림 뽑을 때 씀
   (js/game/, js/auth/  앞으로 추가: 게임 규칙(꿈빛·덩이·꿈열매), 로그인)
 ```
@@ -36,6 +37,8 @@ src/
 |---|---|
 | `tools/assemble.py` | `src/` → `build/sonssies.html` (아티팩트에 그대로 게시하는 파일) |
 | `tools/build_site.py` | assemble 실행 후 → 사이트용 `index.html` (doctype·head·PWA·OG 태그, 저장 기능을 브라우저 다운로드/공유로 대체) |
+| `tools/test_flow.js` | **전체 흐름 자동 확인**(꿈알→기본형→꾸미기→이름→저장→다시 열기→메인→수정→배경화면). 단계마다 검사하고 페이지 오류가 있으면 실패. 화면은 `out_flow/`에 저장 |
+| `tools/egg_assets.py` | 꿈알 PNG(assets/dreamegg) → `src/js/flow/egg-art.js` |
 | `tools/test_page.js` | Playwright로 화면·저장 이미지를 렌더해 확인 (cdnjs·구글폰트를 로컬 npm으로 대신) |
 | `index.html` | 사이트 페이지 (직접 고치지 말고 build_site.py로 생성) |
 | `manifest.webmanifest`, `sw.js`, `icon-*.png`, `favicon.*`, `apple-touch-icon.png`, `og.png`, `splash/` | 홈 화면 앱(PWA)·오프라인·링크 미리보기·시작 화면 |
@@ -44,7 +47,7 @@ src/
 1. `src/` 안의 해당 파일 수정
 2. `python3 tools/assemble.py` → `build/sonssies.html`
 3. 문법 확인: `<script>` 안 JS를 떼어 `node --check`
-4. 렌더 확인: `node tools/test_page.js` (필요하면 스크립트를 복사해 원하는 화면을 눌러보는 식으로 확장)
+4. 확인: `node tools/test_flow.js` (전체 흐름, 모두 ✓여야 함) · 필요하면 `node tools/test_page.js`
 5. 아티팩트 게시: Artifact 도구로 `build/sonssies.html`을 위 URL에 publish (`url` 지정해서 같은 링크 유지, 다른 채팅이면 먼저 `read`. capabilities는 생략해 `downloads` 유지)
 6. 사이트: **평소엔 아티팩트에만 반영.** 사용자가 "깃허브에 반영해줘"라고 할 때만 모아서 `python3 tools/build_site.py` → `git commit` → `git push` (1~2분 뒤 Pages 반영)
 7. 사용자에게 변경점 요약 + 확인용 렌더 이미지 전송

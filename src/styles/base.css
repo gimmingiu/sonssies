@@ -1,0 +1,16 @@
+/* 글꼴(Google Fonts): 이름·말풍선 Jua(우아한형제들) · 본문 Noto Sans KR Medium · 숫자·푸터 Nanum Gothic Coding */
+/* Layout: 고정되는 스테이지(턴어라운드) + 오른쪽 파츠별 조정 패널, 좁은 화면에선 스테이지가 위에 붙고 패널이 아래로 */
+:root{
+  --bg:#e4ebeb; --stage:#c4d1d3; --panel:#f8fbfb; --fg:#1f2a2e; --muted:#5b6b70; --line:#cfdbdc; --accent:#2b8599; --accent-ink:#ffffff; --neg:#c4693f;
+  --f-name:"Jua","Noto Sans KR",system-ui,sans-serif;
+  --f-body:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --f-mono:"Nanum Gothic Coding",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141a1c; --stage:#1b2427; --panel:#192023; --fg:#e5eef0; --muted:#93a5aa; --line:#2b383c; --accent:#7ed0e1; --accent-ink:#0f2329; --neg:#f0a27c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141a1c; --stage:#1b2427; --panel:#192023; --fg:#e5eef0; --muted:#93a5aa; --line:#2b383c; --accent:#7ed0e1; --accent-ink:#0f2329; --neg:#f0a27c; color-scheme:dark}
+html,body{background:var(--bg);color:var(--fg)}
+body{font-family:var(--f-body);font-weight:500;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 32px}
+.wrap{max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}

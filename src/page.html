@@ -3,7 +3,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Gothic+Coding&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
 <style>
-@@include styles/main.css
+@@include styles/base.css
+@@include styles/controls.css
+@@include styles/card.css
+@@include styles/screens.css
+@@include styles/egg.css
+@@include styles/editor.css
 </style>
 @@include intro/intro.html
 
@@ -32,6 +37,10 @@
 @@include js/core/boot.js
 @@include js/save/save.js
 @@include js/flow/flow.js
+@@include js/flow/editor-camera.js
+@@include js/flow/editor-tabs.js
+@@include js/flow/editor-undo.js
+@@include js/flow/editor-thumbs.js
 @@include js/flow/editor.js
 @@include js/flow/egg-art.js
 @@include js/flow/egg.js
