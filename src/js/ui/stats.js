@@ -1,7 +1,7 @@
 // ---------- 누적 통계 버튼 (집계는 준비 중: 숫자 자리는 '–') ----------
-{const INFO={visit:['누적 방문객 수','지금까지 이 페이지를 찾아온 사람 수예요. 집계는 준비 중이에요.'],
-  made:['누적 손시 수','지금까지 만들어진 손시 수예요. 집계는 준비 중이에요.'],
-  like:['누적 좋아요 수','이 서비스가 받은 좋아요 수예요. 집계는 준비 중이에요.']};
+{const INFO={visit:['누적 방문객 수','지금까지 이곳을 찾아온 사람을 세는 자리요. 집계는 아직 준비 중이오.'],
+  made:['누적 손시 수','지금까지 만들어진 손시를 세는 자리요. 집계는 아직 준비 중이오.'],
+  like:['누적 좋아요 수','이곳이 받은 좋아요를 세는 자리요. 집계는 아직 준비 중이오.']};
  const tip=$('statTip'),hdr=tip.parentElement;let cur=null;
  const close=()=>{tip.hidden=true;if(cur)cur.setAttribute('aria-expanded','false');cur=null};
  document.querySelectorAll('.stat').forEach(b=>b.addEventListener('click',e=>{

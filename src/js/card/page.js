@@ -31,7 +31,7 @@ async function openResult(){
   if($('busy').classList.contains('on'))await new Promise(r=>setTimeout(r,320));
   spinning=false;$('spinBtn').setAttribute('aria-pressed',false);target=angle;
   await loadTagFonts();
-  syncTagCols();$('resName').value=charName;$('saveMsg').textContent=dl?'':'이 화면에서는 저장 버튼을 쓸 수 없어요. 화면을 캡처해서 저장해 주세요.';
+  syncTagCols();$('resName').value=charName;$('saveMsg').textContent=dl?'':'이 화면에서는 저장 버튼을 쓸 수 없소. 화면을 캡처해서 저장해 주시오.';
   $('result').hidden=false;document.body.style.overflow='hidden';
   const card=$('rcard');card.style.animation='none';void card.offsetWidth;card.style.animation='';
   compose(resCv,1,false);$('backBtn').focus({preventScroll:true});

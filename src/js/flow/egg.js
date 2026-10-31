@@ -20,7 +20,7 @@ function makeEgg(){
 function eggBeat(n){const k=n/EGG_N;egg.box.style.setProperty('--beat',(2.2-1.2*k).toFixed(2)+'s');egg.box.style.setProperty('--lmin',(0.35+0.25*k).toFixed(2))}
 function hatchedUI(on){$('eggHint').hidden=on;$('eggGuide').classList.toggle('inv',!on);$('pickBox').hidden=!on;$('app').querySelector('.stagehold[data-size="egg"]').classList.toggle('done',on)}
 function enterEgg(){if(eggDone){hatchedUI(true);if(egg)egg.box.hidden=true;if(chars[0])chars[0].visible=true;return}
-  hatchedUI(false);if(!egg)makeEgg();egg.box.hidden=false;if(chars[0])chars[0].visible=false;$('eggHint').textContent='터치하여 알 깨기'}
+  hatchedUI(false);if(!egg)makeEgg();egg.box.hidden=false;if(chars[0])chars[0].visible=false;$('eggHint').textContent='톡톡 두드려 알을 깨 보시오'}
 function leaveEgg(){if(egg&&eggDone){egg.box.remove();egg=null}if(chars[0])chars[0].visible=true}
 function eggTap(){
   if(eggDone||!egg||eggTaps>=EGG_N)return;
@@ -39,7 +39,7 @@ function eggTap(){
     {transform:'translateY(0) scale(1,1) rotate(0deg)'}],{duration:640+k*120});
   egg.glow.animate([{opacity:1,transform:'scale(1.15)'},{opacity:0,transform:'scale(1)'}],{duration:420,easing:'ease-out'});   // 누를 때 빛 번쩍
   try{navigator.vibrate&&navigator.vibrate(10+n*2)}catch(_){}
-  $('eggHint').textContent=n<4?'터치하여 알 깨기':n<8?'손시가 깨어나고 있어요!':'손시가 곧 태어나요!';
+  $('eggHint').textContent=n<4?'톡톡 두드려 알을 깨 보시오':n<8?'손시가 깨어나고 있소!':'손시가 곧 태어나겠소!';
   if(n>=EGG_N)setTimeout(hatch,900);
 }
 // 알 그림의 알 가운데가 손시의 몸 가운데와 겹치게 세로 위치를 맞춤(손시가 알이 있던 자리에서 나오게)
