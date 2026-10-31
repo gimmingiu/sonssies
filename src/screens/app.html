@@ -62,11 +62,13 @@
 
   <!-- 알 깨기 -->
   <section class="scr" data-scr="egg" aria-label="꿈알">
-    <p class="guide" id="eggGuide" hidden>기본형을 고르고, 만들기 버튼을 누르세요.</p>
+    <p class="guide inv" id="eggGuide">기본형 선택</p>
     <div class="stagehold" data-size="egg"></div>
-    <p class="egghint" id="eggHint">알을 깨서 손시를 깨워주세요.</p>
-    <div class="starts" id="starts" hidden></div>
-    <div class="bbar end"><button type="button" class="bigbtn fit" id="eggGo" hidden>만들기</button></div>
+    <p class="egghint" id="eggHint">터치하여 알 깨기</p>
+    <div class="pickbox" id="pickBox" hidden>
+      <div class="starts" id="starts"></div>
+      <button type="button" class="bigbtn" id="eggGo">만들기</button>
+    </div>
   </section>
 
   <!-- 시작 고르기 -->

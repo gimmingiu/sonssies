@@ -25,8 +25,8 @@ $('prog').innerHTML=STEPS.map(()=>'<i></i>').join('');
 // 시작 고르기: 프리셋 3개 + 랜덤
 let startPick='깨두';
 Object.keys(PRESETS).forEach(n=>{const b=document.createElement('button');b.type='button';b.dataset.preset=n;b.style.setProperty('--c',PRESETS[n].color||DEF.color);
-  b.innerHTML='<i></i>'+n;b.onclick=()=>{startPick=n;apply(PRESETS[n],true);setName(n);$('rndBtn').setAttribute('aria-pressed','false');bump()};$('starts').appendChild(b)});
-function bump(){popT0=0;bounceT0=performance.now()}
+  b.innerHTML='<i></i>'+n;b.onclick=()=>{startPick=n;apply(PRESETS[n],true);setName(n);$('rndBtn').setAttribute('aria-pressed','false');bump(true)};$('starts').appendChild(b)});
+function bump(spin){if(spin){bounceT0=0;popT0=spinT0=performance.now()}else{popT0=0;bounceT0=performance.now()}}   // spin: 랜덤처럼 돌며 등장
 {const b=document.createElement('button');b.type='button';b.className='dice';b.id='rndBtn';b.innerHTML='<i></i>랜덤';
  b.onclick=()=>{startPick='랜덤';dice.onclick();setTimeout(()=>b.setAttribute('aria-pressed','true'),0);bounceT0=0;popT0=spinT0=performance.now()};$('starts').appendChild(b)}
 
@@ -91,21 +91,24 @@ function pickLine(){const h=new Date().getHours(),t=h>=5&&h<11?'morning':h>=11&&
 function sayLine(){const b=$('mbub');b.textContent=pickLine();b.hidden=false;b.classList.remove('pop');void b.offsetWidth;b.classList.add('pop')}
 {let tx=0,ty=0,tt=0;
  canvas.addEventListener('pointerdown',e=>{tx=e.clientX;ty=e.clientY;tt=performance.now()});
- canvas.addEventListener('pointerup',e=>{if(scrNow!=='main')return;if(Math.hypot(e.clientX-tx,e.clientY-ty)<8&&performance.now()-tt<450){bounceT0=performance.now();setTimeout(sayLine,140)}});}
+ canvas.addEventListener('pointerup',e=>{const onMain=scrNow==='main',onPick=scrNow==='egg'&&eggDone;if(!onMain&&!onPick)return;   // 누르면 말랑통통(메인에선 말도 바뀜)
+   if(Math.hypot(e.clientX-tx,e.clientY-ty)<8&&performance.now()-tt<450&&!popT0){bounceT0=performance.now();if(onMain)setTimeout(sayLine,140)}});}
 
+// 말랑통통: 살짝 웅크렸다 → 늘어나며 한 번 뜀 → 착지하며 찌그러진 뒤, 젤리처럼 늘었다 줄었다 하며 잦아듦(관성)
+const BOUNCE_MS=1150;
+function bounceAt(t){
+  const T0=0.09,T1=0.50;   // 웅크림 끝 · 착지 시점(비율)
+  if(t<T0)return {dy:0,q:-0.11*Math.sin(Math.PI*t/T0)};
+  if(t<T1){const a=(t-T0)/(T1-T0);return {dy:0.5*Math.sin(Math.PI*a),q:0.17*Math.sin(Math.PI*a)*(1-a)+0.07*Math.pow(a,6)}}
+  const u=(t-T1)/(1-T1);return {dy:0,q:-0.17*Math.exp(-4.2*u)*Math.cos(2*Math.PI*2.3*u)*(1-u*0.15)};
+}
 // 매 프레임: 등장(알에서 나올 때)·통통 튀기·말풍선 위치·알 흔들림
 function flowFrame(now){
   const c=chars[0];if(!c)return;
   let s=1,dy=0,sx=1,sy=1,spin=0;
   if(popT0){const t=Math.min(1,(now-popT0)/(spinT0?900:750));s=t<0.5?0.15+0.97*Math.sin(t/0.5*Math.PI/2):1.12-0.12*Math.sin((t-0.5)/0.5*Math.PI/2);if(t>=1){popT0=0;s=1}}
   if(spinT0){const t=Math.min(1,(now-spinT0)/900),e=1-Math.pow(1-t,3);spin=(1-e)*Math.PI*2;if(t>=1)spinT0=0}
-  if(bounceT0){const t=(now-bounceT0)/760;if(t>=1)bounceT0=0;else{
-    // 인트로처럼: 찌그러졌다가 → 늘어나며 뜀 → 꼭대기 → 내려와 착지하며 다시 찌그러짐 → 출렁이며 제자리
-    const k=(a,b)=>Math.max(0,Math.min(1,(t-a)/(b-a))),air=k(0.12,0.78);
-    dy=air>0&&air<1?0.5*Math.sin(Math.PI*air):0;
-    const pre=t<0.12?Math.sin(Math.PI*t/0.12):0,up=air>0&&air<1?Math.sin(Math.PI*air)*(1-air):0,land=t>0.78?Math.sin(Math.PI*k(0.78,1))*(1-k(0.78,1)*0.4):0;
-    const q=-0.12*pre+0.22*up-0.13*land+0.04*Math.sin(Math.PI*2*k(0.9,1))*(t>0.9?1:0);
-    sy=1+q;sx=1-q*0.55}}
+  if(bounceT0){const t=(now-bounceT0)/BOUNCE_MS;if(t>=1)bounceT0=0;else{const b=bounceAt(t);dy=b.dy;sy=1+b.q;sx=1-b.q*0.55}}
   c.scale.set(s*sx,s*sy,s*sx);c.position.y=dy;if(spin)c.rotation.y=angle+spin;
   if(scrNow==='main'){const b=$('mbub');if(!b.hidden){const v=new THREE.Vector3(0,(charH+0.12)*s+dy,0).project(persp);
     b.style.left=((v.x+1)/2*stage.clientWidth)+'px';b.style.top=Math.max(58,(1-v.y)/2*stage.clientHeight-4)+'px'}}
