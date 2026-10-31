@@ -14,7 +14,7 @@ stepEls.forEach((box,i)=>{
 function showSub(i,name){subOf[i]=name;const box=stepEls[i];
   box.querySelectorAll('section[data-sub]').forEach(s=>s.hidden=s.dataset.sub!==name);
   box.querySelectorAll('.subtabs button').forEach(b=>b.setAttribute('aria-selected',b.textContent===name));
-  if(name==='눈'||name==='입')makeThumbs(name==='눈'?'eyeType':'mouthType')}
+  if(name==='눈'||name==='입')makeThumbs(name==='눈'?'eyeType':'mouthType');else partCards(name)}
 
 // ── 아이콘 탭 (미리보기 바로 아래, 지금 단계 표시 + 눌러서 이동)
 const ICONS=[   // 색, 머리·뿔, 귀, 눈·눈썹, 코·입·볼, 몸, 팔·다리, 꼬리 (24칸, 둥근 선)
