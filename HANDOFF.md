@@ -1,4 +1,4 @@
-# 인수인계 — 나의 반려 도깨비 만들기
+# 인수인계 — Sonssies (손시 키우기)
 
 새 채팅의 Claude가 이 문서만 읽고 같은 스타일·규칙으로 이어서 작업할 수 있게 정리한 문서예요.
 **사용자와는 항상 한국어로 대화**해요. 사용자는 디자이너이고, 화면을 보며 짧게 요청해요. 결과는 렌더 이미지로 보여주며 확인받는 방식을 좋아해요.
@@ -10,22 +10,44 @@
 | 공개 사이트 (GitHub Pages) | https://sonssies.com (가비아 도메인 연결) · 기본 주소 https://gimmingiu.github.io/sonssies/ |
 | 저장소 | https://github.com/gimmingiu/sonssies (예전 이름 sonssies, Claude GitHub App 설치됨 → push 가능) |
 
-## 2. 파일
+## 2. 파일 (역할별로 나눈 구조, 2026-10-31~)
+소스는 `src/`에 역할별로 나뉘어 있고, `tools/assemble.py`가 한 파일로 합쳐요.
+합친 결과(`build/sonssies.html`) 하나가 아티팩트로도, 사이트로도 쓰여요.
+
+```
+src/
+  page.html            뼈대. `@@include 경로` 줄이 해당 파일 내용으로 바뀜 (포함 순서 = 실행 순서)
+  styles/main.css      디자인 전체
+  intro/intro.html     홈 화면 앱 인트로(점프하는 손시 머리)
+  screens/             화면 HTML: app.html(알·꾸미기·이름·메인·배경화면), stage.html(3D 미리보기), card.html(카드 만들기)
+  js/core/             params.js(슬라이더·프리셋·포즈 정의), boot.js(초기 손시)
+  js/render/           3D: renderer(조명·재질), shape, body-sdf(몸), ears, character(손시 조립), camera(카메라·회전·확대)
+  js/ui/               controls(슬라이더·색·프리셋), name(이름·주사위), stats(누적 통계)
+  js/card/             compose(카드 이미지), bubble(말풍선), page(카드 화면), save-image(이미지 저장), stickers(이모티콘)
+  js/save/save.js      ★ 저장 창구. 손시 데이터는 전부 여기로 읽고 씀 (지금은 기기 저장 → 나중에 서버 저장으로 이 파일만 교체)
+  js/flow/             flow(화면 이동·메인·뒤로가기), egg(꿈알), init(시작 화면 정하기)
+  js/dev/hooks.js      테스트용 창구(window.__dk*): 아이콘·인트로 그림 뽑을 때 씀
+  (js/game/, js/auth/  앞으로 추가: 게임 규칙(꿈빛·덩이·꿈열매), 로그인)
+```
+- JS 파일들은 합쳐지면 **하나의 함수 범위** 안에서 실행돼요. 서로의 변수·함수를 그대로 부를 수 있지만, **포함 순서**(page.html)를 지켜야 해요.
+- 규칙: 화면은 저장 방식을 몰라야 해요 → 저장은 `Save.data()`로 읽고 고친 뒤 `Save.commit()`. 게임 규칙(계산)은 화면 코드와 섞지 않고 `js/game/`에.
+
 | 파일 | 역할 |
 |---|---|
-| `src/dokkaebi-artifact.html` | **작업 원본.** 아티팩트에 그대로 게시하는 파일(문서 껍데기 없이 `<link>`·`<style>`부터 시작) |
-| `tools/build_site.py` | 원본 → 사이트용 `index.html` 변환 (doctype·head·PWA·OG 태그 추가, 저장 기능을 브라우저 다운로드/공유로 대체) |
-| `tools/test_page.js` | Playwright로 꾸미기 화면·저장 이미지를 렌더해 확인 (cdnjs·구글폰트를 로컬 npm으로 대신) |
+| `tools/assemble.py` | `src/` → `build/sonssies.html` (아티팩트에 그대로 게시하는 파일) |
+| `tools/build_site.py` | assemble 실행 후 → 사이트용 `index.html` (doctype·head·PWA·OG 태그, 저장 기능을 브라우저 다운로드/공유로 대체) |
+| `tools/test_page.js` | Playwright로 화면·저장 이미지를 렌더해 확인 (cdnjs·구글폰트를 로컬 npm으로 대신) |
 | `index.html` | 사이트 페이지 (직접 고치지 말고 build_site.py로 생성) |
-| `manifest.webmanifest`, `sw.js`, `icon-*.png`, `apple-touch-icon.png`, `og.png` | 홈 화면 앱(PWA)·오프라인·링크 미리보기 |
+| `manifest.webmanifest`, `sw.js`, `icon-*.png`, `favicon.*`, `apple-touch-icon.png`, `og.png`, `splash/` | 홈 화면 앱(PWA)·오프라인·링크 미리보기·시작 화면 |
 
 ## 3. 작업·배포 순서
-1. `src/dokkaebi-artifact.html` 수정 (버전 칩 `<b>v0.16.x</b>`도 올리기 — 화면엔 숨겨져 있음)
-2. 문법 확인: `<script>` 안 JS를 떼어 `node --check`
-3. 렌더 확인: `node tools/test_page.js` (필요하면 스크립트를 복사해 특정 탭·포즈를 눌러보는 식으로 확장)
-4. 아티팩트 게시: Artifact 도구로 위 URL에 publish (다른 채팅이므로 먼저 `read`로 읽고, `url` 지정해서 같은 링크 유지. capabilities는 생략해 `downloads` 유지)
-5. 사이트: **평소엔 아티팩트에만 반영.** 사용자가 "깃허브에 반영해줘"라고 할 때만 모아서 `python3 tools/build_site.py` → `git commit` → `git push` (1~2분 뒤 Pages 반영)
-6. 사용자에게 변경점 요약 + 확인용 렌더 이미지 전송
+1. `src/` 안의 해당 파일 수정
+2. `python3 tools/assemble.py` → `build/sonssies.html`
+3. 문법 확인: `<script>` 안 JS를 떼어 `node --check`
+4. 렌더 확인: `node tools/test_page.js` (필요하면 스크립트를 복사해 원하는 화면을 눌러보는 식으로 확장)
+5. 아티팩트 게시: Artifact 도구로 `build/sonssies.html`을 위 URL에 publish (`url` 지정해서 같은 링크 유지, 다른 채팅이면 먼저 `read`. capabilities는 생략해 `downloads` 유지)
+6. 사이트: **평소엔 아티팩트에만 반영.** 사용자가 "깃허브에 반영해줘"라고 할 때만 모아서 `python3 tools/build_site.py` → `git commit` → `git push` (1~2분 뒤 Pages 반영)
+7. 사용자에게 변경점 요약 + 확인용 렌더 이미지 전송
 
 ## 4. 디자인 원칙 (사용자가 정한 것)
 - **스타일:** 동글동글, 각진 곳·날카로운 곳·이음새·얇은 선 없음. 매트 고무 클레이 질감. 모든 새 요소(말풍선 포함)는 캐릭터와 같은 3D 재질·조명으로 렌더.

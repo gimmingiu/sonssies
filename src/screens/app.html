@@ -1,0 +1,138 @@
+<div class="app" id="app">
+  <!-- 재료 보관함: 슬라이더·색 등 조각을 여기서 만들어 각 단계 화면으로 옮김 -->
+  <aside id="holder" hidden>
+      <div id="partHold" hidden>
+        <div class="row" id="eyeRow"><div class="rl"><span>모양</span></div><div class="pbtns" role="group" aria-label="눈 모양" id="eyeTypes"></div></div>
+        <div class="row" id="mouthRow"><div class="rl"><span>모양</span></div><div class="pbtns" role="group" aria-label="입 모양" id="mouthTypes"></div></div>
+        <label class="tg" for="blush2" id="blushTg">볼터치 <input id="blush2" type="checkbox"></label>
+        <div class="row" id="blushRow"><div class="rl"><span>볼터치 색</span></div>
+          <div class="colors" id="blushes">
+            <button class="sw" type="button" style="background:#f6b3a9" data-c="#f6b3a9" aria-label="기본 분홍"></button>
+            <button class="sw" type="button" style="background:#ff8c7a" data-c="#ff8c7a" aria-label="코랄"></button>
+            <button class="sw" type="button" style="background:#f0606c" data-c="#f0606c" aria-label="로즈 레드"></button>
+            <button class="sw" type="button" style="background:#ff9a57" data-c="#ff9a57" aria-label="주홍"></button>
+            <button class="sw" type="button" style="background:#d9485f" data-c="#d9485f" aria-label="진한 빨강"></button>
+            <input id="blushPick" type="color" value="#f6b3a9" aria-label="볼터치 색 직접 고르기" title="볼터치 색 직접 고르기">
+          </div></div>
+      </div>
+      <div id="groups"></div>
+      <details>
+        <summary>색 · 질감</summary>
+        <div class="grp">
+          <div class="row"><div class="rl"><span>배경색</span></div>
+            <div class="colors bgset" id="bgs">
+              <button class="sw bgdef" type="button" data-bg="" aria-label="투명 (기본)" title="투명 (기본)"></button>
+              <button class="sw" type="button" style="background:#ffffff" data-bg="#ffffff" aria-label="흰색"></button>
+              <button class="sw" type="button" style="background:#f4ecdc" data-bg="#f4ecdc" aria-label="크림"></button>
+              <button class="sw" type="button" style="background:#26314a" data-bg="#26314a" aria-label="남색"></button>
+              <button class="sw" type="button" style="background:#141414" data-bg="#141414" aria-label="검정"></button>
+              <input id="bgPick" class="bgpick" type="color" value="#c4d1d3" aria-label="배경색 직접 고르기" title="배경색 직접 고르기">
+            </div>
+          </div>
+          <div class="row"><div class="rl"><span>피부색</span></div><div class="colors" id="colors">
+            <button class="sw" style="background:#a9e4f0" data-c="#a9e4f0" aria-pressed="true" aria-label="하늘색"></button>
+            <button class="sw" style="background:#b8e8d4" data-c="#b8e8d4" aria-label="민트"></button>
+            <button class="sw" style="background:#f4b9b2" data-c="#f4b9b2" aria-label="분홍"></button>
+            <button class="sw" style="background:#f6d77a" data-c="#f6d77a" aria-label="노랑"></button>
+            <button class="sw" style="background:#c9b8f0" data-c="#c9b8f0" aria-label="보라"></button>
+            <input id="pick" type="color" value="#a9e4f0" aria-label="피부색 직접 고르기" title="피부색 직접 고르기">
+          </div></div>
+          <div class="row"><div class="rl"><span>질감</span></div>
+            <div class="pbtns" role="group" aria-label="질감" id="texs"></div>
+          </div>
+          <label class="tg" for="horns">뿔 <input id="horns" type="checkbox" checked></label>
+          <label class="tg" for="tail">꼬리 <input id="tail" type="checkbox" checked></label>
+        </div>
+      </details>
+      <div class="foot" hidden><button id="copy">설정값 복사</button><button id="reset">기본값으로</button></div>
+      <div class="toast" id="toast" aria-live="polite" hidden></div>
+      <textarea id="out" readonly hidden aria-label="설정값"></textarea>
+      <div class="pbtns" id="presets"></div>
+  </aside>
+
+  <!-- 아이폰 사파리 첫 방문: 홈 화면에 추가 안내 -->
+  <section class="scr" data-scr="safari" aria-label="홈 화면에 추가 안내">
+    <div class="scr-c center">
+      <h1 class="h1">홈 화면에 추가하고<br>손시를 키워 보세요</h1>
+      <p class="lead">아이폰은 사파리와 홈 화면 앱이 따로 저장돼요.<br>홈 화면에 추가한 앱에서 만들어야 내 손시가 계속 남아 있어요.</p>
+      <ol class="howto"><li>아래쪽 <b>공유</b> 버튼 <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 3v12M7.5 7.5 12 3l4.5 4.5M5 12v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 누르기</li><li><b>홈 화면에 추가</b> 누르기</li><li>홈 화면의 <b>Sonssies</b>로 열기</li></ol>
+    </div>
+    <div class="bbar"><button type="button" class="ghostbtn wide" id="safariGo">브라우저에서 계속하기</button></div>
+  </section>
+
+  <!-- 알 깨기 -->
+  <section class="scr" data-scr="egg" aria-label="꿈알">
+    <p class="guide" id="eggGuide" hidden>기본형을 고르고, 만들기 버튼을 누르세요.</p>
+    <div class="stagehold" data-size="egg"></div>
+    <p class="egghint" id="eggHint">알을 깨서 손시를 깨워주세요.</p>
+    <div class="starts" id="starts" hidden></div>
+    <div class="bbar end"><button type="button" class="bigbtn fit" id="eggGo" hidden>만들기</button></div>
+  </section>
+
+  <!-- 시작 고르기 -->
+  <section class="scr" data-scr="start" aria-label="시작 고르기">
+    <div class="topbar"><h1 class="tt">어떤 손시로 시작할까?</h1></div>
+    <div class="stagehold" data-size="start"></div>
+    <div class="bbar"><button type="button" class="bigbtn" id="startGo">이 손시로 꾸미기</button></div>
+  </section>
+
+  <!-- 꾸미기 8단계 -->
+  <section class="scr" data-scr="step" aria-label="꾸미기">
+    <div class="topbar"><div class="prog" id="prog" role="progressbar" aria-valuemin="1" aria-valuemax="8"></div><span class="pnum" id="pnum">1/5</span></div>
+    <div class="stagehold" data-size="step"></div>
+    <div class="panel"><h2 class="sh" id="stepTitle"></h2><div id="stepBody"></div></div>
+    <div class="bbar three"><button type="button" class="arrb" id="stepPrev" aria-label="이전 단계"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span></span><button type="button" class="arrb" id="stepNext" aria-label="다음 단계"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="bigbtn fit" id="stepMake" hidden>생성하기</button></div>
+  </section>
+
+  <!-- 이름 짓기·저장 -->
+  <section class="scr" data-scr="name" aria-label="이름 짓기">
+    <div class="topbar"><h1 class="tt">이름을 지어 줘</h1></div>
+    <div class="stagehold" data-size="name"><p class="sname nlive" id="nameLive">깨두</p></div>
+    <div class="panel">
+      <div class="namerow">
+        <input id="charName" type="text" maxlength="12" value="깨두" aria-label="손시 이름" autocomplete="off" spellcheck="false" enterkeyhint="done">
+        <button type="button" class="namedice" id="nameDice" aria-label="랜덤 이름" title="랜덤 이름"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="4" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="8.5" cy="8.5" r="1.4" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="15.5" cy="8.5" r="1.4" fill="currentColor"/><circle cx="8.5" cy="15.5" r="1.4" fill="currentColor"/></svg></button>
+      </div>
+      <p class="hint">띄어쓰기 없이 한글 8자, 영문 12자까지</p>
+      <div class="row" id="bgRowHold"></div>
+    </div>
+    <div class="bbar three"><button type="button" class="arrb" data-back aria-label="이전"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span></span><button type="button" class="bigbtn fit" id="saveDoll">저장하기</button></div>
+  </section>
+
+  <!-- 메인 -->
+  <section class="scr" data-scr="main" aria-label="내 손시">
+    <header class="mhead">
+    <div class="stats" role="group" aria-label="누적 통계">
+      <button type="button" class="stat" data-k="visit" aria-expanded="false" aria-label="누적 방문객 수">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.4"/><path d="M2.8 20c.6-3.6 3.2-5.6 6.2-5.6s5.6 2 6.2 5.6"/><circle cx="17" cy="9" r="2.6"/><path d="M16.6 14.3c2.6.2 4.2 2 4.6 4.8"/></svg>
+        <b>–</b></button>
+      <button type="button" class="stat" data-k="made" aria-expanded="false" aria-label="누적 손시 생성 수">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="8" width="17" height="12" rx="5"/><path d="M7.5 8.2 8.6 4l2.4 4M16.5 8.2 15.4 4 13 8"/><circle cx="9.5" cy="13.6" r=".9" fill="currentColor"/><circle cx="14.5" cy="13.6" r=".9" fill="currentColor"/></svg>
+        <b>–</b></button>
+      <button type="button" class="stat" data-k="like" aria-expanded="false" aria-label="누적 좋아요 수">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7.5-4.4-7.5-10.2A4.3 4.3 0 0 1 12 7.3a4.3 4.3 0 0 1 7.5 2.5C19.5 15.6 12 20 12 20Z"/></svg>
+        <b>–</b></button>
+    </div>
+    <div class="stip" id="statTip" hidden role="status"><div class="bx"><strong id="stTitle"></strong><span id="stBody"></span></div></div>
+    <div class="spec" hidden>
+      <span class="chip">머리 : 몸 <b id="ratio">2.0 : 1</b></span>
+      <span class="chip">상체 : 하체 <b id="ratio2">1 : 1</b></span>
+      <span class="chip">질감 <b id="texChip">매트</b></span>
+      <span class="chip">버전 <b>v0.18.1</b></span>
+    </div>
+    </header>
+    <div class="stagehold" data-size="main"><div class="mbub" id="mbub" hidden></div><button type="button" class="editb" id="goEdit">수정</button></div>
+    <div class="mbtns one">
+      <button type="button" class="mbtn" id="goWall"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 15l4-4 3 3 2-2 3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>배경화면 만들기</button>
+    </div>
+  <footer><div class="sns"><a href="https://www.instagram.com/sonssies/" target="_blank" rel="noopener">instagram</a><a href="https://twitter.com/sonssies" target="_blank" rel="noopener">twitter</a></div><div class="copy">ⓒ 2026 sonssies. all rights reserved.</div></footer>
+  </section>
+
+  <!-- 배경화면 만들기 (준비 중) -->
+  <section class="scr" data-scr="wall" aria-label="배경화면 만들기">
+    <div class="topbar"><h1 class="tt">배경화면 만들기</h1></div>
+    <div class="scr-c center"><p class="soon">서비스 제작 중…</p><p class="lead">내 손시로 휴대폰 배경화면을 만드는 기능을 준비하고 있어요.</p></div>
+    <div class="bbar three"><button type="button" class="arrb" data-back aria-label="이전"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+  </section>
+</div>
+

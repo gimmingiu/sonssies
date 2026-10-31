@@ -19,7 +19,7 @@ const CSS=FONTS.map(([n,w,p])=>`@font-face{font-family:'${n}';font-weight:${w};s
   await p.route(/fonts\.gstatic\.com\/l\//,r=>r.fulfill({path:path.join(NM,'@fontsource',r.request().url().split('/l/')[1]),contentType:'font/woff2'}));
   // 저장 기능 흉내: 저장 버튼을 누르면 이미지 데이터를 window.__img에 담음
   await p.addInitScript(()=>{window.claude={use:async n=>n==='downloads'?{save:async({data})=>{const fr=new FileReader();await new Promise(r=>{fr.onload=r;fr.readAsDataURL(data)});window.__img=fr.result;return{status:'saved'}}}:null}});
-  await p.goto('file://'+path.join(ROOT,'src','dokkaebi-artifact.html'));await p.waitForTimeout(3500);
+  await p.goto('file://'+path.join(ROOT,'build','sonssies.html'));await p.waitForTimeout(3500);
   await (await p.$('#stage')).screenshot({path:'out_main.png'});
   await p.evaluate(()=>document.getElementById('doneBtn').click());await p.waitForTimeout(2500);
   await p.evaluate(()=>{window.__img=null;document.getElementById('saveImg').click()});

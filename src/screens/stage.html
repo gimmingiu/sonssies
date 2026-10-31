@@ -1,0 +1,22 @@
+<!-- 3D 미리보기(하나만): 지금 화면의 자리로 옮겨 다님 -->
+<div id="stageHome" hidden>
+    <div class="stage rot" id="stage">
+      <div class="stagebg" id="stageBg"></div>
+      <canvas id="c" aria-label="손시 캐릭터 3D 미리보기"></canvas>
+      <p class="sname" id="nameTitle">깨두</p>
+      <div class="busy" id="busy">다듬는 중…</div>
+      <div class="views" id="views">
+        <button data-a="0" aria-pressed="true">앞</button>
+        <button data-a="-0.785">3/4</button>
+        <button data-a="-1.571">옆</button>
+        <button data-a="3.1416">뒤</button>
+        <button type="button" id="spinBtn" aria-pressed="false" title="자동 회전">회전</button>
+      </div>
+      <div class="zoom" id="zoomBox">
+        <button type="button" id="zIn" aria-label="확대">+</button>
+        <div class="ztrack" id="zTrack" role="slider" tabindex="0" aria-label="확대 정도" aria-orientation="vertical" aria-valuemin="60" aria-valuemax="300" aria-valuenow="100"><div class="zfill" id="zFill"></div><div class="zthumb" id="zThumb"></div></div>
+        <button type="button" id="zOut" aria-label="축소">−</button>
+      </div>
+    </div>
+</div>
+

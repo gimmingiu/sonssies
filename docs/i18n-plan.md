@@ -33,7 +33,7 @@
 - 저장 파일명: 한국어 이름은 지금처럼 로마자 변환, 그 외 글자는 `dokkaebi_yyyymmdd_hhmmss.png`.
 
 ## 5. 구현 메모
-- `src/dokkaebi-artifact.html` 안에 `I18N={ko:{…},en:{…},ja:{…},zh:{…}}`와 `t(key)` 함수, `data-i18n` 속성으로 정적 문구 교체.
+- `src/` (새 파일 `src/js/core/i18n.js`)에 `I18N={ko:{…},en:{…},ja:{…},zh:{…}}`와 `t(key)` 함수, `data-i18n` 속성으로 정적 문구 교체.
 - GROUPS(슬라이더 정의)의 이름도 키로 바꿔 `t()`로 표시.
 - `<html lang>`과 OG 태그(사이트 빌드)도 언어 반영.
 - 확인: `tools/test_page.js`에 `?lang=` 별로 렌더해 글자 넘침·줄바꿈 점검 (일본어·중국어 폰트는 @fontsource/kosugi-maru, @fontsource/zcool-kuaile, @fontsource/noto-sans-jp, @fontsource/noto-sans-sc 로 대체 가능).

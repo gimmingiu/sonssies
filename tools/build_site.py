@@ -1,7 +1,9 @@
 # 아티팩트 파일(dokkaebi-turnaround.html) → 독립 웹사이트 index.html
 import sys,os
 ROOT=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-src=open(os.path.join(ROOT,'src','dokkaebi-artifact.html'),encoding='utf8').read()
+# 나눠 둔 소스(src/)를 먼저 한 파일로 합친 뒤(build/sonssies.html) 사이트용으로 바꿈
+import subprocess;subprocess.run([sys.executable,os.path.join(ROOT,'tools','assemble.py')],check=True)
+src=open(os.path.join(ROOT,'build','sonssies.html'),encoding='utf8').read()
 s=src
 def rep(a,b):
   global s

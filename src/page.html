@@ -1,0 +1,38 @@
+<title>Sonssies</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Gothic+Coding&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
+<style>
+@@include styles/main.css
+</style>
+@@include intro/intro.html
+
+@@include screens/app.html
+@@include screens/stage.html
+@@include screens/card.html
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(()=>{
+@@include js/core/params.js
+@@include js/render/renderer.js
+@@include js/render/shape.js
+@@include js/render/body-sdf.js
+@@include js/render/ears.js
+@@include js/render/character.js
+@@include js/render/camera.js
+@@include js/ui/controls.js
+@@include js/ui/name.js
+@@include js/card/compose.js
+@@include js/card/bubble.js
+@@include js/card/stickers.js
+@@include js/dev/hooks.js
+@@include js/card/page.js
+@@include js/ui/stats.js
+@@include js/card/save-image.js
+@@include js/core/boot.js
+@@include js/save/save.js
+@@include js/flow/flow.js
+@@include js/flow/egg.js
+@@include js/flow/init.js
+})();
+</script>

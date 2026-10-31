@@ -12,7 +12,7 @@ const ALL='hello,thanks,sorry,good,heart,what,going,eating,kkk,haha,doubt,proud'
   await p.route(/cdnjs/,r=>r.fulfill({path:path.join(NM,'three/build/three.min.js'),contentType:'application/javascript'}));
   await p.route(/fonts\.googleapis/,r=>r.fulfill({body:CSS,contentType:'text/css'}));
   await p.route(/fonts\.gstatic\.com\/l\//,r=>r.fulfill({path:path.join(NM,'@fontsource',r.request().url().split('/l/')[1]),contentType:'font/woff2'}));
-  await p.goto('file://'+path.join(ROOT,'src','dokkaebi-artifact.html'));await p.waitForTimeout(3500);
+  await p.goto('file://'+path.join(ROOT,'build','sonssies.html'));await p.waitForTimeout(3500);
   for(const id of (process.argv[2]||ALL).split(',')){
     const d=await p.evaluate(id=>window.__dkSticker(id),id);fs.writeFileSync(`stk_${id}.png`,Buffer.from(d.split(',')[1],'base64'));console.log('saved',`stk_${id}.png`);
   }

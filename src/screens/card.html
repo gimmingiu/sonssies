@@ -1,0 +1,55 @@
+<div class="result" id="result" hidden role="dialog" aria-modal="true" aria-label="완성된 손시">
+  <div class="rwrap">
+    <div class="rcard" id="rcard"><canvas id="resCv" width="1080" height="1920" aria-label="저장될 이미지 미리보기. 좌우로 끌어서 각도를 바꿀 수 있어요"></canvas>
+      <div class="bubhit" id="bubHit" hidden aria-label="말풍선: 끌어서 옮기고, 누르면 글을 쓸 수 있어요" role="button" tabindex="0"></div>
+      <div class="bubedit" id="bubEdit" hidden>
+        <textarea id="bubText" rows="1" maxlength="30" placeholder="텍스트 입력" aria-label="말풍선 글 (엔터로 줄바꿈)" autocomplete="off" enterkeyhint="enter">반가워!</textarea>
+        <span class="cnt" id="bubCnt">4/30</span>
+        <button type="button" id="bubDone">완료</button>
+      </div>
+    </div>
+    <p class="rhint">말풍선은 드래그하여 이동 가능하고, 누르면 글을 쓸 수 있어요.</p>
+    <div class="rside">
+      <div hidden><span class="t">이름</span>
+      <div class="namerow"><input id="resName" type="text" maxlength="12" aria-label="캐릭터 이름" autocomplete="off" spellcheck="false">
+        <button type="button" class="namedice" id="resDice" aria-label="랜덤 이름" title="랜덤 이름">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="4" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="8.5" cy="8.5" r="1.4" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="15.5" cy="8.5" r="1.4" fill="currentColor"/><circle cx="8.5" cy="15.5" r="1.4" fill="currentColor"/></svg>
+        </button></div></div>
+      <span class="t">포즈</span>
+      <div id="posesRow"></div>
+      <label class="tg" for="tagOn">이름표 <input id="tagOn" type="checkbox" checked></label>
+      <span class="t" id="tagColT" hidden>이름표 색</span>
+      <div class="colors" id="tagCols" hidden>
+        <button class="sw" type="button" data-c="" id="tagAuto" aria-label="기본 (피부색에 맞춘 색)" title="기본"></button>
+        <button class="sw" type="button" style="background:#e0607e" data-c="#e0607e" aria-label="장미"></button>
+        <button class="sw" type="button" style="background:#f09a36" data-c="#f09a36" aria-label="귤"></button>
+        <button class="sw" type="button" style="background:#4f9d69" data-c="#4f9d69" aria-label="초록"></button>
+        <button class="sw" type="button" style="background:#5b6ee0" data-c="#5b6ee0" aria-label="파랑"></button>
+        <input id="tagPick" type="color" value="#2b8599" aria-label="이름표 색 직접 고르기" title="이름표 색 직접 고르기">
+      </div>
+      <label class="tg" for="bubOn">말풍선 <input id="bubOn" type="checkbox" checked></label>
+      <div class="pbtns">
+        <span class="pbtns" role="group" aria-label="말풍선 꼬리" id="bubTail">
+          <button type="button" class="pbtn" data-v="talk" aria-pressed="true">기본</button>
+          <button type="button" class="pbtn" data-v="think" aria-pressed="false">생각</button>
+        </span>
+      </div>
+      <span class="t">배경색</span>
+      <div class="colors bgset" id="bgs2">
+        <button class="sw bgdef" type="button" data-bg="" aria-label="투명 (기본)" title="투명 (기본)"></button>
+        <button class="sw" type="button" style="background:#ffffff" data-bg="#ffffff" aria-label="흰색"></button>
+        <button class="sw" type="button" style="background:#f4ecdc" data-bg="#f4ecdc" aria-label="크림"></button>
+        <button class="sw" type="button" style="background:#26314a" data-bg="#26314a" aria-label="남색"></button>
+        <button class="sw" type="button" style="background:#141414" data-bg="#141414" aria-label="검정"></button>
+        <input class="bgpick" type="color" value="#c4d1d3" aria-label="배경색 직접 고르기" title="배경색 직접 고르기">
+      </div>
+      <div class="ract">
+        <button type="button" class="ghostbtn" id="backBtn">돌아가기</button>
+        <button type="button" class="bigbtn" id="saveImg">이미지로 저장</button>
+      </div>
+      <p class="rnote" id="saveMsg" aria-live="polite"></p>
+    </div>
+    <footer class="rfoot"><div class="sns"><a href="https://www.instagram.com/sonssies/" target="_blank" rel="noopener">instagram</a><a href="https://twitter.com/sonssies" target="_blank" rel="noopener">twitter</a></div><div class="copy">ⓒ 2026 sonssies. all rights reserved.</div></footer>
+  </div>
+</div>
+
