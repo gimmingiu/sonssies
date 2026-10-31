@@ -23,6 +23,7 @@ function makeThumbs(k){clearTimeout(thumbT);thumbT=setTimeout(()=>{
 [['eyeTypes','eyeRow'],['mouthTypes','mouthRow']].forEach(([id,row])=>{
   const box=$(id);box.classList.add('tcards');
   box.querySelectorAll('.pbtn').forEach(b=>{const t=b.textContent.replace(/\s*[∩∪><ω]+.*$/,'').trim();b.classList.add('tcard');b.innerHTML=`<img alt=""><span>${t}</span>`});
+  box.querySelectorAll('[data-v]').forEach(b=>b.addEventListener('click',()=>partBump(id==='eyeTypes'?'눈':'입')));   // 고른 부위만 말랑
   const r=$(row),grp=r.parentNode,fine=document.createElement('details');fine.className='fine';fine.innerHTML='<summary>세부 조정</summary><div class="fine-in"></div>';
   [...grp.children].filter(el=>el!==r&&el.classList.contains('row')).forEach(el=>fine.querySelector('.fine-in').appendChild(el));
   grp.appendChild(fine);

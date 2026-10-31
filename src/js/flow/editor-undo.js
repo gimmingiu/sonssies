@@ -4,7 +4,7 @@ const snapP=()=>{const o={};Object.keys(P).forEach(k=>{if(!POSE_KEYS.includes(k)
 function undoStart(){UNDO.list=[snapP()];UNDO.i=0;UNDO.base=UNDO.list[0];undoUI()}
 function undoRecord(){if(UNDO.mute||scrNow!=='step'||UNDO.i<0)return;clearTimeout(UNDO.t);UNDO.t=setTimeout(()=>{const s=snapP();if(s===UNDO.list[UNDO.i])return;
   UNDO.list=UNDO.list.slice(0,UNDO.i+1);UNDO.list.push(s);if(UNDO.list.length>60)UNDO.list.shift();UNDO.i=UNDO.list.length-1;undoUI()},380)}
-function undoApply(s){UNDO.mute=true;Object.assign(P,JSON.parse(s));snapAll();syncUI();rebuild();UNDO.mute=false;bump()}
+function undoApply(s){UNDO.mute=true;Object.assign(P,JSON.parse(s));snapAll();syncUI();rebuild();UNDO.mute=false;partBump('all')}
 function undoUI(){$('unUndo').disabled=UNDO.i<=0;$('unRedo').disabled=UNDO.i>=UNDO.list.length-1;$('unReset').disabled=snapP()===UNDO.base}
 {const box=document.createElement('div');box.className='undos';
  const ic={unUndo:['되돌리기','<path d="M9 7 4.5 11.5 9 16"/><path d="M5 11.5h9a5 5 0 0 1 0 10h-2"/>'],unRedo:['다시하기','<path d="m15 7 4.5 4.5L15 16"/><path d="M19 11.5h-9a5 5 0 0 0 0 10h2"/>'],

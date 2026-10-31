@@ -16,7 +16,7 @@ const PART_CARDS={
  '코':{shot:'face',items:[['네모',{}],['작은네모',{noseSize:S('noseSize',-3)}],['큰네모',{noseSize:S('noseSize',3)}],
    ['동글',{noseSq:S('noseSq',-5)}],['작은동글',{noseSq:S('noseSq',-5),noseSize:S('noseSize',-3)}],['큰동글',{noseSq:S('noseSq',-5),noseSize:S('noseSize',3)}]]},
  '볼터치':{shot:'cheek',items:[['꾸러기',{blush:true,blushType:'clay',blushColor:'#f6b3a9'}],['데헷',{blush:true,blushType:'hatch',blushColor:'#f0607c'}],
-   ['개구쟁이',{blush:true,blushType:'freckle'}],['수줍',{blush:true,blushType:'blur',blushColor:'#ffa3a3'}],['발그레',{blush:true,blushType:'blur',blushColor:'#ff6a3d'}],['없음',{blush:false}]]},
+   ['개구쟁이(클레이)',{blush:true,blushType:'freckle'}],['개구쟁이(그림)',{blush:true,blushType:'freckle2'}],['수줍',{blush:true,blushType:'blur',blushColor:'#ffa3a3'}],['발그레',{blush:true,blushType:'blur',blushColor:'#ff6a3d'}],['없음',{blush:false}]]},
  '볼살':{shot:'cheek',items:[['빵빵',{cheek:S('cheek',5)}],['통통',{cheek:S('cheek',3)}],['없음',{}]]},
  '몸':{shot:'body',base:{lowerW:1},items:[['깨두',{}],['꼬마',{bodyLen:0.6,upperW:0.92,lowerW:0.95}],['꼼디',{upperW:1.3,lowerW:1.42,bodyD:1.22}]]},
  '팔':{shot:'body',items:[['보통',{}],['짧뚱',{armLen:S('armLen',-4)}],['길쭉',{armLen:S('armLen',4)}]]},
@@ -28,7 +28,7 @@ const cardVals=(name,it)=>{const v={};groupKeys(name).forEach(k=>v[k]=DEF[k]);re
 const sameVal=(k,a,b)=>k in META?stepOf(k,a)===stepOf(k,b):typeof a==='number'&&typeof b==='number'?Math.abs(a-b)<1e-6:a===b;
 function cardMatch(name,it){const v=cardVals(name,it);return Object.keys(v).every(k=>sameVal(k,P[k],v[k]))}
 function cardSet(name,it){const v=cardVals(name,it);Object.keys(v).forEach(k=>P[k]=k in META?toVal(k,stepOf(k,v[k])):v[k])}
-function cardApply(name,it){cardSet(name,it);syncUI();rebuild();bump()}
+function cardApply(name,it){cardSet(name,it);syncUI();rebuild();partBump(name)}
 function markCards(){document.querySelectorAll('.pcards').forEach(box=>{const name=box.dataset.part,set=PART_CARDS[name];
   box.querySelectorAll('.tcard').forEach((b,i)=>b.setAttribute('aria-pressed',cardMatch(name,set.items[i])))})}
 // 카드 만들기: 각 부위 묶음 맨 위에 카드, 원래 있던 슬라이더·스위치는 '세부 조정' 안으로

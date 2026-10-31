@@ -1143,20 +1143,22 @@ function build(M,B){
   const hgeo=blob(hwA,hb,0.74*P.headD,e,0.06,72);
   // 볼살: 얼굴 아래 양옆을 바깥(앞·옆)으로 통통하게 부풀림. 입 '냠냠'(ㅡ( 입)은 괄호 쪽 볼을 동그랗게 더 부풀림(음식을 머금은 모습)
   const puff=P.mouthType==='puff';
-  if(P.cheek>0||puff){const pa=hgeo.attributes.position,na=hgeo.attributes.normal,amp=0.3*P.cheek,cxk=hwA*0.58,cyk=-hb*0.4;
+  if(P.cheek>0||puff){const pa=hgeo.attributes.position,na=hgeo.attributes.normal,amp=0.26*P.cheek,cxk=hwA*0.58,cyk=-hb*0.4;
     const pyk=clamp(P.mouthY*P.headH,-hb*0.8,-hb*0.1)+hb*0.02,pxk=hwA*0.5;
     for(let i=0;i<pa.count;i++){const x=pa.getX(i),y=pa.getY(i),nz=na.getZ(i);if(nz<-0.2)continue;
       let w=0;
-      if(amp>0){const wy=Math.exp(-(((y-cyk)/(hb*0.46))**2)), wx=0.62+0.38*Math.exp(-(((Math.abs(x)-cxk)/(hwA*0.32))**2)), side=Math.exp(-((Math.max(0,Math.abs(x)-hwA*0.82)/(hwA*0.18))**2));
-        w=amp*wy*wx*side*Math.min(1,(nz+0.2)/0.6)}   // 가운데(입·턱)도 62%만큼, 볼은 가장 크게
+      if(amp>0){const wy=y<cyk?1:Math.exp(-(((y-cyk)/(hb*0.42))**2)), wx=0.82+0.18*Math.exp(-(((Math.abs(x)-cxk)/(hwA*0.32))**2)), side=Math.exp(-((Math.max(0,Math.abs(x)-hwA*0.82)/(hwA*0.18))**2));
+        w=amp*wy*wx*side*Math.min(1,(nz+0.45)/0.6)}   // 볼부터 턱까지 아래쪽 얼굴 전체가 통통하게(턱 가운데도 82%)
       if(puff&&x>0){const r=Math.hypot((x-pxk)/(hwA*0.3),(y-pyk)/(hb*0.3));w+=0.11*Math.exp(-r*r)*Math.min(1,(nz+0.2)/0.6)}   // 'ㅡ(' 쪽 볼만 볼록
-      if(w<1e-4)continue;pa.setXYZ(i,x+na.getX(i)*w,y+na.getY(i)*w*0.6,pa.getZ(i)+nz*w)}
+      if(w<1e-4)continue;pa.setXYZ(i,x+na.getX(i)*w,y+na.getY(i)*w*(na.getY(i)<0?0.9:0.6),pa.getZ(i)+nz*w)}
     hgeo.computeVertexNormals()}
-  const head=mesh(hgeo,hm);head.position.y=hy;HI.add(head);
+  const head=mesh(hgeo,hm);head.position.y=hy;head.userData.part='head';HI.add(head);
   RATIO=(2*hb)/(L-0.08);
   g.updateMatrixWorld(true);
   const ray=new THREE.Raycaster();
+  let TAG='';   // 지금 붙이는 부위 이름(수정한 부위만 움직이는 모션에서 찾을 때 씀)
   function stick(target,m,x,y,lift=0,rotZ=0){
+    if(!m.userData.part)m.userData.part=TAG;
     ray.set(new THREE.Vector3(x,y,6),new THREE.Vector3(0,0,-1));
     const h=ray.intersectObject(target)[0];if(!h)return false;
     const n=h.face.normal.clone().transformDirection(target.matrixWorld);
@@ -1168,7 +1170,7 @@ function build(M,B){
     const geo=new THREE.PlaneGeometry(w,h,12,12),pa=geo.attributes.position;
     for(let i=0;i<pa.count;i++){const px=x+pa.getX(i),py=y+pa.getY(i);ray.set(new THREE.Vector3(px,py,6),new THREE.Vector3(0,0,-1));const hit=ray.intersectObject(target)[0];
       if(hit){const n=hit.face.normal.clone().transformDirection(target.matrixWorld);const q=hit.point.clone().addScaledVector(n,0.004);pa.setXYZ(i,q.x,q.y,q.z)}else pa.setXYZ(i,px,py,-1)}
-    geo.computeVertexNormals();const m=new THREE.Mesh(geo,mat);m.renderOrder=2;HI.add(m);return m}
+    geo.computeVertexNormals();const m=new THREE.Mesh(geo,mat);m.renderOrder=2;m.userData.part=TAG;HI.add(m);return m}
   // ---- 얼굴 (항상 얼굴 영역 안, 서로 겹치지 않게 제한) ----
   const faceTop=hb*0.78, faceBot=-hb*0.8, faceX=hwA*0.72;
   const ns=P.noseSize, nhw=0.125*ns, nhh=0.083*ns;
@@ -1199,24 +1201,25 @@ function build(M,B){
     let rz=0;
     if(P.eyeType==='content')rz=Math.PI;
     if(P.eyeType==='squint'&&s>0)rz=Math.PI;
-    stick(head,E.m,s*ex,hy+ey,E.lift,rz);
+    TAG='eye';stick(head,E.m,s*ex,hy+ey,E.lift,rz);TAG='brow';
     const brow=mesh(capsule(bl,bth),dark);brow.scale.z=0.7;
     const asy=s>0?(P.browAsym||0):0;stick(head,brow,s*bx,hy+by+0.07*asy/25,0.006,s*ang-asy*Math.PI/180);
-    if(P.blush){const bx0=s*Math.min(faceX,ex+0.22),by0=hy+ey-0.13+P.blushY,bt=P.blushType;
+    TAG='blush';if(P.blush){const bx0=s*Math.min(faceX,ex+0.22),by0=hy+ey-0.13+P.blushY,bt=P.blushType;
       if(bt==='hatch'){for(let j=-1;j<=1;j++){const c=mesh(capsule(0.1,0.015),pink);c.scale.z=0.7;stick(head,c,bx0+j*0.05,by0,0.005,1.05)}}   // 빗금 세 줄
-      else if(bt==='freckle'){}   // 주근깨는 코를 붙인 뒤 한 띠로(아래)
+      else if(bt==='freckle'||bt==='freckle2'){}   // 주근깨는 코를 붙인 뒤 한 띠로(아래)
       else if(bt==='blur')patch(head,bx0,by0,0.36,0.27,blurMat(P.blushColor));   // 볼에 번지듯 물든 볼터치
       else stick(head,mesh(blob(0.11,0.075,0.012,0.9),pink),bx0,by0,0.004)}
   }
   const noseM=mesh(blob(nhw,nhh,0.055*ns,0.95-0.6*P.noseSq),white);stick(head,noseM,0,hy+ny,0.025*ns);   // 모양: 0 둥근 ↔ 1 각진
-  // 주근깨: 한쪽 볼 → 콧잔등 → 다른 쪽 볼로 이어지는 띠. 색은 피부색보다 조금 진하게
-  if(P.blush&&P.blushType==='freckle'){const fm=freckleMat(P.color),fr=0.016;
-    const y0=ny+nhh*0.3+P.blushY,y1=Math.min(y0-0.03,ey-er-0.07+P.blushY),x0=nhw+0.035,x1=Math.max(x0+0.12,ex+0.2);
-    const T=[[0,0],[.18,.014],[.36,-.008],[.52,.016],[.7,-.01],[.88,.012],[.27,-.038],[.62,-.042]];
-    for(const s of[-1,1])T.forEach(([t,j])=>stick(head,mesh(blob(fr,fr,0.007,0.9),fm),s*(x0+(x1-x0)*t),hy+y0+(y1-y0)*t+j,0.004));
-    noseM.updateMatrixWorld(true);
-    [[-0.5,0.3],[-0.15,0.52],[0.2,0.28],[0.52,0.48]].forEach(([dx,dy2])=>stick(noseM,mesh(blob(fr*0.9,fr*0.9,0.006,0.9),fm),dx*nhw,hy+ny+dy2*nhh,0.002))}
+  // 주근깨(그림 참고): 한쪽 볼 → 눈 사이 콧잔등(코 위로 산 모양) → 다른 쪽 볼. 좌우는 따로 흩뿌려 멀리선 대칭, 가까이선 비대칭
+  //   freckle: 클레이(살짝 도톰한 점) · freckle2: 피부에 물든 점(그림)
+  TAG='blush';
+  if(P.blush&&(P.blushType==='freckle'||P.blushType==='freckle2')){
+    const dots=freckleDots(ny,nhw,nhh,ey,er,ex,P.blushY),fm=freckleMat(P.color);
+    if(P.blushType==='freckle')dots.forEach(([x,y,r])=>stick(head,mesh(blob(r,r,0.005,0.9),fm),x,hy+y,0.003));
+    else{const bx=0,bw=2*(ex+0.2),byc=(ny+ey)/2+P.blushY,bh=0.42;patch(head,bx,hy+byc,bw,bh,freckleMat2(P.color,dots,bx,byc,bw,bh))}}
   // 입
+  TAG='mouth';
   const mW=clamp(P.mouthW,0.6,1.7), mt=P.mouthType;
   if(mt==='open'){
     const oh=0.075*Math.sqrt(mW), ow=0.055*mW, gO=new THREE.Group();
@@ -1227,10 +1230,11 @@ function build(M,B){
     stick(head,mesh(blob(0.03*Math.sqrt(mW),0.038*Math.sqrt(mW),0.018,0.95),dark),0,hy+my-0.01,0.006);
   }else if(mt==='flat'){
     const c=mesh(capsule(0.075*mW,tr),dark);c.scale.z=0.7;stick(head,c,0,hy+my,0.004);
-  }else if(mt==='munch'){   // 야옹: 코 바로 밑에서 갈라지는 'ㅅ'자 입
-    const L=0.1*Math.sqrt(mW),a=0.72,ay=ny-nhh*0.92;
+  }else if(mt==='munch'){   // 야옹: 코 밑에서 짧게 내려온 뒤 양옆으로 갈라지는 'ㅅ'(人)자 입
+    const L=0.085*Math.sqrt(mW),a=1.03,top=ny-nhh*0.7,ay=ny-nhh-0.04,st=mesh(capsule(top-ay+tr,tr),dark);st.scale.z=0.7;
+    stick(head,st,0,hy+(top+ay)/2,0.004,Math.PI/2);
     for(const k of[-1,1]){const c=mesh(capsule(L,tr),dark);c.scale.z=0.7;
-      stick(head,c,k*Math.sin(a)*L/2,hy+ay-Math.cos(a)*L/2,0.004,-k*(Math.PI/2-a))}
+      stick(head,c,k*Math.sin(a)*(L/2-tr*0.5),hy+ay-Math.cos(a)*(L/2-tr*0.5),0.004,-k*(Math.PI/2-a))}
   }else if(mt==='puff'){   // 냠냠: 'ㅡ(' 모양(입에 먹을 것을 담고 있는 표현)
     const lw=0.085*mW,c=mesh(capsule(lw,tr),dark);c.scale.z=0.7;stick(head,c,-0.02,hy+my,0.004);
     const R=0.05,arc=Math.PI*0.62,gP=new THREE.Group(),tor=mesh(new THREE.TorusGeometry(R,tr,12,28,arc),dark);tor.rotation.z=Math.PI-arc/2;tor.scale.z=0.75;gP.add(tor);
@@ -1293,8 +1297,26 @@ const BL_MATS={};
 const BLUR_TEX=(()=>{const cv=document.createElement('canvas');cv.width=cv.height=128;const x=cv.getContext('2d'),g=x.createRadialGradient(64,64,0,64,64,64);
   g.addColorStop(0,'#fff');g.addColorStop(0.35,'#ddd');g.addColorStop(0.75,'#444');g.addColorStop(1,'#000');x.fillStyle=g;x.fillRect(0,0,128,128);return new THREE.CanvasTexture(cv)})();
 function blurMat(hex){const k='b'+hex;return BL_MATS[k]||(BL_MATS[k]=new THREE.MeshStandardMaterial({color:lin(hex),roughness:0.9,metalness:0,transparent:true,opacity:0.85,alphaMap:BLUR_TEX,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2}))}
-function freckleMat(skin){const c=new THREE.Color(skin),h={};c.getHSL(h);c.setHSL(h.h,Math.min(1,h.s+0.12),Math.max(0.12,h.l-0.3));const k='f'+c.getHexString();
-  return BL_MATS[k]||(BL_MATS[k]=clay('#'+c.getHexString(),0.8,false,true))}
+// 주근깨 색: 피부와 같은 색 계열에서 조금만 진하게(명도·채도 차이가 크지 않게)
+function freckleHex(skin){const c=new THREE.Color(skin),h={};c.getHSL(h);c.setHSL(h.h,Math.min(1,h.s*0.92+0.02),Math.max(0.15,h.l-0.13));return '#'+c.getHexString()}
+function freckleMat(skin){const hx=freckleHex(skin),k='f'+hx;return BL_MATS[k]||(BL_MATS[k]=clay(hx,0.85,false,true))}
+// 주근깨 점 자리: 산 모양 띠를 따라 좌우 따로 흩뿌림(늘 같은 자리가 나오게 정해진 난수)
+function freckleDots(ny,nhw,nhh,ey,er,ex,oy){
+  let seed=7;const rnd=()=>{seed=(seed*16807)%2147483647;return (seed-1)/2147483646};
+  const A=[0,ny+nhh+0.075+oy],out=[];
+  for(const s of[-1,1]){const C=[s*(ex+0.1),ny-nhh*0.35+oy],n=s<0?21:23;
+    for(let i=0;i<n;i++){const t=(i+rnd()*0.9)/n,sag=-0.035*Math.sin(Math.PI*t),px=A[0]+(C[0]-A[0])*t,py=A[1]+(C[1]-A[1])*t+sag;
+      const off=(rnd()-0.5)*0.075,x=px+off*0.55,y=py+off,r=0.0085+rnd()*0.0045;
+      if(Math.abs(x)<nhw*1.05&&Math.abs(y-ny)<nhh*1.05)continue;   // 코에 가리는 점은 뺌
+      out.push([x,y,r])}}
+  return out}
+// 그림 주근깨: 점을 그린 투명 그림을 얼굴에 착 붙임(그림 하나를 계속 고쳐 씀)
+const FR_CV=document.createElement('canvas');FR_CV.width=FR_CV.height=512;const FR_TEX=new THREE.CanvasTexture(FR_CV);let FR_MAT=null;
+function freckleMat2(skin,dots,cx,cy,w,h){const x=FR_CV.getContext('2d');x.clearRect(0,0,512,512);x.fillStyle='#fff';
+  dots.forEach(([dx,dy,r])=>{const u=(dx-(cx-w/2))/w*512,v=(1-(dy-(cy-h/2))/h)*512,rx=r/w*512*1.05,ry=r/h*512*1.05;x.beginPath();x.ellipse(u,v,rx,ry,0,0,Math.PI*2);x.fill()});
+  FR_TEX.needsUpdate=true;
+  if(!FR_MAT)FR_MAT=new THREE.MeshStandardMaterial({roughness:0.9,metalness:0,transparent:true,alphaMap:FR_TEX,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2});
+  FR_MAT.color.copy(lin(freckleHex(skin)));FR_MAT.opacity=0.95;return FR_MAT}
 // ---------- 카메라 / 배치 ----------
 // 기본 몸 길이·머리 높이로 선 깨두의 키(뿔 자리 포함). 카메라 거리는 이 키 기준으로 고정하고, 이보다 큰 손시만 그만큼 물러남
 const REF_H=0.78*1+2*0.68*1-0.08+0.3;
@@ -1308,7 +1330,10 @@ function layout(){
   const ch=frameH();   // 카메라는 기본 키(깨두) 기준으로 고정 → 작은 손시는 작게 보임. 더 큰 손시만 물러남
   persp.aspect=asp;let d=(asp<1?10.5:8.2)*ch/2.2;const need=(Math.max(charW,2.6)*0.5*1.18)/(Math.tan(persp.fov*Math.PI/360)*asp);if(need>d)d=need;
   const sh=stage.parentNode&&stage.parentNode.dataset?stage.parentNode.dataset.size:'';const tyK=sh==='main'?0.63:0.46;   // 메인은 손시가 박스 아래쪽에 서 있게(시선을 조금 위로)
-  camBase={d,y:ch*0.8,ty:ch*tyK};placePersp();persp.updateProjectionMatrix();
+  camBase={d,y:ch*0.8,ty:ch*tyK,sh:0};placePersp();persp.updateProjectionMatrix();
+  // 메인: 발 아래 남는 여백의 절반만큼 손시를 더 아래로(화면 크기와 상관없이 같은 비율). 시선과 카메라를 함께 내려서 각도는 그대로
+  if(sh==='main'){persp.updateMatrixWorld(true);const v=new THREE.Vector3(0,0,0).project(persp),gap=h-(1-v.y)/2*h,visH=2*persp.position.distanceTo(new THREE.Vector3(0,camBase.ty,0))*Math.tan(persp.fov*Math.PI/360);
+    camBase.sh=gap/2/h*visH;placePersp()}
 }
 function dispose(o){o.traverse(m=>{if(m.geometry&&!m.userData.keep)m.geometry.dispose();if(m.material&&m.material.type==='ShadowMaterial')m.material.dispose()})}
 let mats=null,earMats=[],depthOnly=null;
@@ -1340,7 +1365,7 @@ let camBase={d:8,y:1.8,ty:1},zoom=1,zoomT=1;
 let focusK=0,focusKT=0,focusH=0;
 // 화면 옮기기(꾸미기에서 확대한 뒤 끌어서 보고 싶은 부위를 가운데로): 시선을 옆·위아래로 panX·panY만큼
 let panX=0,panY=0;
-function placePersp(){const z=zoom;let ty=camBase.ty+(z-1)*0.18*camBase.ty;if(focusK>1e-3)ty+=(focusH-ty)*focusK;ty+=panY;persp.position.set(panX,ty+(camBase.y-camBase.ty)/z,camBase.d/z);persp.lookAt(panX,ty,0)}
+function placePersp(){const z=zoom;let ty=camBase.ty+(z-1)*0.18*camBase.ty;if(focusK>1e-3)ty+=(focusH-ty)*focusK;ty+=panY+(camBase.sh||0);persp.position.set(panX,ty+(camBase.y-camBase.ty)/z,camBase.d/z);persp.lookAt(panX,ty,0)}
 function panBy(dx,dy){const k=2*(camBase.d/zoom)*Math.tan(persp.fov*Math.PI/360)/Math.max(1,stage.clientHeight);
   panX=clamp(panX-dx*k,-charW*0.55,charW*0.55);panY=clamp(panY+dy*k,-charH*0.75,charH*0.75);placePersp()}
 // 부위로 옮겨 갈 때: 각도·확대·시선·화면 위치를 한꺼번에 천천히 시작해서 천천히 멈추게(툭 튀지 않게)
@@ -1880,7 +1905,7 @@ window.__dkApply=o=>apply(o,true);
 window.__dkHead=(px=1024,headOnly=true,span=1.6,dy=0,layer='')=>{   // 정면 머리 렌더(아이콘·파비콘·인트로용). layer: ''=전부, 'base'=귀·뿔 뺀 머리, 'ear-1'/'ear1'/'horn'=그 부분만
   const c=chars[0],HG=c.userData.HG;angle=0;c.rotation.y=0;c.updateMatrixWorld(true);
   const vis=c.children.map(o=>o.visible);if(headOnly)c.children.forEach(o=>{o.visible=(o===HG)});
-  const tv=[];if(layer)HG.traverse(o=>{if(!o.isMesh)return;tv.push([o,o.visible]);let pt=null,q=o;while(q&&q!==HG){if(q.userData.part){pt=q.userData.part;break}q=q.parent}o.visible=layer==='base'?!pt:pt===layer});
+  const tv=[];if(layer)HG.traverse(o=>{if(!o.isMesh)return;tv.push([o,o.visible]);let pt=null,q=o;while(q&&q!==HG){if(/^(ear|horn)/.test(q.userData.part||'')){pt=q.userData.part;break}q=q.parent}o.visible=layer==='base'?!pt:pt===layer});
   const hv=new THREE.Vector3();HG.getWorldPosition(hv);hv.y+=0.68*P.headH*0.75+dy;
   const pr=renderer.getPixelRatio(),fov=persp.fov,asp=persp.aspect,pos=persp.position.clone(),q=persp.quaternion.clone();
   renderer.setPixelRatio(1);renderer.setSize(px,px,false);persp.aspect=1;persp.fov=10;
@@ -1889,6 +1914,7 @@ window.__dkHead=(px=1024,headOnly=true,span=1.6,dy=0,layer='')=>{   // 정면 �
   tv.forEach(([o,v])=>{o.visible=v});c.children.forEach((o,i)=>{o.visible=vis[i]});persp.fov=fov;persp.aspect=asp;persp.position.copy(pos);persp.quaternion.copy(q);persp.updateProjectionMatrix();
   renderer.setPixelRatio(pr);layout();return u};
 window.__dkChar=(q=1)=>{angle=0;return renderChar(q).img.toDataURL('image/png')};
+window.__dkFeet=()=>{const v=new THREE.Vector3(0,0,0).project(persp);return {feet:(1-v.y)/2*stage.clientHeight,h:stage.clientHeight}};   // 발끝이 미리보기 박스 위에서 몇 px인지
 const resCv=$('resCv');let pv=0;
 function placeBubHit(){const h=$('bubHit');if(!h)return;const b=bubbleRect;h.hidden=!b;if(!b)return;
   Object.assign(h.style,{left:(b.x/1080*100)+'%',top:(b.y/1920*100)+'%',width:(b.w/1080*100)+'%',height:(b.h/1920*100)+'%'})}
@@ -2092,9 +2118,12 @@ function show(st,dir){
     if(editing){editing=false;if(ST.doll)loadDoll(ST.doll)}            // 꾸미다 저장하지 않고 돌아오면 원래대로
     setPose(ST.pose,false);                                             // 메인에서 고른 포즈
     if(ST.doll)setBg(ST.doll.bg||'');
-    faceFront();angle=target;sayLine(sayMood);sayMood='';}
+    faceFront();angle=target;
+    if(enterSpin){enterSpin=false;const m=sayMood;$('mbub').hidden=true;bounceT0=0;popT0=spinT0=performance.now();clearTimeout(sayT);sayT=setTimeout(()=>{if(scrNow==='main')sayLine(m)},980)}   // 돌며 등장이 끝나면 말풍선 뿅
+    else sayLine(sayMood);
+    sayMood='';}
   if(st.scr==='card'){faceFront();angle=target;if(ST.doll)setBg(ST.doll.bg||'');openResult()}
-  if(st.scr!=='main')$('mbub').hidden=true;
+  if(st.scr!=='main'){$('mbub').hidden=true;clearTimeout(sayT)}
   layout();scrollTo(0,0);persistSoon();
 }
 function faceFront(){spinning=false;$('spinBtn').setAttribute('aria-pressed',false);target=Math.round(angle/(2*Math.PI))*2*Math.PI;setViewPressed('0')}
@@ -2123,12 +2152,12 @@ function saveBarCheck(){if(scrNow!=='step')return;const end=innerHeight+scrollY>
 addEventListener('scroll',saveBarCheck,{passive:true});addEventListener('resize',saveBarCheck);
 try{new ResizeObserver(saveBarCheck).observe($('stepBody'))}catch(_){}
 // 이름 짓기 → 저장하기. 이름이 비어 있으면 입력칸을 흔들어 알려 줌
-let sayMood='';   // 다음에 메인에 들어갈 때 말풍선 상황(lines.js): 처음 만든 뒤 'first', 수정해서 바뀐 뒤 'edited'
+let sayMood='',enterSpin=false;   // enterSpin: 이름 짓고 저장한 뒤 메인에서 돌며 등장   // 다음에 메인에 들어갈 때 말풍선 상황(lines.js): 처음 만든 뒤 'first', 수정해서 바뀐 뒤 'edited'
 $('saveDoll').onclick=()=>{setName($('charName').value);
   if(!charName){const inp=$('charName');inp.classList.remove('nope');void inp.offsetWidth;inp.classList.add('nope');inp.focus();return}
   const before=ST.done&&ST.doll?JSON.stringify(ST.doll.p):null;
   ST.doll=snapDoll();sayMood=!ST.done?'first':before!==JSON.stringify(ST.doll.p)?'edited':'';
-  ST.done=true;ST.hatched=true;delete ST.draft;Save.commit();editing=false;resetTo({scr:'main'})};
+  ST.done=true;ST.hatched=true;delete ST.draft;Save.commit();editing=false;enterSpin=true;resetTo({scr:'main'})};
 $('goEdit').onclick=()=>{editing=true;POSE_KEYS.forEach(k=>P[k]=DEF[k]);syncUI();rebuild();go({scr:'step',step:0})};   // 꾸밀 때는 기본 포즈로
 // 메인 포즈: 기본·차렷·앉기·갸우뚱 (고른 포즈는 저장해 둠)
 function setPose(n,anim){n=POSES[n]?n:'기본';const same=POSE_KEYS.every(k=>P[k]===(k in POSES[n]?POSES[n][k]:DEF[k]));
@@ -2140,7 +2169,7 @@ if($('goCard'))$('goCard').onclick=()=>go({scr:'card'});
 $('goWall').onclick=()=>go({scr:'wall'});
 
 // 메인: 말풍선(들어올 때마다, 누를 때마다 다른 말 · 멘트는 lines.js) + 누르면 통통
-let bounceT0=0,popT0=0,spinT0=0;
+let bounceT0=0,popT0=0,spinT0=0,bounceK=1,sayT=0;
 function sayLine(mood){const b=$('mbub');b.textContent=pickLine(mood);b.hidden=false;b.classList.remove('pop');void b.offsetWidth;b.classList.add('pop')}
 {let tx=0,ty=0,tt=0;
  canvas.addEventListener('pointerdown',e=>{tx=e.clientX;ty=e.clientY;tt=performance.now()});
@@ -2161,11 +2190,11 @@ function flowFrame(now){
   let s=1,dy=0,sx=1,sy=1,spin=0;
   if(popT0){const t=Math.min(1,(now-popT0)/(spinT0?900:750));s=t<0.5?0.15+0.97*Math.sin(t/0.5*Math.PI/2):1.12-0.12*Math.sin((t-0.5)/0.5*Math.PI/2);if(t>=1){popT0=0;s=1}}
   if(spinT0){const t=Math.min(1,(now-spinT0)/900),e=1-Math.pow(1-t,3);spin=(1-e)*Math.PI*2;if(t>=1)spinT0=0}
-  if(bounceT0){const t=(now-bounceT0)/BOUNCE_MS;if(t>=1)bounceT0=0;else{const b=bounceAt(t);dy=b.dy;sy=1+b.q;sx=1-b.q*0.55}}
+  if(bounceT0){const t=(now-bounceT0)/BOUNCE_MS;if(t>=1){bounceT0=0;bounceK=1}else{const b=bounceAt(t);dy=b.dy*bounceK;sy=1+b.q*bounceK;sx=1-b.q*0.55*bounceK}}
   c.scale.set(s*sx,s*sy,s*sx);c.position.y=dy;if(spin)c.rotation.y=angle+spin;
   if(scrNow==='main'){const b=$('mbub');if(!b.hidden){const v=new THREE.Vector3(0,(charH+0.12)*s+dy,0).project(persp);
     b.style.left=((v.x+1)/2*stage.clientWidth)+'px';b.style.top=Math.max(58,(1-v.y)/2*stage.clientHeight-4)+'px'}}
-  bodyFade(now);
+  bodyFade(now);partWiggle(now);
   if(egg)eggFrame(now);
 }
 
@@ -2176,9 +2205,9 @@ let thumbBusy=false;
 
 // ── 부위별 카메라 (a: 돌린 각도, z: 확대, f: 시선을 얼마나 옮길지, h: 어디로 'head' 얼굴 / 'top' 머리 위 / 'low' 다리)
 const FACE_VIEW={a:0,z:1.5,f:.92,h:'head'};
-const VIEW={'피부':FACE_VIEW,'머리':FACE_VIEW,'뿔':{a:-.35,z:1.55,f:.85,h:'top'},'귀':{a:-.75,z:1.5,f:.7,h:'head'},
+const VIEW={'피부':FACE_VIEW,'머리':FACE_VIEW,'뿔':{a:0,z:1.55,f:.85,h:'top'},'귀':{a:0,z:1.5,f:.7,h:'head'},
   '눈':{a:0,z:1.95,f:.9,h:'eye'},'눈썹':{a:0,z:1.95,f:.9,h:'eye'},'코':{a:0,z:1.95,f:.9,h:'face'},'입':{a:0,z:1.95,f:.9,h:'face'},
-  '볼터치':{a:-.25,z:1.85,f:.9,h:'face'},'볼살':{a:-.4,z:1.75,f:.9,h:'face'},
+  '볼터치':{a:0,z:1.85,f:.9,h:'face'},'볼살':{a:0,z:1.75,f:.9,h:'face'},
   '몸':{a:0,z:1.05,f:0},'꼬리':{a:Math.PI*.82,z:1.2,f:.5,h:'mid'},'팔':{a:-.45,z:1.15,f:.4,h:'mid'},'다리':{a:-.35,z:1.2,f:.6,h:'low'}};
 function partY(h){   // 시선이 향할 높이(손시 위치 기준)
   const c=chars[0];if(!c)return camBase.ty;const HG=c.userData.HG,v=new THREE.Vector3();HG?HG.getWorldPosition(v):v.set(0,charH*0.6,0);
@@ -2201,6 +2230,18 @@ function applyHeadOnly(){const c=chars[0];if(!c||thumbBusy)return;const HG=c.use
   c.children.forEach(o=>{if(o!==HG)o.visible=a>0.001});
   if(typeof mats!=='undefined'&&mats&&mats.body){const m=mats.body,tr=a<0.999;if(m.transparent!==tr){m.transparent=tr;m.needsUpdate=true}m.opacity=a;m.depthWrite=a>0.5}}
 function bodyFade(now){if(!bodyT0)return;const u=Math.min(1,(now-bodyT0)/BODY_MS),e=easeIO(u),to=headOnly?0:1;bodyA=bodyFrom+(to-bodyFrom)*e;if(u>=1){bodyA=to;bodyT0=0}applyHeadOnly()}
+
+// ── 고친 부위만 말랑: 카드로 바꾸면 그 부위만 살짝 눌렸다 늘었다 잦아듦(머리 모양·볼살은 머리통, 몸 쪽·피부·되돌리기는 손시 전체를 작게)
+const PART_TAG={'피부':'all','머리':'HG','볼살':'HG','뿔':'horn','귀':'ear','눈':'eye','눈썹':'brow','코':'nose','입':'mouth','볼터치':'blush','몸':'all','꼬리':'all','팔':'all','다리':'all'};
+let wig=null;const WIG_MS=620;
+function partBump(name){const tag=PART_TAG[name]||'all';
+  if(tag==='all'){popT0=0;bounceK=0.45;bounceT0=performance.now();return}
+  wigEnd();wig={tag,t0:performance.now()}}
+function wigTargets(){const c=chars[0];if(!c||!wig)return [];if(wig.tag==='HG')return [c.userData.HG];const out=[];c.traverse(o=>{const p=o.userData.part;if(p&&p.startsWith(wig.tag))out.push(o)});return out}
+function wigEnd(){wigTargets().forEach(o=>{if(o.userData.bs)o.scale.copy(o.userData.bs)});wig=null}
+function partWiggle(now){if(!wig||thumbBusy)return;const u=(now-wig.t0)/WIG_MS;if(u>=1){wigEnd();return}
+  const f=0.09*Math.exp(-4.5*u)*Math.sin(2*Math.PI*1.7*u);   // 처음엔 살짝 커졌다(늘어남) 작아지며 잦아듦
+  wigTargets().forEach(o=>{if(!o.userData.bs)o.userData.bs=o.scale.clone();const b=o.userData.bs;o.scale.set(b.x*(1-f*0.5),b.y*(1+f),b.z*(1-f*0.5))})}
 // ── 하위 탭: 단계마다 묶인 두 부위는 한 번에 하나만 보여 줌
 const subOf=[];   // 단계별 지금 보고 있는 하위 항목 이름
 stepEls.forEach((box,i)=>{
@@ -2240,7 +2281,7 @@ const snapP=()=>{const o={};Object.keys(P).forEach(k=>{if(!POSE_KEYS.includes(k)
 function undoStart(){UNDO.list=[snapP()];UNDO.i=0;UNDO.base=UNDO.list[0];undoUI()}
 function undoRecord(){if(UNDO.mute||scrNow!=='step'||UNDO.i<0)return;clearTimeout(UNDO.t);UNDO.t=setTimeout(()=>{const s=snapP();if(s===UNDO.list[UNDO.i])return;
   UNDO.list=UNDO.list.slice(0,UNDO.i+1);UNDO.list.push(s);if(UNDO.list.length>60)UNDO.list.shift();UNDO.i=UNDO.list.length-1;undoUI()},380)}
-function undoApply(s){UNDO.mute=true;Object.assign(P,JSON.parse(s));snapAll();syncUI();rebuild();UNDO.mute=false;bump()}
+function undoApply(s){UNDO.mute=true;Object.assign(P,JSON.parse(s));snapAll();syncUI();rebuild();UNDO.mute=false;partBump('all')}
 function undoUI(){$('unUndo').disabled=UNDO.i<=0;$('unRedo').disabled=UNDO.i>=UNDO.list.length-1;$('unReset').disabled=snapP()===UNDO.base}
 {const box=document.createElement('div');box.className='undos';
  const ic={unUndo:['되돌리기','<path d="M9 7 4.5 11.5 9 16"/><path d="M5 11.5h9a5 5 0 0 1 0 10h-2"/>'],unRedo:['다시하기','<path d="m15 7 4.5 4.5L15 16"/><path d="M19 11.5h-9a5 5 0 0 0 0 10h2"/>'],
@@ -2277,6 +2318,7 @@ function makeThumbs(k){clearTimeout(thumbT);thumbT=setTimeout(()=>{
 [['eyeTypes','eyeRow'],['mouthTypes','mouthRow']].forEach(([id,row])=>{
   const box=$(id);box.classList.add('tcards');
   box.querySelectorAll('.pbtn').forEach(b=>{const t=b.textContent.replace(/\s*[∩∪><ω]+.*$/,'').trim();b.classList.add('tcard');b.innerHTML=`<img alt=""><span>${t}</span>`});
+  box.querySelectorAll('[data-v]').forEach(b=>b.addEventListener('click',()=>partBump(id==='eyeTypes'?'눈':'입')));   // 고른 부위만 말랑
   const r=$(row),grp=r.parentNode,fine=document.createElement('details');fine.className='fine';fine.innerHTML='<summary>세부 조정</summary><div class="fine-in"></div>';
   [...grp.children].filter(el=>el!==r&&el.classList.contains('row')).forEach(el=>fine.querySelector('.fine-in').appendChild(el));
   grp.appendChild(fine);
@@ -2300,7 +2342,7 @@ const PART_CARDS={
  '코':{shot:'face',items:[['네모',{}],['작은네모',{noseSize:S('noseSize',-3)}],['큰네모',{noseSize:S('noseSize',3)}],
    ['동글',{noseSq:S('noseSq',-5)}],['작은동글',{noseSq:S('noseSq',-5),noseSize:S('noseSize',-3)}],['큰동글',{noseSq:S('noseSq',-5),noseSize:S('noseSize',3)}]]},
  '볼터치':{shot:'cheek',items:[['꾸러기',{blush:true,blushType:'clay',blushColor:'#f6b3a9'}],['데헷',{blush:true,blushType:'hatch',blushColor:'#f0607c'}],
-   ['개구쟁이',{blush:true,blushType:'freckle'}],['수줍',{blush:true,blushType:'blur',blushColor:'#ffa3a3'}],['발그레',{blush:true,blushType:'blur',blushColor:'#ff6a3d'}],['없음',{blush:false}]]},
+   ['개구쟁이(클레이)',{blush:true,blushType:'freckle'}],['개구쟁이(그림)',{blush:true,blushType:'freckle2'}],['수줍',{blush:true,blushType:'blur',blushColor:'#ffa3a3'}],['발그레',{blush:true,blushType:'blur',blushColor:'#ff6a3d'}],['없음',{blush:false}]]},
  '볼살':{shot:'cheek',items:[['빵빵',{cheek:S('cheek',5)}],['통통',{cheek:S('cheek',3)}],['없음',{}]]},
  '몸':{shot:'body',base:{lowerW:1},items:[['깨두',{}],['꼬마',{bodyLen:0.6,upperW:0.92,lowerW:0.95}],['꼼디',{upperW:1.3,lowerW:1.42,bodyD:1.22}]]},
  '팔':{shot:'body',items:[['보통',{}],['짧뚱',{armLen:S('armLen',-4)}],['길쭉',{armLen:S('armLen',4)}]]},
@@ -2312,7 +2354,7 @@ const cardVals=(name,it)=>{const v={};groupKeys(name).forEach(k=>v[k]=DEF[k]);re
 const sameVal=(k,a,b)=>k in META?stepOf(k,a)===stepOf(k,b):typeof a==='number'&&typeof b==='number'?Math.abs(a-b)<1e-6:a===b;
 function cardMatch(name,it){const v=cardVals(name,it);return Object.keys(v).every(k=>sameVal(k,P[k],v[k]))}
 function cardSet(name,it){const v=cardVals(name,it);Object.keys(v).forEach(k=>P[k]=k in META?toVal(k,stepOf(k,v[k])):v[k])}
-function cardApply(name,it){cardSet(name,it);syncUI();rebuild();bump()}
+function cardApply(name,it){cardSet(name,it);syncUI();rebuild();partBump(name)}
 function markCards(){document.querySelectorAll('.pcards').forEach(box=>{const name=box.dataset.part,set=PART_CARDS[name];
   box.querySelectorAll('.tcard').forEach((b,i)=>b.setAttribute('aria-pressed',cardMatch(name,set.items[i])))})}
 // 카드 만들기: 각 부위 묶음 맨 위에 카드, 원래 있던 슬라이더·스위치는 '세부 조정' 안으로

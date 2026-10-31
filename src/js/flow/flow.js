@@ -54,9 +54,12 @@ function show(st,dir){
     if(editing){editing=false;if(ST.doll)loadDoll(ST.doll)}            // 꾸미다 저장하지 않고 돌아오면 원래대로
     setPose(ST.pose,false);                                             // 메인에서 고른 포즈
     if(ST.doll)setBg(ST.doll.bg||'');
-    faceFront();angle=target;sayLine(sayMood);sayMood='';}
+    faceFront();angle=target;
+    if(enterSpin){enterSpin=false;const m=sayMood;$('mbub').hidden=true;bounceT0=0;popT0=spinT0=performance.now();clearTimeout(sayT);sayT=setTimeout(()=>{if(scrNow==='main')sayLine(m)},980)}   // 돌며 등장이 끝나면 말풍선 뿅
+    else sayLine(sayMood);
+    sayMood='';}
   if(st.scr==='card'){faceFront();angle=target;if(ST.doll)setBg(ST.doll.bg||'');openResult()}
-  if(st.scr!=='main')$('mbub').hidden=true;
+  if(st.scr!=='main'){$('mbub').hidden=true;clearTimeout(sayT)}
   layout();scrollTo(0,0);persistSoon();
 }
 function faceFront(){spinning=false;$('spinBtn').setAttribute('aria-pressed',false);target=Math.round(angle/(2*Math.PI))*2*Math.PI;setViewPressed('0')}
@@ -85,12 +88,12 @@ function saveBarCheck(){if(scrNow!=='step')return;const end=innerHeight+scrollY>
 addEventListener('scroll',saveBarCheck,{passive:true});addEventListener('resize',saveBarCheck);
 try{new ResizeObserver(saveBarCheck).observe($('stepBody'))}catch(_){}
 // 이름 짓기 → 저장하기. 이름이 비어 있으면 입력칸을 흔들어 알려 줌
-let sayMood='';   // 다음에 메인에 들어갈 때 말풍선 상황(lines.js): 처음 만든 뒤 'first', 수정해서 바뀐 뒤 'edited'
+let sayMood='',enterSpin=false;   // enterSpin: 이름 짓고 저장한 뒤 메인에서 돌며 등장   // 다음에 메인에 들어갈 때 말풍선 상황(lines.js): 처음 만든 뒤 'first', 수정해서 바뀐 뒤 'edited'
 $('saveDoll').onclick=()=>{setName($('charName').value);
   if(!charName){const inp=$('charName');inp.classList.remove('nope');void inp.offsetWidth;inp.classList.add('nope');inp.focus();return}
   const before=ST.done&&ST.doll?JSON.stringify(ST.doll.p):null;
   ST.doll=snapDoll();sayMood=!ST.done?'first':before!==JSON.stringify(ST.doll.p)?'edited':'';
-  ST.done=true;ST.hatched=true;delete ST.draft;Save.commit();editing=false;resetTo({scr:'main'})};
+  ST.done=true;ST.hatched=true;delete ST.draft;Save.commit();editing=false;enterSpin=true;resetTo({scr:'main'})};
 $('goEdit').onclick=()=>{editing=true;POSE_KEYS.forEach(k=>P[k]=DEF[k]);syncUI();rebuild();go({scr:'step',step:0})};   // 꾸밀 때는 기본 포즈로
 // 메인 포즈: 기본·차렷·앉기·갸우뚱 (고른 포즈는 저장해 둠)
 function setPose(n,anim){n=POSES[n]?n:'기본';const same=POSE_KEYS.every(k=>P[k]===(k in POSES[n]?POSES[n][k]:DEF[k]));
@@ -102,7 +105,7 @@ if($('goCard'))$('goCard').onclick=()=>go({scr:'card'});
 $('goWall').onclick=()=>go({scr:'wall'});
 
 // 메인: 말풍선(들어올 때마다, 누를 때마다 다른 말 · 멘트는 lines.js) + 누르면 통통
-let bounceT0=0,popT0=0,spinT0=0;
+let bounceT0=0,popT0=0,spinT0=0,bounceK=1,sayT=0;
 function sayLine(mood){const b=$('mbub');b.textContent=pickLine(mood);b.hidden=false;b.classList.remove('pop');void b.offsetWidth;b.classList.add('pop')}
 {let tx=0,ty=0,tt=0;
  canvas.addEventListener('pointerdown',e=>{tx=e.clientX;ty=e.clientY;tt=performance.now()});
@@ -123,11 +126,11 @@ function flowFrame(now){
   let s=1,dy=0,sx=1,sy=1,spin=0;
   if(popT0){const t=Math.min(1,(now-popT0)/(spinT0?900:750));s=t<0.5?0.15+0.97*Math.sin(t/0.5*Math.PI/2):1.12-0.12*Math.sin((t-0.5)/0.5*Math.PI/2);if(t>=1){popT0=0;s=1}}
   if(spinT0){const t=Math.min(1,(now-spinT0)/900),e=1-Math.pow(1-t,3);spin=(1-e)*Math.PI*2;if(t>=1)spinT0=0}
-  if(bounceT0){const t=(now-bounceT0)/BOUNCE_MS;if(t>=1)bounceT0=0;else{const b=bounceAt(t);dy=b.dy;sy=1+b.q;sx=1-b.q*0.55}}
+  if(bounceT0){const t=(now-bounceT0)/BOUNCE_MS;if(t>=1){bounceT0=0;bounceK=1}else{const b=bounceAt(t);dy=b.dy*bounceK;sy=1+b.q*bounceK;sx=1-b.q*0.55*bounceK}}
   c.scale.set(s*sx,s*sy,s*sx);c.position.y=dy;if(spin)c.rotation.y=angle+spin;
   if(scrNow==='main'){const b=$('mbub');if(!b.hidden){const v=new THREE.Vector3(0,(charH+0.12)*s+dy,0).project(persp);
     b.style.left=((v.x+1)/2*stage.clientWidth)+'px';b.style.top=Math.max(58,(1-v.y)/2*stage.clientHeight-4)+'px'}}
-  bodyFade(now);
+  bodyFade(now);partWiggle(now);
   if(egg)eggFrame(now);
 }
 

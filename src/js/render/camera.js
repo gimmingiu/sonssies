@@ -11,7 +11,10 @@ function layout(){
   const ch=frameH();   // 카메라는 기본 키(깨두) 기준으로 고정 → 작은 손시는 작게 보임. 더 큰 손시만 물러남
   persp.aspect=asp;let d=(asp<1?10.5:8.2)*ch/2.2;const need=(Math.max(charW,2.6)*0.5*1.18)/(Math.tan(persp.fov*Math.PI/360)*asp);if(need>d)d=need;
   const sh=stage.parentNode&&stage.parentNode.dataset?stage.parentNode.dataset.size:'';const tyK=sh==='main'?0.63:0.46;   // 메인은 손시가 박스 아래쪽에 서 있게(시선을 조금 위로)
-  camBase={d,y:ch*0.8,ty:ch*tyK};placePersp();persp.updateProjectionMatrix();
+  camBase={d,y:ch*0.8,ty:ch*tyK,sh:0};placePersp();persp.updateProjectionMatrix();
+  // 메인: 발 아래 남는 여백의 절반만큼 손시를 더 아래로(화면 크기와 상관없이 같은 비율). 시선과 카메라를 함께 내려서 각도는 그대로
+  if(sh==='main'){persp.updateMatrixWorld(true);const v=new THREE.Vector3(0,0,0).project(persp),gap=h-(1-v.y)/2*h,visH=2*persp.position.distanceTo(new THREE.Vector3(0,camBase.ty,0))*Math.tan(persp.fov*Math.PI/360);
+    camBase.sh=gap/2/h*visH;placePersp()}
 }
 function dispose(o){o.traverse(m=>{if(m.geometry&&!m.userData.keep)m.geometry.dispose();if(m.material&&m.material.type==='ShadowMaterial')m.material.dispose()})}
 let mats=null,earMats=[],depthOnly=null;
@@ -43,7 +46,7 @@ let camBase={d:8,y:1.8,ty:1},zoom=1,zoomT=1;
 let focusK=0,focusKT=0,focusH=0;
 // 화면 옮기기(꾸미기에서 확대한 뒤 끌어서 보고 싶은 부위를 가운데로): 시선을 옆·위아래로 panX·panY만큼
 let panX=0,panY=0;
-function placePersp(){const z=zoom;let ty=camBase.ty+(z-1)*0.18*camBase.ty;if(focusK>1e-3)ty+=(focusH-ty)*focusK;ty+=panY;persp.position.set(panX,ty+(camBase.y-camBase.ty)/z,camBase.d/z);persp.lookAt(panX,ty,0)}
+function placePersp(){const z=zoom;let ty=camBase.ty+(z-1)*0.18*camBase.ty;if(focusK>1e-3)ty+=(focusH-ty)*focusK;ty+=panY+(camBase.sh||0);persp.position.set(panX,ty+(camBase.y-camBase.ty)/z,camBase.d/z);persp.lookAt(panX,ty,0)}
 function panBy(dx,dy){const k=2*(camBase.d/zoom)*Math.tan(persp.fov*Math.PI/360)/Math.max(1,stage.clientHeight);
   panX=clamp(panX-dx*k,-charW*0.55,charW*0.55);panY=clamp(panY+dy*k,-charH*0.75,charH*0.75);placePersp()}
 // 부위로 옮겨 갈 때: 각도·확대·시선·화면 위치를 한꺼번에 천천히 시작해서 천천히 멈추게(툭 튀지 않게)
