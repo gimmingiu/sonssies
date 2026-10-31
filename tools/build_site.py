@@ -35,15 +35,15 @@ head='''<!doctype html>
 <meta name="theme-color" content="#e4ebeb" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#141a1c" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="favicon.ico?v=2" sizes="any"><link rel="icon" href="favicon.png?v=2" type="image/png">
-<link rel="apple-touch-icon" href="apple-touch-icon.png?v=4">
+<link rel="icon" href="favicon.ico?v=3" sizes="any"><link rel="icon" href="favicon.png?v=3" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=5">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Sonssies">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://sonssies.com/">
 <meta property="og:title" content="Sonssies - 영혼의 단짝, 손시 만들기">
 <meta property="og:description" content="나만의 손시를 깨우고, 삶의 여정을 함께 나아가 보세요.">
-<meta property="og:image" content="https://sonssies.com/og.png?v=3">
+<meta property="og:image" content="https://sonssies.com/og.png?v=4">
 <meta name="twitter:card" content="summary_large_image">
 '''+open(os.path.join(ROOT,'splash','links.html'),encoding='utf8').read()
 i=s.index('<!-- 인트로') if '<!-- 인트로' in s else s.index('<div class="wrap">')   # 인트로부터 body에 넣어야 화면이 바로 그려짐
