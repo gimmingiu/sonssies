@@ -15,12 +15,17 @@ function build(M,B){
   const puff=P.mouthType==='puff';
   if(P.cheek>0||puff){const pa=hgeo.attributes.position,na=hgeo.attributes.normal,amp=0.26*P.cheek,cxk=hwA*0.58,cyk=-hb*0.4;
     const pyk=clamp(P.mouthY*P.headH,-hb*0.8,-hb*0.1)+hb*0.02,pxk=hwA*0.5;
-    for(let i=0;i<pa.count;i++){const x=pa.getX(i),y=pa.getY(i),nz=na.getZ(i),fz=Math.max(0,Math.min(1,(nz+0.45)/0.6));if(fz<=0)continue;   // 뒤쪽으로 갈수록 부드럽게 0(뒤통수에 턱이 지지 않게)
+    // 부풀리는 방향과 세기는 점의 '자리'로만 정함(면 방향을 쓰면 둥근 네모 머리의 모서리에서 접혀 울퉁불퉁해짐)
+    const hd=0.74*P.headD,sm=(a,b,v)=>{const t=Math.max(0,Math.min(1,(v-a)/(b-a)));return t*t*(3-2*t)};
+    for(let i=0;i<pa.count;i++){const x=pa.getX(i),y=pa.getY(i),z=pa.getZ(i),fz=sm(-0.45,0.35,z/hd);if(fz<=0)continue;   // 앞쪽만, 뒤로 갈수록 부드럽게 0
       let w=0;
       if(amp>0){const wy=y<cyk?1:Math.exp(-(((y-cyk)/(hb*0.42))**2)), wx=0.82+0.18*Math.exp(-(((Math.abs(x)-cxk)/(hwA*0.32))**2)), side=Math.exp(-((Math.max(0,Math.abs(x)-hwA*0.82)/(hwA*0.18))**2));
         w=amp*wy*wx*side*fz}   // 볼부터 턱까지 아래쪽 얼굴 전체가 통통하게(턱 가운데도 82%)
       if(puff&&x>0){const r=Math.hypot((x-pxk)/(hwA*0.3),(y-pyk)/(hb*0.3));w+=0.11*Math.exp(-r*r)*fz}   // 'ㅡ(' 쪽 볼만 볼록
-      if(w<1e-4)continue;pa.setXYZ(i,x+na.getX(i)*w,y+na.getY(i)*w*(na.getY(i)<0?0.9:0.6),pa.getZ(i)+nz*w)}
+      if(w<1e-4)continue;
+      // 머리 가운데에서 바깥으로(타원 기준) 매끈하게 바뀌는 방향
+      let dx=x/(hwA*hwA),dy=y/(hb*hb),dz=z/(hd*hd);const L=Math.hypot(dx,dy,dz)||1;dx/=L;dy/=L;dz/=L;
+      pa.setXYZ(i,x+dx*w,y+dy*w*(dy<0?0.9:0.6),z+dz*w)}
     hgeo.computeVertexNormals()}
   const head=mesh(hgeo,hm);head.position.y=hy;head.userData.part='head';HI.add(head);
   RATIO=(2*hb)/(L-0.08);

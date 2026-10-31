@@ -51,7 +51,7 @@ const CSS=FONTS.map(([n,w,p])=>`@font-face{font-family:'${n}';font-weight:${w};s
   await p.click('#nameDice');await p.waitForTimeout(1500);await p.evaluate(()=>{const i=document.getElementById('bgPick');i.value='#ffaa00';i.dispatchEvent(new Event('input'))});await p.waitForTimeout(600);
   await p.reload();await p.waitForTimeout(3000);
   await expect('이어하기(이름·직접 고른 배경색)','name',()=>document.getElementById('bgPick').dataset.on==='true'&&document.getElementById('bgPick').value==='#ffaa00');
-  await p.click('#saveDoll');await p.waitForTimeout(1500);
+  await p.click('#saveDoll');await p.waitForTimeout(2600);
   await expect('메인(첫 인사)','main',()=>['반가워!','안녕!'].includes(document.getElementById('mbub').textContent));
   await p.click('#mainPoses [data-pose="앉기"]');await p.waitForTimeout(1500);
   await expect('포즈: 앉기','main',()=>document.querySelector('#mainPoses [data-pose="앉기"]').getAttribute('aria-pressed')==='true');
@@ -66,7 +66,7 @@ const CSS=FONTS.map(([n,w,p])=>`@font-face{font-family:'${n}';font-weight:${w};s
   await p.evaluate(()=>scrollTo(0,document.documentElement.scrollHeight));await p.waitForTimeout(800);
   await p.click('#stepSave');await p.waitForTimeout(1000);
   await expect('수정 → 이름(이름 그대로)','name',()=>document.getElementById('charName').value!=='');
-  await p.click('#saveDoll');await p.waitForTimeout(1500);
+  await p.click('#saveDoll');await p.waitForTimeout(2600);
   await expect('수정 후 메인(새 모습 멘트)','main',()=>['나 어때?','새로운 기분이야!','어울려?','짠! 달라졌지?'].includes(document.getElementById('mbub').textContent));
   await p.click('#goWall');await p.waitForTimeout(800);
   await expect('배경화면','wall');

@@ -18,18 +18,14 @@ function lookAtPart(name){
   spinning=false;$('spinBtn').setAttribute('aria-pressed',false);setViewPressed(null);
   camTo({a:v.a+Math.round((angle-v.a)/(2*Math.PI))*2*Math.PI,z:v.z,k:v.f||0,h:partY(v.h)});
 }
-function lookReset(){camStop();setZoom(1);focusKT=0;panX=panY=0;placePersp();setHeadOnly(false,true)}
+function lookReset(){camStop();setZoom(1);focusKT=0;panX=panY=0;placePersp();setHeadOnly(false)}
 
 // 머리만 보이기: 얼굴 단계(피부·머리 ~ 볼·볼살)에서는 몸통을 숨기고 머리통만 보여 줌.
 // 처음 만들 때 고칠 게 적어 보이게(이탈 방지). 몸·꼬리·팔·다리는 다 만든 뒤 [수정]의 세부 단계에서.
-// 얼굴 단계 ↔ 몸 단계를 오갈 때 몸통은 툭 나타나지 않고 서서히 나타나고 사라짐
-let headOnly=false,bodyA=1,bodyFrom=1,bodyT0=0;const BODY_MS=520;
-function setHeadOnly(on,now){if(on===headOnly&&!now)return;headOnly=on;
-  if(now||!chars[0]){bodyA=on?0:1;bodyT0=0}else{bodyFrom=bodyA;bodyT0=performance.now()}applyHeadOnly()}
-function applyHeadOnly(){const c=chars[0];if(!c||thumbBusy)return;const HG=c.userData.HG,a=bodyA;
-  c.children.forEach(o=>{if(o!==HG)o.visible=a>0.001});
-  if(typeof mats!=='undefined'&&mats&&mats.body){const m=mats.body,tr=a<0.999;if(m.transparent!==tr){m.transparent=tr;m.needsUpdate=true}m.opacity=a;m.depthWrite=a>0.5}}
-function bodyFade(now){if(!bodyT0)return;const u=Math.min(1,(now-bodyT0)/BODY_MS),e=easeIO(u),to=headOnly?0:1;bodyA=bodyFrom+(to-bodyFrom)*e;if(u>=1){bodyA=to;bodyT0=0}applyHeadOnly()}
+// 몸통은 반투명하게 번지지 않고 바로 나타나고 사라짐(카메라만 천천히 이동)
+let headOnly=false;
+function setHeadOnly(on){headOnly=on;applyHeadOnly()}
+function applyHeadOnly(){const c=chars[0];if(!c||thumbBusy)return;const HG=c.userData.HG;c.children.forEach(o=>{o.visible=!headOnly||o===HG})}
 
 // ── 고친 부위만 말랑: 카드로 바꾸면 그 부위만 살짝 눌렸다 늘었다 잦아듦(머리 모양·볼살은 머리통, 몸 쪽·피부·되돌리기는 손시 전체를 작게)
 const PART_TAG={'피부':'all','머리':'HG','볼살':'HG','뿔':'horn','귀':'ear','눈':'eye','눈썹':'brow','코':'nose','입':'mouth','볼터치':'blush','몸':'all','꼬리':'all','팔':'all','다리':'all'};

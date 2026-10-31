@@ -45,7 +45,6 @@ Object.entries(PART_CARDS).forEach(([name,set])=>{
 function aimShot(px,rotY,span,aim,onlyHead){
   const c=chars[0],HG=c.userData.HG,rot=c.rotation.y,sc=c.scale.clone(),py=c.position.y;c.rotation.y=rotY||0;c.scale.setScalar(1);c.position.y=0;c.updateMatrixWorld(true);
   const vis=c.children.map(o=>o.visible);c.children.forEach(o=>{o.visible=!onlyHead||o===HG});
-  const mb=mats.body;if(mb.transparent||mb.opacity<1){mb.transparent=false;mb.opacity=1;mb.depthWrite=true;mb.needsUpdate=true}
   const f=aim(c),pr=renderer.getPixelRatio(),fov=persp.fov,asp=persp.aspect,pos=persp.position.clone(),q=persp.quaternion.clone();
   renderer.setPixelRatio(1);renderer.setSize(px,px,false);persp.aspect=1;persp.fov=10;
   const d=span/2/Math.tan(5*Math.PI/180);persp.position.set(f.x,f.y,f.z+d);persp.lookAt(f);persp.updateProjectionMatrix();
