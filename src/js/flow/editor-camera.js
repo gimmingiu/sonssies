@@ -37,7 +37,8 @@ let wig=null;const WIG_MS=680;
 function partBump(name){const tag=PART_TAG[name]||'all';
   if(tag==='all'){popT0=0;bounceK=0.65;bounceT0=performance.now();return}
   wigEnd();wig={tag,t0:performance.now()}}
-function wigTargets(){const c=chars[0];if(!c||!wig)return [];if(wig.tag==='HG')return [c.userData.HG];const out=[];c.traverse(o=>{const p=o.userData.part;if(p&&p.startsWith(wig.tag))out.push(o)});return out}
+function wigTargets(){const c=chars[0];if(!c||!wig)return [];if(wig.tag==='HG')return [c.userData.HG];const out=[];
+  c.traverse(o=>{const p=o.userData.part;if(p&&p.startsWith(wig.tag))out.push(o)});return out}
 function wigEnd(){wigTargets().forEach(o=>{if(o.userData.bs)o.scale.copy(o.userData.bs)});wig=null}
 function partWiggle(now){if(!wig||thumbBusy)return;const u=(now-wig.t0)/WIG_MS;if(u>=1){wigEnd();return}
   const f=0.15*Math.exp(-4.5*u)*Math.sin(2*Math.PI*1.7*u);   // 처음엔 살짝 커졌다(늘어남) 작아지며 잦아듦

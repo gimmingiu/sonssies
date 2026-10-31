@@ -50,7 +50,8 @@ function aimShot(px,rotY,span,aim,onlyHead){
   renderer.setPixelRatio(1);renderer.setSize(px,px,false);persp.aspect=1;persp.fov=10;
   const d=span/2/Math.tan(5*Math.PI/180);persp.position.set(f.x,f.y,f.z+d);persp.lookAt(f);persp.updateProjectionMatrix();
   renderer.render(scene,persp);const u=renderer.domElement.toDataURL('image/png');
-  c.children.forEach((o,i)=>{o.visible=vis[i]});c.rotation.y=rot;c.scale.copy(sc);c.position.y=py;persp.fov=fov;persp.aspect=asp;persp.position.copy(pos);persp.quaternion.copy(q);persp.updateProjectionMatrix();
+  c.children.forEach((o,i)=>{o.visible=vis[i]});c.rotation.y=rot;c.scale.copy(sc);c.position.y=py;persp.fov=fov;
+    persp.aspect=asp;persp.position.copy(pos);persp.quaternion.copy(q);persp.updateProjectionMatrix();
   renderer.setPixelRatio(pr);layout();return u}
 const headC=c=>{const v=new THREE.Vector3();c.userData.HG.getWorldPosition(v);v.y+=0.68*P.headH*0.75;return v};
 function bodyShot(px){const span=Math.max(charH*0.92,charW)*1.02;return aimShot(px,0,span,()=>new THREE.Vector3(0,charH*0.47,0),false)}

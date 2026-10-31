@@ -81,7 +81,8 @@ function maskMat(hex,mode,U,bump){
   m.onBeforeCompile=sh=>{
     Object.assign(sh.uniforms,uni);
     const va=mode===1?'attribute float aArm;varying float vArm;attribute float aTail;varying float vTail;':'';
-    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vLocal;'+va).replace('#include <begin_vertex>','#include <begin_vertex>\nvLocal=position;'+(mode===1?'vArm=aArm;vTail=aTail;':''));
+    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vLocal;'+va).replace('#include <begin_vertex>',
+      '#include <begin_vertex>\nvLocal=position;'+(mode===1?'vArm=aArm;vTail=aTail;':''));
     sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vLocal;uniform vec3 uColB;'+MASK_DECL[mode])
       .replace('vec4 diffuseColor = vec4( diffuse, opacity );',MASK_GLSL[mode]+'\nvec4 diffuseColor = vec4( mix(diffuse,uColB,m), opacity );diffuseColor.rgb*=ao;');
   };

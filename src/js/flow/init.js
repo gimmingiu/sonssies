@@ -9,7 +9,8 @@
   else if(ST.hatched){
     const d=ST.draft;if(d)loadDoll(d);
     eggDone=true;st=[{scr:'egg'}];
-    if(d&&(d.scr==='step'||d.scr==='name')){const k=d.scr==='name'?FACE_STEPS-1:Math.min(FACE_STEPS-1,d.step||0);for(let i=0;i<=k;i++)st.push({scr:'step',step:i});if(d.scr==='name')st.push({scr:'name'})}
+    if(d&&(d.scr==='step'||d.scr==='name')){const k=d.scr==='name'?FACE_STEPS-1:Math.min(FACE_STEPS-1,d.step||0);
+      for(let i=0;i<=k;i++)st.push({scr:'step',step:i});if(d.scr==='name')st.push({scr:'name'})}
   }else{
     const iOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
     let top=true;try{top=window.top===window}catch(_){top=false}

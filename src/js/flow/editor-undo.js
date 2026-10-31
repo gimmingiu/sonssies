@@ -10,7 +10,8 @@ function undoUI(){$('unUndo').disabled=UNDO.i<=0;$('unRedo').disabled=UNDO.i>=UN
  const ic={unUndo:['되돌리기','<path d="M9 7 4.5 11.5 9 16"/><path d="M5 11.5h9a5 5 0 0 1 0 10h-2"/>'],unRedo:['다시하기','<path d="m15 7 4.5 4.5L15 16"/><path d="M19 11.5h-9a5 5 0 0 0 0 10h2"/>'],
    unReset:['처음으로','<path d="M4.5 12a7.5 7.5 0 1 0 2.4-5.5"/><path d="M4 4v4.5h4.5"/>']};
  Object.entries(ic).forEach(([id,[l,d]])=>{const b=document.createElement('button');b.type='button';b.id=id;b.setAttribute('aria-label',l);b.title=l;
-   b.innerHTML=`<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;box.appendChild(b)});
+   b.innerHTML=`<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+     box.appendChild(b)});
  $('app').querySelector('.stagehold[data-size="step"]').appendChild(box);
  $('unUndo').onclick=()=>{if(UNDO.i>0){UNDO.i--;undoApply(UNDO.list[UNDO.i]);undoUI()}};
  $('unRedo').onclick=()=>{if(UNDO.i<UNDO.list.length-1){UNDO.i++;undoApply(UNDO.list[UNDO.i]);undoUI()}};

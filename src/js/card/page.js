@@ -14,7 +14,8 @@ function drawPreview(reuse){if(!reuse)pvFull=true;if(pv)return;pv=requestAnimati
 // 말풍선 입력 팝업: 말풍선 바로 아래(꼬리 아래)에 떠서, 쓰는 동안 말풍선이 바뀌는 걸 보면서 입력
 function placeBubEdit(){const e=$('bubEdit');if(e.hidden)return;const b=bubbleRect;
   const y=b?Math.min(1920*0.62,b.bottom+30):1920*0.18;e.style.top=(y/1920*100)+'%'}
-function openBubEdit(){if(!bubOn){bubOn=true;$('bubOn').checked=true;bubTailDim();drawPreview(true)}const e=$('bubEdit');e.hidden=false;fitBubText();placeBubEdit();const i=$('bubText');i.focus({preventScroll:true});i.setSelectionRange(i.value.length,i.value.length);
+function openBubEdit(){if(!bubOn){bubOn=true;$('bubOn').checked=true;bubTailDim();drawPreview(true)}const e=$('bubEdit');
+  e.hidden=false;fitBubText();placeBubEdit();const i=$('bubText');i.focus({preventScroll:true});i.setSelectionRange(i.value.length,i.value.length);
   setTimeout(()=>e.scrollIntoView({block:'nearest',behavior:'smooth'}),250)}
 // 입력칸 높이를 글 줄 수에 맞춤
 function fitBubText(){const t=$('bubText');t.style.height='auto';t.style.height=t.scrollHeight+'px'}
@@ -23,7 +24,9 @@ let lastBubText='반가워!';
 function closeBubEdit(){const e=$('bubEdit');if(e.hidden)return;e.hidden=true;
   if(!bubText.trim()){bubText=lastBubText;$('bubText').value=lastBubText;bubCount();drawPreview(true)}else lastBubText=bubText}
 // 구글 폰트는 글자 범위별로 나뉘어 있어서, 그릴 글자를 넘겨 해당 조각을 미리 받아 둠
-async function loadTagFonts(){try{await Promise.all([document.fonts.load('100px Jua',(charName||'깨두')+bubText),document.fonts.load('700 34px "Noto Sans KR"','내 이름은'+bubText),document.fonts.load('26px "Nanum Gothic Coding"','ⓒsonssies')])}catch(_){}}
+async function loadTagFonts(){try{await Promise.all([document.fonts.load('100px Jua',(charName||'깨두')+bubText),
+  document.fonts.load('700 34px "Noto Sans KR"','내 이름은'+bubText),document.fonts.load('26px "Nanum Gothic Coding"',
+  'ⓒsonssies')])}catch(_){}}
 async function openResult(){
   if($('busy').classList.contains('on'))await new Promise(r=>setTimeout(r,320));
   spinning=false;$('spinBtn').setAttribute('aria-pressed',false);target=angle;

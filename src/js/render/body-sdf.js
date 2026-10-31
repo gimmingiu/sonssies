@@ -221,7 +221,10 @@ function surfaceNets(f,b0,b1,h,cls){
 }
 let bodyCache={key:'',geo:null,model:null};
 function getBody(h){
-  const keys=['bodyLen','lowerRatio','upperW','lowerW','bodyD','legSplit','legGap','footSize','armLen','armThick','handSize','tail','tailSize','tailLen','tailY','tailTilt','tailBlend','tailShape','tailW','tailSq','armRaiseR','armFwdR','armRaiseL','armFwdL','sit','tuck','headW','headH','headD','headSq','legSwingR','legSwingL','tilt','legThick','handPose'];
+  const keys=['bodyLen','lowerRatio','upperW','lowerW','bodyD','legSplit','legGap','footSize','armLen','armThick',
+    'handSize','tail','tailSize','tailLen','tailY','tailTilt','tailBlend','tailShape','tailW','tailSq','armRaiseR',
+    'armFwdR','armRaiseL','armFwdL','sit','tuck','headW','headH','headD','headSq','legSwingR','legSwingL','tilt','legThick',
+    'handPose'];
   const k=keys.map(x=>P[x]).join('|')+'|'+h;
   if(bodyCache.key===k)return bodyCache;
   const model=bodyModel();

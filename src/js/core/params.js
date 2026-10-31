@@ -15,7 +15,11 @@ const GROUPS=[
  ['꼬리',[['tailSize','크기',0.5,1.5,1],['tailW','너비',1,1.8,1]]],
  ['포즈',[]],
 ];
-const DEF={browAsym:0,handPose:'',tailSq:0,hornSize:1,hornTilt:8,browX:0.25,earSpread:0,lowerW:1,blushColor:'#f6b3a9',blushType:'clay',horns:true,blush:false,tail:true,tex:'smooth',color:'#a9e4f0',eyeType:'dot',mouthType:'smile',sit:false,tuck:false,footSize:2,legGap:0.05,handSize:1,earInnerH:0.6,earInnerW:0.85,tailShape:'round',tailLen:1,tailY:0,tailTilt:15,tailBlend:0.35,armRaiseR:6,armFwdR:0,armRaiseL:6,armFwdL:0,legSwingR:0,legSwingL:0,headPitch:0,headYaw:0,tilt:0};
+const DEF={browAsym:0,handPose:'',tailSq:0,hornSize:1,hornTilt:8,browX:0.25,earSpread:0,lowerW:1,blushColor:'#f6b3a9',
+  blushType:'clay',horns:true,blush:false,tail:true,tex:'smooth',color:'#a9e4f0',eyeType:'dot',mouthType:'smile',
+  sit:false,tuck:false,footSize:2,legGap:0.05,handSize:1,earInnerH:0.6,earInnerW:0.85,tailShape:'round',tailLen:1,
+  tailY:0,tailTilt:15,tailBlend:0.35,armRaiseR:6,armFwdR:0,armRaiseL:6,armFwdL:0,legSwingR:0,legSwingL:0,headPitch:0,
+  headYaw:0,tilt:0};
 const EXPR_KEYS=['eyeType','mouthType','blush'];   // 랜덤에서만 표정 조합으로 씀
 const POSE_KEYS=['tilt','tuck','legSwingR','legSwingL','armRaiseR','armFwdR','armRaiseL','armFwdL','headPitch','headYaw','sit'];
 const POSES={
@@ -40,7 +44,10 @@ const P={...DEF};
 
 const PRESETS={
  '깨두':{color:'#37c3dc',browAng:48,eyeSize:0.6,eyeX:0.27,eyeY:0.026,browLen:0.124,browThick:0.016},   // 눈 크기 -4 · 간격 -2 · 높이 +1, 눈썹 길이 -3 · 두께 -3, 각도 48°
- '꼬마':{color:'#1ec850',blush:true,browAng:48,headW:0.96,headH:0.92,bodyLen:0.6,upperW:0.92,lowerW:0.95,armLen:0.6,legSplit:0.258,eyeSize:0.9,eyeX:0.36,hornSize:0.8,hornRound:1,earSize:1.1,browLen:0.15},
- '꼼디':{color:'#c8e628',headW:1.2,headD:1.15,headSq:0.25,upperW:1.3,lowerW:1.42,bodyD:1.22,armThick:1.35,handSize:1.2,earSize:1.0,hornSize:1.15,mouthW:1.5,eyeX:0.4,legSplit:0.3,eyeType:'line',mouthType:'flat',eyeSize:1.9,browLen:0.2,browAng:24},
+ '꼬마':{color:'#1ec850',blush:true,browAng:48,headW:0.96,headH:0.92,bodyLen:0.6,upperW:0.92,lowerW:0.95,armLen:0.6,
+   legSplit:0.258,eyeSize:0.9,eyeX:0.36,hornSize:0.8,hornRound:1,earSize:1.1,browLen:0.15},
+ '꼼디':{color:'#c8e628',headW:1.2,headD:1.15,headSq:0.25,upperW:1.3,lowerW:1.42,bodyD:1.22,armThick:1.35,handSize:1.2,
+   earSize:1.0,hornSize:1.15,mouthW:1.5,eyeX:0.4,legSplit:0.3,eyeType:'line',mouthType:'flat',eyeSize:1.9,browLen:0.2,
+   browAng:24},
 };
 

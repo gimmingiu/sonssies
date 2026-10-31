@@ -8,7 +8,8 @@ function faceShot(px,span=1.25,dy=-0.06){   // 정면 얼굴(머리)만 작게 �
   renderer.setPixelRatio(1);renderer.setSize(px,px,false);persp.aspect=1;persp.fov=10;
   const d=span/2/Math.tan(5*Math.PI/180);persp.position.set(0,hv.y,hv.z+d);persp.lookAt(0,hv.y,hv.z);persp.updateProjectionMatrix();
   renderer.render(scene,persp);const u=renderer.domElement.toDataURL('image/png');
-  c.children.forEach((o,i)=>{o.visible=vis[i]});c.rotation.y=rot;c.scale.copy(sc);c.position.y=py;persp.fov=fov;persp.aspect=asp;persp.position.copy(pos);persp.quaternion.copy(q);persp.updateProjectionMatrix();
+  c.children.forEach((o,i)=>{o.visible=vis[i]});c.rotation.y=rot;c.scale.copy(sc);c.position.y=py;persp.fov=fov;
+    persp.aspect=asp;persp.position.copy(pos);persp.quaternion.copy(q);persp.updateProjectionMatrix();
   renderer.setPixelRatio(pr);layout();return u}
 let thumbT=0;
 function makeThumbs(k){clearTimeout(thumbT);thumbT=setTimeout(()=>{

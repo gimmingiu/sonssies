@@ -21,20 +21,25 @@ src/
   intro/intro.html     홈 화면 앱 인트로(점프하는 손시 머리)
   screens/             화면 HTML: app.html(알·꾸미기·이름·메인·배경화면), stage.html(3D 미리보기), card.html(카드 만들기)
   js/core/             params.js(슬라이더·프리셋·포즈 정의), boot.js(초기 손시)
-  js/render/           3D: renderer(조명·재질), shape, body-sdf(몸), ears, character(손시 조립), camera(카메라·회전·확대)
-  js/ui/               controls(슬라이더·색·프리셋), name(이름·주사위), stats(누적 통계)
-  js/card/             compose(카드 이미지), bubble(말풍선), page(카드 화면), save-image(이미지 저장), stickers(이모티콘)
+  js/render/           3D: renderer(조명·재질) · shape(형태 도구) · body-sdf(몸) · ears · character(머리·얼굴·볼터치·뿔·귀 조립)
+                       camera(카메라 자리·화면 배치 layout) · rebuild(손시 다시 만들기) · camera-motion(확대·시선·화면 옮기기·camTo·매 프레임 frame)
+                       gestures(끌기=돌리기/옮기기, 두 손가락=확대, 휠)
+  js/ui/               sliders(−5~+5 단계 슬라이더·부위 묶음) · controls(프리셋·랜덤·눌림 표시 syncUI·눈/입 버튼) · colors(보기 각도·피부/볼터치/배경색)
+                       name(이름 규칙·주사위) · stats(누적 통계 버튼) · romanize(저장 파일 이름용 로마자)
+  js/card/             카드 만들기(나중에 사용): compose(카드 이미지) · bubble(말풍선) · stickers(이모티콘) · page(카드 화면) · result-ui(카드 화면 조작) · save-image(이미지 저장)
   js/save/save.js      ★ 저장 창구. 손시 데이터는 전부 여기로 읽고 씀 (지금은 기기 저장 → 나중에 서버 저장으로 이 파일만 교체)
-  js/flow/             lines(메인 말풍선 멘트: 처음·수정 후·시간대·언제든 — 새 멘트는 여기에만), flow(화면 이동·메인·포즈·저장 버튼·뒤로가기),
-                       editor-camera(부위별 카메라·몸통 서서히 보이기/숨기기) · editor-tabs(아이콘 탭 7개·하위 탭) · editor-undo(되돌리기) ·
+  js/flow/             lines(메인 말풍선 멘트 — 새 멘트는 여기에만)
+                       doll(손시 저장·불러오기) → steps(꾸미기 단계 조립·기본형 버튼) → nav(화면 이동 show·go·뒤로가기) → actions(화면 버튼·저장·수정·포즈)
+                       → motion(말풍선·말랑통통·등장·매 프레임 flowFrame)
+                       editor-camera(부위별 카메라·몸통 서서히 보이기/숨기기·고친 부위만 말랑) · editor-tabs(아이콘 탭 7개·하위 탭) · editor-undo(되돌리기) ·
                        editor-thumbs(눈·입 그림 카드) · editor-cards(나머지 부위 프리셋 카드·카드 그림 구도) · editor(꾸미기 들어올 때),
                        egg-art(꿈알 그림, 자동 생성) · egg(꿈알), init(시작 화면 정하기)
                        꾸미기 단계: 피부·머리 / 뿔·귀 / 눈·눈썹 / 코·입 / 볼터치·볼살 (처음 만들 때 = 여기까지, 머리만) / 몸·꼬리 / 팔·다리 ([수정]에서만)
-                       카메라: 끌기 옆=돌리기, 위아래=화면 옮기기(꾸미기만), 두 손가락=확대·옮기기. 부위 이동은 camTo(천천히 시작·멈춤)
   js/dev/hooks.js      테스트용 창구(window.__dk*): 아이콘·인트로 그림 뽑을 때 씀
   (js/game/, js/auth/  앞으로 추가: 게임 규칙(꿈빛·덩이·꿈열매), 로그인)
 ```
 - JS 파일들은 합쳐지면 **하나의 함수 범위** 안에서 실행돼요. 서로의 변수·함수를 그대로 부를 수 있지만, **포함 순서**(page.html)를 지켜야 해요.
+- 파일 맨 위 `// == ` 줄은 그 파일이 맡은 일. 한 줄은 200자 안쪽으로(`;`·`,` 뒤에서 줄바꿈).
 - 규칙: 화면은 저장 방식을 몰라야 해요 → 저장은 `Save.data()`로 읽고 고친 뒤 `Save.commit()`. 게임 규칙(계산)은 화면 코드와 섞지 않고 `js/game/`에.
 
 | 파일 | 역할 |

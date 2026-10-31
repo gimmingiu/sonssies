@@ -1,7 +1,8 @@
 // ---------- 이모티콘 세트 (카톡에 이미지로 보내는 512×512 PNG, 흰 바탕) ----------
 // 지금 꾸민 손시에 장면별 표정·자세·소품만 잠시 덮어써서 렌더 → 원래대로 되돌림
 const D2Rs=Math.PI/180;
-const PROP_COL={spark:'#ffd36b',heart:'#ff7d8f',sweat:'#f7fafa',thumb:'#ffd36b',quest:'#ffd36b',cloud:'#eef2f3',line:'#d3dde1',bowl:'#9cc3d1',rice:'#fbfcfc',spoon:'#e9c98f',dot:'#a9b8bd',tear:'#f7fafa'};
+const PROP_COL={spark:'#ffd36b',heart:'#ff7d8f',sweat:'#f7fafa',thumb:'#ffd36b',quest:'#ffd36b',cloud:'#eef2f3',
+  line:'#d3dde1',bowl:'#9cc3d1',rice:'#fbfcfc',spoon:'#e9c98f',dot:'#a9b8bd',tear:'#f7fafa'};
 // 매끈한 덩어리 소품(엄지척·물음표)은 SDF로 빚어 surface nets로 메시화 (이음새 없음)
 const _propCache={};
 function sdfProp(f,b0,b1,h){const g=surfaceNets(f,b0,b1,h,{});g.computeBoundingSphere();return g}
@@ -9,15 +10,19 @@ function propGeo(type){
   if(_propCache[type])return _propCache[type].clone();
   const sm=(a,b,k)=>{const h=Math.max(k-Math.abs(a-b),0)/k;return Math.min(a,b)-h*h*k*0.25};
   const rbox=(x,y,z,bx,by,bz,r)=>{const qx=Math.abs(x)-bx+r,qy=Math.abs(y)-by+r,qz=Math.abs(z)-bz+r;return Math.hypot(Math.max(qx,0),Math.max(qy,0),Math.max(qz,0))+Math.min(Math.max(qx,qy,qz),0)-r};
-  const cap=(x,y,z,a,b,r)=>{const bx=b[0]-a[0],by=b[1]-a[1],bz=b[2]-a[2],l2=bx*bx+by*by+bz*bz;let t=((x-a[0])*bx+(y-a[1])*by+(z-a[2])*bz)/l2;t=t<0?0:t>1?1:t;return Math.hypot(x-a[0]-bx*t,y-a[1]-by*t,z-a[2]-bz*t)-r};
+  const cap=(x,y,z,a,b,r)=>{const bx=b[0]-a[0],by=b[1]-a[1],bz=b[2]-a[2],l2=bx*bx+by*by+bz*bz;let t=((x-a[0])*bx+(y-a[1])*by+(z-a[2])*bz)/l2;
+    t=t<0?0:t>1?1:t;return Math.hypot(x-a[0]-bx*t,y-a[1]-by*t,z-a[2]-bz*t)-r};
   if(type==='cloud'){   // 먼지 구름: 둥근 공 4개가 매끈하게 뭉친 덩어리
     const B=[[0,0,0,0.42],[0.42,-0.08,0,0.32],[-0.4,-0.1,0,0.3],[0.12,0.28,0,0.3]];
     const g=sdfProp((x,y,z)=>B.reduce((d,b)=>sm(d,Math.hypot(x-b[0],y-b[1],(z-b[2])*1.3)-b[3],0.18),9),[-0.85,-0.55,-0.45],[0.85,0.7,0.45],0.03);_propCache[type]=g;return g.clone()}
   if(type==='line'){const g=sdfProp((x,y,z)=>cap(x,y,z,[-0.5,0,0],[0.5,0,0],0.08),[-0.65,-0.15,-0.15],[0.65,0.15,0.15],0.02);_propCache[type]=g;return g.clone()}
   if(type==='bowl'){   // 밥그릇: 아래가 둥근 그릇(굽 포함)
-    const g=sdfProp((x,y,z)=>{const r=Math.hypot(x,z);let d=Math.max(Math.hypot(r,y-0.2)-0.62,y-0.18);d=sm(d,Math.max(Math.abs(y+0.42)-0.06,r-0.26)-0.02,0.08);return d-0.02},[-0.75,-0.6,-0.75],[0.75,0.3,0.75],0.03);_propCache[type]=g;return g.clone()}
+    const g=sdfProp((x,y,z)=>{const r=Math.hypot(x,z);let d=Math.max(Math.hypot(r,y-0.2)-0.62,y-0.18);d=sm(d,Math.max(Math.abs(y+0.42)-0.06,
+      r-0.26)-0.02,0.08);return d-0.02},[-0.75,-0.6,-0.75],[0.75,0.3,0.75],0.03);
+      _propCache[type]=g;return g.clone()}
   if(type==='rice'){const g=sdfProp((x,y,z)=>Math.hypot(x,(y-0.12)*1.7,z)-0.56,[-0.65,0,-0.65],[0.65,0.5,0.65],0.03);_propCache[type]=g;return g.clone()}
-  if(type==='spoon'){const g=sdfProp((x,y,z)=>sm(Math.hypot(x,(y-0.55)*0.8,z*2.2)-0.17,cap(x,y,z,[0,-0.55,0],[0,0.4,0],0.06),0.06),[-0.3,-0.7,-0.2],[0.3,0.85,0.2],0.02);_propCache[type]=g;return g.clone()}
+  if(type==='spoon'){const g=sdfProp((x,y,z)=>sm(Math.hypot(x,(y-0.55)*0.8,z*2.2)-0.17,cap(x,y,z,[0,-0.55,0],[0,
+    0.4,0],0.06),0.06),[-0.3,-0.7,-0.2],[0.3,0.85,0.2],0.02);_propCache[type]=g;return g.clone()}
   if(type==='dot'){const g=new THREE.SphereGeometry(1,24,18);return g}
   if(type==='tear'){return propGeo('sweat')}
   if(type==='thumb'){   // 엄지척: 가로로 누운 주먹(앞쪽에 접힌 손가락 4개의 둥근 마디) + 주먹 왼쪽 위에서 짧게 선 엄지
@@ -31,7 +36,8 @@ function propGeo(type){
       if(a>=a0&&a<=a1)return Math.abs(Math.hypot(x-c[0],y-c[1])-R);
       const e=[[c[0]+R*Math.cos(a0),c[1]+R*Math.sin(a0)],[c[0]+R*Math.cos(a1),c[1]+R*Math.sin(a1)]];return Math.min(...e.map(q=>Math.hypot(x-q[0],y-q[1])))};
     const ex=c[0]+R*Math.cos(a0),ey=c[1]+R*Math.sin(a0);
-    const g=sdfProp((x,y,z)=>{const tube=Math.hypot(arc(x,y),z)-0.13,stem=cap(x,y,z,[ex,ey,0],[0,-0.12,0],0.13),dot=Math.hypot(x,y+0.52,z)-0.15;return Math.min(sm(tube,stem,0.08),dot)},[-0.65,-0.8,-0.25],[0.65,0.98,0.25],0.025);
+    const g=sdfProp((x,y,z)=>{const tube=Math.hypot(arc(x,y),z)-0.13,stem=cap(x,y,z,[ex,ey,0],[0,-0.12,0],0.13),
+      dot=Math.hypot(x,y+0.52,z)-0.15;return Math.min(sm(tube,stem,0.08),dot)},[-0.65,-0.8,-0.25],[0.65,0.98,0.25],0.025);
     _propCache[type]=g;return g.clone()}
   if(type==='heart'){const s=new THREE.Shape();s.moveTo(0,-0.9);s.bezierCurveTo(-0.15,-0.62,-1.05,-0.25,-1.05,0.28);s.bezierCurveTo(-1.05,0.82,-0.38,1.02,0,0.55);
     s.bezierCurveTo(0.38,1.02,1.05,0.82,1.05,0.28);s.bezierCurveTo(1.05,-0.25,0.15,-0.62,0,-0.9);

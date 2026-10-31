@@ -7,7 +7,8 @@ function cleanName(v){let u=0,out='';for(const ch of (v||'').replace(/[^가-힣�
 function bindName(inp,after){const fix=()=>{const c=cleanName(inp.value);if(c!==inp.value)inp.value=c;charName=c;after()};
   inp.addEventListener('input',e=>{if(e.isComposing)return;fix()});inp.addEventListener('compositionend',fix);
   inp.addEventListener('keydown',e=>{if(e.key===' '&&!e.isComposing)e.preventDefault()})}
-function setName(n){charName=cleanName(n);$('charName').value=charName;$('resName').value=charName;$('nameTitle').textContent=charName;syncNtag();persistSoon();if(!$('result').hidden)loadTagFonts().then(()=>drawPreview(true))}
+function setName(n){charName=cleanName(n);$('charName').value=charName;$('resName').value=charName;$('nameTitle').textContent=charName;
+  syncNtag();persistSoon();if(!$('result').hidden)loadTagFonts().then(()=>drawPreview(true))}
 // 주사위: 약 1초 동안 이름이 슬롯머신처럼 빠르게 바뀌다가 느려지며 멈춤
 let rolling=null;
 // 이름표 '통' 착지: 입력칸의 land 애니메이션과 같은 곡선(0.92 → 1.06 → 1)
@@ -24,8 +25,11 @@ function rollName(d0,inp0){
   const live=!$('result').hidden;
   const tt=$('nameTitle');tt.classList.remove('landed');tt.classList.add('shuffling');
   const nt=$('nameLive');nt.classList.add('shuffling');
-  const tick=()=>{if(i<delays.length){inp.value=NAMES[Math.floor(Math.random()*NAMES.length)];tt.textContent=inp.value;nt.textContent=inp.value;if(live){tagNameShow=inp.value;drawPreview(true)}rolling=setTimeout(tick,delays[i++])}
-    else{rolling=null;inp.classList.remove('shuffling');tagNameShow=null;setName(n);nt.classList.remove('shuffling');nt.classList.remove('pop');void nt.offsetWidth;nt.classList.add('pop');void inp.offsetWidth;inp.classList.add('landed');tt.classList.remove('shuffling');void tt.offsetWidth;tt.classList.add('landed');if(live)tagLand()}};
+  const tick=()=>{if(i<delays.length){inp.value=NAMES[Math.floor(Math.random()*NAMES.length)];tt.textContent=inp.value;
+    nt.textContent=inp.value;if(live){tagNameShow=inp.value;drawPreview(true)}rolling=setTimeout(tick,delays[i++])}
+    else{rolling=null;inp.classList.remove('shuffling');tagNameShow=null;setName(n);nt.classList.remove('shuffling');
+      nt.classList.remove('pop');void nt.offsetWidth;nt.classList.add('pop');void inp.offsetWidth;inp.classList.add('landed');
+      tt.classList.remove('shuffling');void tt.offsetWidth;tt.classList.add('landed');if(live)tagLand()}};
   tick();
 }
 $('nameDice').onclick=()=>rollName();

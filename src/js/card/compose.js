@@ -19,7 +19,8 @@ function renderChar(q){
   const cb=camBase;persp.aspect=OW/RH;camBase={d:12*ch/2.2,y:ch*0.8,ty:ch*0.46};placePersp();persp.updateProjectionMatrix();
   chars[0].rotation.y=angle;chars[0].updateMatrixWorld(true);
   const bb=new THREE.Box3().setFromObject(chars[0]);
-  const span=()=>{let mn=1e9,mx=-1e9;for(const X of [bb.min.x,bb.max.x])for(const Y of [bb.min.y,bb.max.y])for(const Z of [bb.min.z,bb.max.z]){const v=new THREE.Vector3(X,Y,Z).project(persp);const px=(v.x+1)/2*OW;mn=Math.min(mn,px);mx=Math.max(mx,px)}return [mn,mx]};
+  const span=()=>{let mn=1e9,mx=-1e9;for(const X of [bb.min.x,bb.max.x])for(const Y of [bb.min.y,bb.max.y])for(const Z of [bb.min.z,bb.max.z]){const v=new THREE.Vector3(X,Y,Z).project(persp);
+    const px=(v.x+1)/2*OW;mn=Math.min(mn,px);mx=Math.max(mx,px)}return [mn,mx]};
   // 가로로 너무 넓으면 카메라를 뒤로 물려 정해진 폭 안에 들어오게
   let [mnx,mxx]=span();
   if(mxx-mnx>CHAR_MAXW){camBase.d*=(mxx-mnx)/CHAR_MAXW*1.01;placePersp();persp.updateProjectionMatrix();[mnx,mxx]=span()}
@@ -52,7 +53,8 @@ function compose(dst,q,reuse){
     // 이름 글자는 흰 칸(윗띠 아래) 안에 '실제 글자 모양' 기준으로 맞춤 → 겹받침(ㄼ 등)이 아래로 삐져나오지 않음
     const NF=f=>f+'px Jua, "Noto Sans KR", sans-serif';
     let fs=100;x.font=NF(fs);
-    const ink=()=>{const m=x.measureText(name),r=x.measureText('깨둥');return {w:m.width,asc:Math.max(m.actualBoundingBoxAscent,r.actualBoundingBoxAscent),desc:Math.max(m.actualBoundingBoxDescent,r.actualBoundingBoxDescent)}};
+    const ink=()=>{const m=x.measureText(name),r=x.measureText('깨둥');return {w:m.width,asc:Math.max(m.actualBoundingBoxAscent,
+      r.actualBoundingBoxAscent),desc:Math.max(m.actualBoundingBoxDescent,r.actualBoundingBoxDescent)}};
     let M=ink();const cw=Math.min(900,Math.max(440,M.w+130)),boxH=tagH-72-34;
     const k=Math.min(1,(cw-90)/M.w,boxH/(M.asc+M.desc));if(k<1){fs=Math.floor(fs*k);x.font=NF(fs);M=ink()}
     const nameY=(-tagH/2+72+tagH/2-12)/2+(M.asc-M.desc)/2;   // 흰 칸 가운데에 글자 묶음 가운데
