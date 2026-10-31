@@ -76,15 +76,15 @@ function build(M,B){
     const asy=s>0?(P.browAsym||0):0;stick(head,brow,s*bx,hy+by+0.07*asy/25,0.006,s*ang-asy*Math.PI/180);
     TAG='blush';if(P.blush){const bx0=s*Math.min(faceX,ex+0.22),by0=hy+ey-0.13+P.blushY,bt=P.blushType;
       if(bt==='hatch'){for(let j=-1;j<=1;j++){const c=mesh(capsule(0.1,0.015),pink);c.scale.z=0.7;stick(head,c,bx0+j*0.05,by0,0.005,1.05)}}   // 빗금 세 줄
-      else if(bt==='freckle'){}   // 주근깨는 코를 붙인 뒤 한 띠로(아래)
+      else if(bt==='freckle'){}   // 주근깨는 코를 붙인 뒤(아래)
       else if(bt==='blur')patch(head,bx0,by0,0.36,0.27,blurMat(P.blushColor));   // 볼에 번지듯 물든 볼터치
       else stick(head,mesh(blob(0.11,0.075,0.012,0.9),pink),bx0,by0,0.004)}
   }
   const noseM=mesh(blob(nhw,nhh,0.055*ns,0.95-0.6*P.noseSq),white);stick(head,noseM,0,hy+ny,0.025*ns);   // 모양: 0 둥근 ↔ 1 각진
-  // 주근깨(그림 참고): 한쪽 볼 → 눈 사이 콧잔등(코 위로 산 모양) → 다른 쪽 볼. 한쪽을 흩뿌린 뒤 반대쪽에 거울처럼 옮기고 살짝만 흔듦(대칭 95% · 비대칭 5%)
+  // 주근깨: 양 볼에 동그랗게 모인 점. 색은 피부색보다 조금 진하게
   TAG='blush';
   if(P.blush&&P.blushType==='freckle'){
-    const dots=freckleDots(ny,nhw,nhh,ey,er,ex,P.blushY),fm=freckleMat(P.color);
+    const dots=freckleDots(Math.min(faceX,ex+0.22),ey-0.13+P.blushY,0.075),fm=freckleMat(P.color);
     dots.forEach(([x,y,r])=>stick(head,mesh(blob(r,r,0.006,0.9),fm),x,hy+y,0.003))}
   // 입
   TAG='mouth';
@@ -168,14 +168,10 @@ function blurMat(hex){const k='b'+hex;return BL_MATS[k]||(BL_MATS[k]=new THREE.M
 // 주근깨 색: 피부와 같은 색 계열에서 조금만 진하게(명도·채도 차이가 크지 않게)
 function freckleHex(skin){const c=new THREE.Color(skin),h={};c.getHSL(h);c.setHSL(h.h,Math.min(1,h.s*0.92+0.02),Math.max(0.15,h.l-0.13));return '#'+c.getHexString()}
 function freckleMat(skin){const hx=freckleHex(skin),k='f'+hx;return BL_MATS[k]||(BL_MATS[k]=clay(hx,0.85,false,true))}
-// 주근깨 점 자리: 산 모양 띠를 따라 한쪽에 흩뿌리고, 반대쪽은 거울 자리에서 아주 조금만 어긋나게(늘 같은 자리가 나오게 정해진 난수)
-function freckleDots(ny,nhw,nhh,ey,er,ex,oy){
+// 주근깨 점 자리: 볼 위에 동그랗게(해바라기씨 배열로 고르게 + 살짝 흔듦). 반대쪽은 거울 자리에서 아주 조금만 어긋나게(대칭 95% · 비대칭 5%)
+function freckleDots(cx,cy,R){
   let seed=7;const rnd=()=>{seed=(seed*16807)%2147483647;return (seed-1)/2147483646};
-  const A=[0,ny+nhh+0.075+oy],C=[ex+0.1,ny-nhh*0.35+oy],n=13,half=[],out=[];
-  for(let i=0;i<n;i++){const t=(i+0.15+rnd()*0.7)/n,sag=-0.035*Math.sin(Math.PI*t),px=A[0]+(C[0]-A[0])*t,py=A[1]+(C[1]-A[1])*t+sag;
-    const off=(rnd()-0.5)*0.07;half.push([px+off*0.55,py+off,0.0115+rnd()*0.0035])}
-  for(const s of[-1,1])half.forEach(([x,y,r])=>{const j=s>0?0.006:0;   // 오른쪽만 살짝 어긋남
-    const X=s*(x+(rnd()-0.5)*j),Y=y+(rnd()-0.5)*j,R=r*(s>0?0.92+rnd()*0.16:1);
-    if(Math.abs(X)<nhw*1.05&&Math.abs(Y-ny)<nhh*1.05)return;if(Math.abs(X)<0.012)return;   // 코에 가리거나 가운데에서 겹치는 점은 뺌
-    out.push([X,Y,R])});
+  const n=10,half=[],out=[],G=Math.PI*(3-Math.sqrt(5));
+  for(let i=0;i<n;i++){const r=R*Math.sqrt((i+0.5)/n),a=i*G+0.4;half.push([cx+Math.cos(a)*r*1.15+(rnd()-0.5)*0.012,cy+Math.sin(a)*r*0.85+(rnd()-0.5)*0.012,0.0115+rnd()*0.0035])}
+  for(const s of[-1,1])half.forEach(([x,y,r])=>{const j=s>0?0.006:0;out.push([s*(x+(rnd()-0.5)*j),y+(rnd()-0.5)*j,r*(s>0?0.92+rnd()*0.16:1)])});
   return out}
