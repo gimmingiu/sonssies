@@ -77,14 +77,18 @@ function build(M,B){
     if(P.eyeType==='content')rz=Math.PI;
     if(P.eyeType==='squint'&&s>0)rz=Math.PI;
     TAG='eye';stick(head,E.m,s*ex,hy+ey,E.lift,rz);TAG='brow';
-    const brow=mesh(capsule(bl,bth),dark);brow.scale.z=0.7;
+    // 눈썹: 일자(막대) 또는 반달(위로 둥근 곡선). 반달도 양 끝 사이 길이는 bl
+    const brow=P.browType==='arc'?arcStroke(bl/(2*Math.sin(Math.PI*0.36)),bth,Math.PI*0.72,dark):mesh(capsule(bl,bth),dark);
+    if(P.browType!=='arc')brow.scale.z=0.7;
     const asy=s>0?(P.browAsym||0):0;stick(head,brow,s*bx,hy+by+0.07*asy/25,0.006,s*ang-asy*Math.PI/180);
     TAG='blush';if(P.blush){const bx0=s*Math.min(faceX,ex+0.22),by0=hy+ey-0.13+P.blushY,bt=P.blushType;
       if(bt==='hatch'){for(let j=-1;j<=1;j++){const c=mesh(capsule(0.1,0.015),pink);c.scale.z=0.7;stick(head,c,bx0+j*0.05,by0,0.005,1.05)}}   // 빗금 세 줄
       else if(bt==='freckle'){}   // 주근깨는 코를 붙인 뒤(아래)
       else if(bt==='blur')patch(head,bx0,by0,0.36,0.27,blurMat(P.blushColor));   // 볼에 번지듯 물든 볼터치
+      else if(bt==='yeonji')stick(head,mesh(blob(0.062,0.062,0.01,0.9),pink),bx0,by0,0.004);   // 연지: 양 볼에 붉은 동그라미(곤지는 아래 이마에)
       else stick(head,mesh(blob(0.11,0.075,0.012,0.9),pink),bx0,by0,0.004)}
   }
+  if(P.blush&&P.blushType==='yeonji'){TAG='blush';stick(head,mesh(blob(0.045,0.045,0.008,0.9),pink),0,hy+Math.min(faceTop-0.04,by+bth+0.11),0.004)}   // 곤지: 이마 가운데
   const noseM=mesh(blob(nhw,nhh,0.055*ns,0.95-0.6*P.noseSq),white);stick(head,noseM,0,hy+ny,0.025*ns);   // 모양: 0 둥근 ↔ 1 각진
   // 주근깨: 양 볼에 동그랗게 모인 점. 색은 피부색보다 조금 진하게
   TAG='blush';

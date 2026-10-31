@@ -10,13 +10,13 @@ const PART_CARDS={
  '귀':{shot:'ear',items:[['보통',{}],['앙증',{earSize:S('earSize',-4)}],['큼직',{earSize:S('earSize',4)}],
    ['쫑긋',{earY:S('earY',4)}],['작은쫑긋',{earSize:S('earSize',-4),earY:S('earY',4)}],['큰쫑긋',{earSize:S('earSize',4),earY:S('earY',4)}]]},
  // 보통·짧둥·굵직은 깨두 눈썹(비스듬히) 바탕
- '눈썹':{shot:'face',items:[['보통',{browAng:48,browLen:0.124,browThick:0.016}],['짧둥',{browAng:48,browLen:S('browLen',-5),browThick:0.016}],
-   ['굵직',{browAng:48,browLen:0.124,browThick:S('browThick',2)}],['겁쟁이',{browAng:S('browAng',-3)}],['순둥이',{}],['고집쟁이',{browThick:S('browThick',3)}]]},
+ '눈썹':{shot:'face',base:{browType:'line'},items:[['보통',{browAng:48,browLen:0.124,browThick:0.016}],['짧둥',{browAng:48,browLen:S('browLen',-5),browThick:0.016}],
+   ['굵직',{browAng:48,browLen:0.124,browThick:S('browThick',2)}],['시옷',{browAng:S('browAng',-3)}],['반달',{browType:'arc'}],['숯검댕',{browThick:S('browThick',5)}]]},
  // 깨두 코(기본) = 네모 계열
  '코':{shot:'face',items:[['네모',{}],['작은네모',{noseSize:S('noseSize',-3)}],['큰네모',{noseSize:S('noseSize',3)}],
    ['동글',{noseSq:S('noseSq',-5)}],['작은동글',{noseSq:S('noseSq',-5),noseSize:S('noseSize',-3)}],['큰동글',{noseSq:S('noseSq',-5),noseSize:S('noseSize',3)}]]},
  '볼터치':{shot:'cheek',items:[['꾸러기',{blush:true,blushType:'clay',blushColor:'#f6b3a9'}],['데헷',{blush:true,blushType:'hatch',blushColor:'#f0607c'}],
-   ['개구쟁이',{blush:true,blushType:'freckle'}],['수줍',{blush:true,blushType:'blur',blushColor:'#ffa3a3'}],['발그레',{blush:true,blushType:'blur',blushColor:'#ff6a3d'}],['없음',{blush:false}]]},
+   ['주근깨',{blush:true,blushType:'freckle'}],['연지곤지',{blush:true,blushType:'yeonji',blushColor:'#e23b33'}],['발그레',{blush:true,blushType:'blur',blushColor:'#ff6a3d'}],['없음',{blush:false}]]},
  '볼살':{shot:'cheek',items:[['빵빵',{cheek:S('cheek',5)}],['통통',{cheek:S('cheek',3)}],['없음',{}]]},
  '몸':{shot:'body',base:{lowerW:1},items:[['깨두',{}],['꼬마',{bodyLen:0.6,upperW:0.92,lowerW:0.95}],['꼼디',{upperW:1.3,lowerW:1.42,bodyD:1.22}]]},
  '팔':{shot:'body',items:[['보통',{}],['짧뚱',{armLen:S('armLen',-4)}],['길쭉',{armLen:S('armLen',4)}]]},
