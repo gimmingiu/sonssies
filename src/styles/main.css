@@ -347,3 +347,38 @@ body{padding:0;margin:0;min-height:100dvh}
 .eggart.shiver .eggi{animation:eggShiver .11s linear infinite alternate}
 @keyframes eggShiver{from{transform:translateX(-.5%) rotate(-.6deg)}to{transform:translateX(.5%) rotate(.6deg)}}
 @media (prefers-reduced-motion: reduce){.eggart.shiver .eggi,.eggart .lt{animation:none}.eggart .l1{opacity:.85}.eggart .l2{display:none}}
+
+/* ===== 꾸미기 화면 도구 ===== */
+.scr[data-scr="step"] .topbar{display:none}
+/* 아이콘 탭: 미리보기 바로 아래 (미리보기와 함께 위에 붙어 있음) */
+.stabs{display:flex;gap:2px;background:var(--panel);border:1px solid var(--line);border-top:0;border-radius:0 0 14px 14px;padding:4px 6px 0;margin-top:-10px;padding-top:12px;overflow-x:auto;scrollbar-width:none}
+.stabs::-webkit-scrollbar{display:none}
+.stabs button{flex:1 1 0;min-width:36px;height:46px;border:0;background:transparent;color:var(--muted);display:grid;place-items:center;cursor:pointer;border-bottom:3px solid transparent;padding:0;position:relative}
+.stabs button svg{width:26px;height:26px}
+.stabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+.stabs button.done::after{content:"";position:absolute;top:7px;right:calc(50% - 17px);width:6px;height:6px;border-radius:50%;background:var(--accent);opacity:.55}
+.stagehold[data-size="step"] .stage{border-radius:14px 14px 0 0}
+/* 되돌리기·다시하기·처음으로 */
+.undos{position:absolute;right:10px;top:10px;z-index:7;display:flex;flex-direction:column;gap:6px}
+.undos button{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--fg);display:grid;place-items:center;cursor:pointer;padding:0;box-shadow:0 3px 8px -5px rgba(0,0,0,.4)}
+.undos button:disabled{opacity:.35;cursor:default}
+.undos button:not(:disabled):active{transform:scale(.92)}
+/* 하위 탭 */
+.subtabs{display:flex;gap:4px;background:var(--bg);border-radius:12px;padding:4px;margin-bottom:2px}
+.subtabs button{flex:1;font:700 14px var(--f-body);border:0;border-radius:9px;padding:9px 6px;background:transparent;color:var(--muted);cursor:pointer}
+.subtabs button[aria-selected="true"]{background:var(--panel);color:var(--accent);box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.stepbox section{display:flex;flex-direction:column;gap:16px}
+/* 그림 카드(눈·입 모양) */
+.tcards{display:grid!important;grid-template-columns:repeat(3,1fr);gap:8px}
+.tcard{display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 4px 8px!important;border-radius:14px!important;border:1.5px solid var(--line)!important;background:var(--bg)!important;color:var(--fg)!important;font:500 12.5px var(--f-body)!important}
+.tcard img{width:100%;aspect-ratio:1;border-radius:10px;background:var(--stage);object-fit:cover}
+.tcard img:not([src]){visibility:hidden}
+.tcard[aria-pressed="true"]{border-color:var(--accent)!important;background:color-mix(in srgb,var(--accent) 12%,var(--panel))!important;color:var(--accent)!important}
+details.fine{border:0;border-top:1px dashed var(--line);padding-top:4px}
+details.fine summary{padding:10px 2px;font:700 13px var(--f-body);color:var(--muted)}
+.fine-in{display:flex;flex-direction:column;gap:16px;padding:4px 0 6px}
+/* 큰 색 칩(둥근 사각) */
+.colors{gap:10px}
+.colors .sw,.colors input[type=color]{width:44px;height:44px;border-radius:14px;border:3px solid var(--panel);box-shadow:0 0 0 1px var(--line)}
+.colors .sw[aria-pressed="true"],.colors input[type=color][data-on="true"]{box-shadow:0 0 0 2.5px var(--accent)}
+.colors input[type=color]::-webkit-color-swatch{border-radius:10px}

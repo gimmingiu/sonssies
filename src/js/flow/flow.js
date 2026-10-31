@@ -9,7 +9,7 @@ function persistSoon(){clearTimeout(psT);psT=setTimeout(()=>{   // 처음 꾸미
 function syncNtag(){const t=$('nameLive');if(!rolling){t.textContent=charName||'깨두';hello(charName)}t.style.color=bgColor?(isDark(bgColor)?'#eef4f5':'#1f2a2e'):''}
 // '안녕! 나는 ○○야/이야' (받침 있으면 이야)
 function hello(){}
-function afterRebuild(){syncNtag();persistSoon();if(!$('result').hidden)drawPreview()}
+function afterRebuild(){syncNtag();persistSoon();undoRecord();if(!$('result').hidden)drawPreview()}
 
 // 꾸미기 8단계: 원래 항목 묶음을 단계별로 모음
 const GRP={};document.querySelectorAll('#holder details').forEach(d=>{GRP[d.querySelector('summary').textContent.trim()]=d.querySelector('.grp')});
@@ -45,7 +45,9 @@ function show(st,dir){
   if(st.scr==='egg')enterEgg();else leaveEgg();
   if(st.scr==='step'){const i=st.step||0,N=nSteps();$('stepTitle').textContent=STEPS[i][0];$('stepPrev').disabled=stack.length<=1;stepEls.forEach((e,j)=>e.hidden=j!==i);
     $('prog').style.gridTemplateColumns=`repeat(${N},1fr)`;$('prog').querySelectorAll('i').forEach((e,j)=>{e.hidden=j>=N;e.classList.toggle('on',j<=i)});$('pnum').textContent=(i+1)+'/'+N;
-    $('prog').setAttribute('aria-valuemax',N);$('prog').setAttribute('aria-valuenow',i+1);const last=i>=N-1;$('stepNext').hidden=last;$('stepMake').hidden=!last;$('stepMake').textContent=editing?'완료':'생성하기'}
+    $('prog').setAttribute('aria-valuemax',N);$('prog').setAttribute('aria-valuenow',i+1);const last=i>=N-1;$('stepNext').hidden=last;$('stepMake').hidden=!last;$('stepMake').textContent=editing?'완료':'생성하기';
+    editorEnter(i,prev!=='step')}
+  else if(prev==='step')lookReset();
   if(st.scr==='name')syncNtag();
   if(st.scr==='main'){
     if(editing){editing=false;if(ST.doll)loadDoll(ST.doll)}            // 꾸미다 저장하지 않고 돌아오면 원래대로

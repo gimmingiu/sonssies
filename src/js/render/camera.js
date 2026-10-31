@@ -39,7 +39,9 @@ function rebuild(fine=true){
 }
 // 돌려보기 줌: 휠·핀치·버튼. 가까워질수록 시선이 얼굴 쪽으로 살짝 올라감
 let camBase={d:8,y:1.8,ty:1},zoom=1,zoomT=1;
-function placePersp(){const z=zoom,ty=camBase.ty+(z-1)*0.18*camBase.ty;persp.position.set(0,ty+(camBase.y-camBase.ty)/z,camBase.d/z);persp.lookAt(0,ty,0)}
+// 시선 높이: 꾸미기에서 고치는 부위(얼굴 등)로 카메라가 옮겨 갈 때 focusK(0~1)만큼 focusH 쪽으로
+let focusK=0,focusKT=0,focusH=0;
+function placePersp(){const z=zoom;let ty=camBase.ty+(z-1)*0.18*camBase.ty;if(focusK>1e-3)ty+=(focusH-ty)*focusK;persp.position.set(0,ty+(camBase.y-camBase.ty)/z,camBase.d/z);persp.lookAt(0,ty,0)}
 const ZMIN=0.6,ZMAX=3;
 // 슬라이더 위치(0~1): 아래 절반 = 60~100%, 위 절반 = 100~300% (각각 로그 비율) → 100%가 정확히 가운데
 const zT=z=>z<=1?0.5*Math.log(z/ZMIN)/Math.log(1/ZMIN):0.5+0.5*Math.log(z)/Math.log(ZMAX);
@@ -48,9 +50,9 @@ function setZoom(z){zoomT=Math.max(ZMIN,Math.min(ZMAX,z));const pc=Math.round(zo
   const t=zT(zoomT),th=document.getElementById('zThumb');if(th){th.style.top=`calc(6px + ${(1-t).toFixed(4)} * (100% - 12px))`;document.getElementById('zFill').style.height=`calc(${t.toFixed(4)} * (100% - 12px))`;document.getElementById('zTrack').setAttribute('aria-valuenow',pc)}}
 function frame(){
   if(mode==='rot'&&chars[0]){if(spinning&&!dragging)target+=0.006;angle+=(target-angle)*0.12;chars[0].rotation.y=angle;
-    if(Math.abs(zoomT-zoom)>1e-4){zoom+=(zoomT-zoom)*0.18;placePersp()}}
+    if(Math.abs(zoomT-zoom)>1e-4||Math.abs(focusKT-focusK)>1e-3){zoom+=(zoomT-zoom)*0.14;focusK+=(focusKT-focusK)*0.14;placePersp()}}
   flowFrame(performance.now());
-  if(stage.offsetParent!==null)renderer.render(scene,persp);requestAnimationFrame(frame);   // 미리보기가 안 보이는 화면에선 그리지 않음(배터리)
+  if(stage.offsetParent!==null&&!thumbBusy)renderer.render(scene,persp);requestAnimationFrame(frame);   // 미리보기가 안 보이는 화면에선 그리지 않음(배터리)
   if(chars[0]&&!frame.ok){frame.ok=1;window.__dkIntroReady&&window.__dkIntroReady()}
 }
 let dragging=false,lastX=0;const ptrs=new Map();let pinch0=0,zoom0=1;
