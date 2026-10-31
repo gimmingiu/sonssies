@@ -3,9 +3,10 @@
 
 - src/page.html 이 뼈대. 그 안의 `@@include 경로` 줄이 해당 파일 내용으로 바뀜.
 - 결과물 하나가 아티팩트(claude.ai)로도, 사이트(index.html, tools/build_site.py)로도 쓰임.
+- 꿈알 그림(egg/)은 페이지 옆에 따로 둠 → build/egg/로 복사(아티팩트는 files로 함께 올림, 사이트는 저장소 egg/를 그대로 씀).
 사용: python3 tools/assemble.py [출력경로]
 """
-import os, re, sys
+import os, re, sys, shutil
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, 'src')
 
@@ -31,4 +32,7 @@ if __name__ == '__main__':
     html = expand('page.html')
     with open(dst, 'w', encoding='utf8') as f:
         f.write(html)
-    print(f'{os.path.relpath(dst, ROOT)}  {len(html.encode())//1024}KB')
+    eg = os.path.join(os.path.dirname(dst), 'egg')
+    if os.path.abspath(eg) != os.path.join(ROOT, 'egg'):
+        shutil.rmtree(eg, ignore_errors=True); shutil.copytree(os.path.join(ROOT, 'egg'), eg)
+    print(f'{os.path.relpath(dst, ROOT)}  {len(html.encode())//1024}KB (+ egg/ 그림 {len(os.listdir(eg))}개)')
