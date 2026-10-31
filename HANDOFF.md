@@ -46,6 +46,7 @@ src/
 |---|---|
 | `tools/assemble.py` | `src/` → `build/sonssies.html` (아티팩트에 그대로 게시하는 파일) |
 | `tools/build_site.py` | assemble 실행 후 → 사이트용 `index.html` (doctype·head·PWA·OG 태그, 저장 기능을 브라우저 다운로드/공유로 대체) |
+| `tools/check.py` | **코드 점검**: 200자 넘는 줄·같은 CSS 규칙 두 번·화면에 없는 id 찾기(오류) / 안 쓰는 함수·변수·CSS 클래스·150줄 넘는 파일(경고). `build_site.py`가 먼저 돌리고 오류면 멈춤. 작업 규칙은 `CLAUDE.md` |
 | `tools/test_flow.js` | **전체 흐름 자동 확인**(꿈알→기본형→꾸미기→이름→저장→다시 열기→메인→수정→배경화면). 단계마다 검사하고 페이지 오류가 있으면 실패. 화면은 `out_flow/`에 저장 |
 | `tools/egg_assets.py` | 꿈알 PNG(assets/dreamegg) → `egg/*.webp` 24장 + 파일 목록 `src/js/flow/egg-art.js`(`?v=` 값으로 옛 그림 캐시 무효화). `--list`는 목록만 |
 | `tools/test_page.js` | 메인 미리보기와 카드 만들기 화면의 저장 이미지(1080×1920)를 렌더해 확인 (카드 화면은 들어가는 버튼이 없어 `__dkFlow.go`로 엶) |

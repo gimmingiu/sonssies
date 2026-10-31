@@ -4,7 +4,6 @@ const REF_H=0.78*1+2*0.68*1-0.08+0.3;
 const frameH=()=>Math.max(REF_H,charH);
 const persp=new THREE.PerspectiveCamera(26,1,0.1,60);
 let mode='rot',chars=[],angle=0,target=0,spinning=false,charH=2.2,charW=2.7;
-const VIEWS=[['앞','',0],['3/4','',-Math.PI/4],['옆','',-Math.PI/2],['뒤','',Math.PI]];
 function layout(){
   const w=stage.clientWidth,h=stage.clientHeight,asp=w/h;if(!w||!h)return;
   renderer.setSize(w,h,false);

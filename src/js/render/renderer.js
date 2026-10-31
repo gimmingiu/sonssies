@@ -36,8 +36,8 @@ const TEX={
 };
 const curTex=()=>TEX[P.tex]||TEX.smooth;
 function texFix(sh,t){
-  sh.fragmentShader=sh.fragmentShader.replace('#include <lights_fragment_end>','#include <lights_fragment_end>\nreflectedLight.directSpecular*='+t.spec.toFixed(3)+';reflectedLight.indirectSpecular*='+t.spec.toFixed(3)+';');
-  if(t.glsl)sh.fragmentShader=sh.fragmentShader.replace('#include <output_fragment>','float rimF=1.0-clamp(dot(normalize(normal),normalize(vViewPosition)),0.0,1.0);\n'+t.glsl+'\n#include <output_fragment>');
+  sh.fragmentShader=sh.fragmentShader.replace('#include <lights_fragment_end>',
+    '#include <lights_fragment_end>\nreflectedLight.directSpecular*='+t.spec.toFixed(3)+';reflectedLight.indirectSpecular*='+t.spec.toFixed(3)+';');
 }
 // fixed=true: 눈·눈썹·입처럼 질감과 상관없이 고정된 재질 / bump=false: 귓바퀴처럼 요철만 빼는 경우
 function clay(hex,rough,bump=true,fixed=false){
@@ -70,7 +70,10 @@ const MASK_GLSL={
  3:`float m=0.0; vec3 bq=(vLocal-uBC)/uBR; float bd=(length(bq)-1.)*min(uBR.x,min(uBR.y,uBR.z)); float ao=mix(0.66,1.,smoothstep(0.,0.14,bd));`
 };
 const MASK_DECL={
- 1:'uniform vec3 uSL;uniform vec3 uDL;uniform float uHSL;uniform vec3 uEL;uniform vec3 uSR;uniform vec3 uDR;uniform float uHSR;uniform vec3 uER;uniform float uHR;uniform float uSole;uniform float uSit;uniform float uFootZ;uniform float uFootY;uniform float uLegY;uniform float uLegZ;uniform float uLegAL;uniform float uLegAR;uniform float uBend;uniform float uWaist;varying float vArm;varying float vTail;uniform vec3 uHC;uniform vec3 uHRad;uniform float uHE;',
+ 1:'uniform vec3 uSL;uniform vec3 uDL;uniform float uHSL;uniform vec3 uEL;uniform vec3 uSR;uniform vec3 uDR;uniform float uHSR;'+
+    'uniform vec3 uER;uniform float uHR;uniform float uSole;uniform float uSit;uniform float uFootZ;uniform float uFootY;uniform float uLegY;'+
+    'uniform float uLegZ;'+
+    'uniform float uLegAL;uniform float uLegAR;uniform float uBend;uniform float uWaist;varying float vArm;varying float vTail;uniform vec3 uHC;uniform vec3 uHRad;uniform float uHE;',
  2:'uniform float uSide;uniform float uRu;uniform float uRv;uniform float uLim;',
  3:'uniform vec3 uBC;uniform vec3 uBR;'
 };

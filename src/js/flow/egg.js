@@ -7,7 +7,8 @@ let egg=null,eggTaps=0,eggDone=false;const EGG_N=EGG_ART.length-1;   // 누르�
 function makeEgg(){
   const hold=$('app').querySelector('.stagehold[data-size="egg"]');
   const box=document.createElement('div');box.className='eggart';box.id='eggArt';box.setAttribute('role','button');box.setAttribute('aria-label','꿈알 두드리기');
-  box.innerHTML='<div class="eglow"></div><div class="eggw"><div class="eggi"><img class="shell" alt="" draggable="false"><img class="lt l1" alt="" draggable="false"><img class="lt l2" alt="" draggable="false"></div></div>';
+  box.innerHTML='<div class="eglow"></div><div class="eggw"><div class="eggi">'+
+    '<img class="shell" alt="" draggable="false"><img class="lt l1" alt="" draggable="false"><img class="lt l2" alt="" draggable="false"></div></div>';
   hold.appendChild(box);
   const img=box.querySelector('.shell'),lts=[...box.querySelectorAll('.lt')];img.src=EGG_ART[0];lts.forEach(l=>l.src=EGG_LIGHT[0]);
   EGG_ART.concat(EGG_LIGHT).forEach(u=>{const i=new Image();i.src=u;i.decode&&i.decode().catch(()=>{})});   // 미리 풀어 두어 바꿀 때 깜빡임 없게

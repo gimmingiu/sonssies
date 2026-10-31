@@ -1,8 +1,11 @@
-# 아티팩트 파일(dokkaebi-turnaround.html) → 독립 웹사이트 index.html
+# 아티팩트 파일(build/sonssies.html) → 독립 웹사이트 index.html
 import sys,os
 ROOT=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # 나눠 둔 소스(src/)를 먼저 한 파일로 합친 뒤(build/sonssies.html) 사이트용으로 바꿈
-import subprocess;subprocess.run([sys.executable,os.path.join(ROOT,'tools','assemble.py')],check=True)
+import subprocess
+# 코드 점검(tools/check.py)을 먼저 돌려서 오류가 있으면 사이트를 만들지 않음
+if subprocess.run([sys.executable,os.path.join(ROOT,'tools','check.py')]).returncode:sys.exit('점검 오류가 있어 사이트를 만들지 않았어요. 위 오류를 고친 뒤 다시 실행하세요.')
+subprocess.run([sys.executable,os.path.join(ROOT,'tools','assemble.py')],check=True)
 src=open(os.path.join(ROOT,'build','sonssies.html'),encoding='utf8').read()
 s=src
 def rep(a,b):

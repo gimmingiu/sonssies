@@ -23,5 +23,4 @@ function setPose(n,anim){n=POSES[n]?n:'기본';const same=POSE_KEYS.every(k=>P[k
   if(same)return;POSE_KEYS.forEach(k=>P[k]=DEF[k]);Object.assign(P,POSES[n]);syncUI();rebuild();if(anim)bump()}
 Object.keys(POSES).forEach(n=>{const b=document.createElement('button');b.type='button';b.className='mpose';b.dataset.pose=n;
   b.textContent=n;b.onclick=()=>setPose(n,true);$('mainPoses').appendChild(b)});
-if($('goCard'))$('goCard').onclick=()=>go({scr:'card'});
 $('goWall').onclick=()=>go({scr:'wall'});

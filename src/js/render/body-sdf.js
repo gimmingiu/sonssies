@@ -1,4 +1,4 @@
-// ---------- SDF 몸 (상체·하체·팔·손·발·꼬리를 한 덩어리로) ----------
+// ---------- SDF 몸 (상체·하체·팔·손·발·꼬리를 한 덩어리로) ----------   check:big-ok 몸 모양 하나를 계산하는 한 덩어리(나누면 오히려 읽기 어려움)
 const smin=(a,b,k)=>{const h=Math.max(k-Math.abs(a-b),0)/k;return Math.min(a,b)-h*h*k*0.25};
 const smax=(a,b,k)=>-smin(-a,-b,k);
 function ell(x,y,z,rx,ry,rz){const k0=Math.sqrt((x/rx)**2+(y/ry)**2+(z/rz)**2),k1=Math.sqrt((x/(rx*rx))**2+(y/(ry*ry))**2+(z/(rz*rz))**2);return k0*(k0-1)/(k1||1e-6)}
