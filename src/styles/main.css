@@ -335,12 +335,15 @@ body{padding:0;margin:0;min-height:100dvh}
 .eggart{position:absolute;inset:0;z-index:8;display:grid;place-items:center;overflow:visible;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;outline:none;--glow:0}
 /* 그림이 칸보다 커도 칸 가운데에 오도록 절대 위치(정사각형이라 margin %도 너비 기준으로 같음) */
 .eggart .eggw{position:absolute;left:50%;top:50%;width:min(150%,74vh);aspect-ratio:1;margin:calc(min(150%,74vh)/-2) 0 0 calc(min(150%,74vh)/-2);transform-origin:50% 80%;will-change:transform}
-.eggart img{width:100%;height:100%;display:block;user-select:none;-webkit-user-drag:none;pointer-events:none}
+.eggart .eggi{position:absolute;inset:0}
+.eggart img{position:absolute;inset:0;width:100%;height:100%;display:block;user-select:none;-webkit-user-drag:none;pointer-events:none}
 .eggart .eglow{position:absolute;left:50%;top:50%;width:min(80%,46vh);aspect-ratio:1;translate:-50% -46%;border-radius:50%;pointer-events:none;
   background:radial-gradient(closest-side,rgba(255,226,140,.75),rgba(255,226,140,.25) 55%,rgba(255,226,140,0));opacity:0}
-.eggart.breathe::before{content:"";position:absolute;left:50%;top:50%;width:min(76%,44vh);aspect-ratio:1;translate:-50% -46%;border-radius:50%;pointer-events:none;
-  background:radial-gradient(closest-side,rgba(255,226,140,.55),rgba(255,226,140,0));opacity:calc(var(--glow)*.8);animation:eggBreath 2.4s ease-in-out infinite}
-@keyframes eggBreath{0%,100%{transform:scale(.92);opacity:calc(var(--glow)*.45)}50%{transform:scale(1.06);opacity:calc(var(--glow)*.9)}}
-.eggart.shiver img{animation:eggShiver .11s linear infinite alternate}
+/* 빛 레이어: l1 = 틈 안에서 밝아졌다 어두워짐, l2 = 밝아질 때 같은 빛이 바깥으로 번지며 사라짐 */
+.eggart .l1{animation:eggLight var(--beat,2.2s) ease-in-out infinite}
+.eggart .l2{filter:blur(5px);transform-origin:50% 50.6%;animation:eggLeak var(--beat,2.2s) ease-out infinite}
+@keyframes eggLight{0%,100%{opacity:var(--lmin,.35)}50%{opacity:1}}
+@keyframes eggLeak{0%,38%{opacity:0;transform:scale(1)}55%{opacity:.85;transform:scale(1.03)}100%{opacity:0;transform:scale(1.2)}}
+.eggart.shiver .eggi{animation:eggShiver .11s linear infinite alternate}
 @keyframes eggShiver{from{transform:translateX(-.5%) rotate(-.6deg)}to{transform:translateX(.5%) rotate(.6deg)}}
-@media (prefers-reduced-motion: reduce){.eggart.shiver img,.eggart.breathe::before{animation:none}}
+@media (prefers-reduced-motion: reduce){.eggart.shiver .eggi,.eggart .lt{animation:none}.eggart .l1{opacity:.85}.eggart .l2{display:none}}

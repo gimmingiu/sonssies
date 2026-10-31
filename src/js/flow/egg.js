@@ -1,28 +1,30 @@
 // ---------- 꿈알 ----------
 // 그림 12장(EGG_ART, Graphic Assets에서 만든 꿈알)을 누를 때마다 다음 장으로 바꿔 끼움. 12장 모두 같은 구도라 제자리에서 깨져 보임.
-// 바꿀 때마다 모션: 찌그러짐 → 통 뜀 → 착지하며 다시 찌그러짐 → 좌우로 흔들림. 깨질수록 세지고, 빛이 숨 쉬고, 바르르 떨림.
+// 그림은 껍데기(EGG_ART)와 빛(EGG_LIGHT) 두 겹. 누르지 않을 때도 빛이 틈 안에서 밝아졌다가 바깥으로 번지며 사라지는 걸 반복(깨질수록 세고 빨라짐).
+// 누를 때마다 모션: 찌그러짐 → 통 뜀 → 착지하며 다시 찌그러짐 → 좌우로 흔들림. 깨질수록 세지고 바르르 떨림.
 // 마지막 장(빛이 터짐)이 나오면 잠시 뒤 빛이 화면을 다 덮고, 조금 머문 뒤 걷히면서 알이 있던 자리에서 손시가 나옴.
 let egg=null,eggTaps=0,eggDone=false;const EGG_N=EGG_ART.length-1;   // 누르는 횟수 = 11 (1장은 멀쩡한 알)
 function makeEgg(){
   const hold=$('app').querySelector('.stagehold[data-size="egg"]');
   const box=document.createElement('div');box.className='eggart';box.id='eggArt';box.setAttribute('role','button');box.setAttribute('aria-label','꿈알 두드리기');
-  box.innerHTML='<div class="eglow"></div><div class="eggw"><img alt="" draggable="false"></div>';
+  box.innerHTML='<div class="eglow"></div><div class="eggw"><div class="eggi"><img class="shell" alt="" draggable="false"><img class="lt l1" alt="" draggable="false"><img class="lt l2" alt="" draggable="false"></div></div>';
   hold.appendChild(box);
-  const img=box.querySelector('img');img.src=EGG_ART[0];
-  EGG_ART.forEach(u=>{const i=new Image();i.src=u;i.decode&&i.decode().catch(()=>{})});   // 미리 풀어 두어 바꿀 때 깜빡임 없게
+  const img=box.querySelector('.shell'),lts=[...box.querySelectorAll('.lt')];img.src=EGG_ART[0];lts.forEach(l=>l.src=EGG_LIGHT[0]);
+  EGG_ART.concat(EGG_LIGHT).forEach(u=>{const i=new Image();i.src=u;i.decode&&i.decode().catch(()=>{})});   // 미리 풀어 두어 바꿀 때 깜빡임 없게
   box.addEventListener('pointerdown',e=>{e.preventDefault();eggTap()});
   box.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();eggTap()}});box.tabIndex=0;
-  egg={box,img,w:box.querySelector('.eggw'),glow:box.querySelector('.eglow'),anim:null};
+  egg={box,img,lts,w:box.querySelector('.eggw'),glow:box.querySelector('.eglow'),anim:null};eggBeat(0);
 }
+// 빛이 숨 쉬는 박자: 1단계 2.2초 → 12단계 1초, 가장 어두울 때 밝기도 깨질수록 올라감
+function eggBeat(n){const k=n/EGG_N;egg.box.style.setProperty('--beat',(2.2-1.2*k).toFixed(2)+'s');egg.box.style.setProperty('--lmin',(0.35+0.25*k).toFixed(2))}
 function hatchedUI(on){$('eggHint').hidden=on;$('eggGuide').classList.toggle('inv',!on);$('pickBox').hidden=!on;$('app').querySelector('.stagehold[data-size="egg"]').classList.toggle('done',on)}
 function enterEgg(){if(eggDone){hatchedUI(true);if(egg)egg.box.hidden=true;if(chars[0])chars[0].visible=true;return}
   hatchedUI(false);if(!egg)makeEgg();egg.box.hidden=false;if(chars[0])chars[0].visible=false;$('eggHint').textContent='터치하여 알 깨기'}
 function leaveEgg(){if(egg&&eggDone){egg.box.remove();egg=null}if(chars[0])chars[0].visible=true}
 function eggTap(){
   if(eggDone||!egg||eggTaps>=EGG_N)return;
-  const n=++eggTaps,k=n/EGG_N;egg.img.src=EGG_ART[n];
-  egg.box.style.setProperty('--glow',Math.min(1,0.15+k*0.9).toFixed(2));
-  egg.box.classList.toggle('shiver',n>=7&&n<EGG_N);egg.box.classList.toggle('breathe',n>=4);
+  const n=++eggTaps,k=n/EGG_N;egg.img.src=EGG_ART[n];egg.lts.forEach(l=>l.src=EGG_LIGHT[n]);eggBeat(n);
+  egg.box.classList.toggle('shiver',n>=7&&n<EGG_N);
   // 통 튀는 모션(인트로 손시 점프와 같은 말랑한 느낌). 깨질수록 높이·흔들림이 커짐
   const up=6+k*10,rot=(n%2?1:-1)*(3+k*7),sq=0.06+k*0.05;
   if(egg.anim)egg.anim.cancel();
@@ -49,7 +51,7 @@ function eggFrame(){
 }
 function hatch(){
   eggDone=true;
-  const IN=650,HOLD=1000,OUT=1000;   // 빛이 덮는 시간 · 머무는 시간 · 걷히는 시간(ms)
+  const IN=650,HOLD=1000,OUT=750;   // 빛이 덮는 시간 · 머무는 시간 · 걷히는 시간(ms)
   const f=document.createElement('div');f.className='flash';document.body.appendChild(f);
   f.animate([{opacity:0},{opacity:1}],{duration:IN,easing:'ease-in',fill:'forwards'});
   try{navigator.vibrate&&navigator.vibrate([30,60,60])}catch(_){}
@@ -57,14 +59,14 @@ function hatch(){
   setTimeout(()=>{if(egg)egg.box.hidden=true;hatchedUI(true);layout();if(chars[0])chars[0].visible=false;ST.hatched=true;Save.commit()},IN+40);
   // 빛이 걷히면서 손시가 '뿅'
   setTimeout(()=>{if(chars[0])chars[0].visible=true;spinT0=0;bounceT0=0;popT0=performance.now();
-    const a=f.animate([{opacity:1},{opacity:0}],{duration:OUT,easing:'ease-out',fill:'forwards'});a.onfinish=()=>f.remove();setTimeout(sparks,420)},IN+HOLD);
+    const a=f.animate([{opacity:1},{opacity:0}],{duration:OUT,easing:'ease-out',fill:'forwards'});a.onfinish=()=>f.remove();sparks()},IN+HOLD);
   // ?egg 테스트에서 이미 만든 손시가 있으면, 깨어나는 모습을 잠깐 보여 준 뒤 메인으로 돌아감
   if(Save.dry&&ST.done&&ST.doll)setTimeout(()=>{if(scrNow==='egg')resetTo({scr:'main'})},IN+HOLD+OUT+2200);
 }
 
 
 
-// 등장 뒤 반짝이: 손시 몸에서 한꺼번에 '차란~' 퍼졌다가 금방 사라짐(1초 남짓)
+// 등장과 동시에 반짝이: 손시 몸에서 한꺼번에 '차란~' 퍼졌다가 금방 사라짐(1초 남짓)
 function sparks(){
   if(matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return;
   const hold=$('app').querySelector('.stagehold[data-size="egg"]');if(!hold)return;

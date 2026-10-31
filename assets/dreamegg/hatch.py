@@ -81,36 +81,51 @@ def render(stage):
         cen = np.exp(-(ang/0.38)**2)                          # 알 가운데 금이 가장 넓고 밝게                      # 오래된 금일수록 굵고 밝게, 끝은 가늘게
         cf = crack_field(sd)
         w_line = 0.0085*wid*(0.35 + 0.65*age)*(0.8 + 0.7*cen)
-        w_grv = w_line*2.4
+        w_grv = w_line*1.9
         on = front > 0
         groove = np.where(on, np.clip(1 - cf/w_grv, 0, 1)**1.5, 0)
         line = np.where(on, np.clip(1 - cf/w_line, 0, 1)**0.8, 0)
-        col = col*(1 - 0.4*groove)[:, None] + DEEP*0.7*(0.4*groove)[:, None]
-        lc = GOLD*(0.85 + 0.15*min(g, 1)) + 0.12*max(g-1, 0)
-        col = col*(1-line)[:, None] + np.clip(lc, 0, 1)[None]*line[:, None]
+        # 껍데기: 금은 빛 없이 패인 틈(짙은 깨두색)으로만
+        col = col*(1 - 0.35*groove)[:, None] + DEEP*0.75*(0.35*groove)[:, None]
+        col = col*(1-line)[:, None] + (DEEP*0.66)[None]*line[:, None]
         alpha = np.maximum(alpha, np.maximum(groove*0.95, line))
         glow = line*g*(0.35 + 0.35*age + 0.7*cen)
-        # 금이 많이 퍼지면 속빛이 껍데기 전체를 조금씩 데움
-        warm = 0.07*max(g-0.8, 0)*np.clip(front/0.6 + 0.5, 0, 1)
-        col = col*(1-warm)[:, None] + GOLD*warm[:, None]
-    img = np.zeros((W*W, 4)); img[hi, :3] = np.clip(col, 0, 1); img[hi, 3] = alpha
-    img = img.reshape(W, W, 4)
+        linepx = line*(0.75 + 0.25*min(g, 1))
+        # 금이 많이 퍼지면 속빛이 껍데기 전체를 조금씩 데움(빛 레이어 쪽)
+        warm = 0.10*max(g-0.6, 0)*np.clip(front/0.6 + 0.5, 0, 1)
+    else:
+        linepx = np.zeros(len(P)); warm = np.zeros(len(P))
+    # 속에서 은은하게 비치는 꿈빛(모든 단계, 빛 레이어 쪽). 1단계는 이것만 숨 쉼
+    inner = np.exp(-((xv+0.03)**2/0.30 + (yv+0.12)**2/0.45))*(0.30 + 0.06*g)*nv**0.6
+    # ---- 껍데기 그림 ----
+    shell = np.zeros((W*W, 4)); shell[hi, :3] = np.clip(col, 0, 1); shell[hi, 3] = alpha
+    shell = shell.reshape(W, W, 4)
+    gr = gaussian_filter(np.random.default_rng(7).normal(0, 1, (W, W)), 0.8*SS/2); gr /= gr.std()
+    shell[..., :3] = np.clip(shell[..., :3] + (gr*0.014)[..., None]*(shell[..., 3:] > 0), 0, 1)
+    # ---- 빛 그림(투명 바탕에 빛만) ----
     gb = np.zeros(W*W); gb[hi] = glow; gb = gb.reshape(W, W)
     halo = gaussian_filter(gb, 3*SS/2)*0.55 + gaussian_filter(gb, 11*SS)*0.9
+    a0 = shell[..., 3]
     if stage == 12:   # 마지막: 금 사이로 빛이 터져 나옴
         YY = -s[:, None] + 0.02; XX = s[None, :]
         r = np.hypot(XX - 0.03, (YY + 0.0)*0.8); an = np.arctan2(YY, XX - 0.03)
         rays = 0.5 + 0.5*np.cos(an*11 + 0.4)**10
         win = np.clip((1.5 - np.hypot(XX, YY))/0.5, 0, 1)**2
-        halo += (np.exp(-(r/0.85)**2)*0.45 + np.exp(-(r/1.1)**2)*rays*0.45)*win*(1 - 0.9*img[..., 3])
-    a0 = img[..., 3]; hc = np.clip(halo, 0, 1)
-    rgb = img[..., :3]*a0[..., None] + (GOLD*0.85 + 0.15)[None, None]*hc[..., None]*(1 - 0.4*a0[..., None])
-    a = np.clip(a0 + hc*(1 - a0)*0.85, 0, 1)
-    rgb = np.where(a[..., None] > 0, np.clip(rgb/np.maximum(a[..., None], 1e-6), 0, 1), 0)
-    gr = gaussian_filter(np.random.default_rng(7).normal(0, 1, (W, W)), 0.8*SS/2); gr /= gr.std()
-    rgb = np.clip(rgb + (gr*0.014)[..., None]*(a0 > 0)[..., None], 0, 1)
-    im = Image.fromarray((np.concatenate([rgb, a[..., None]], -1)*255).astype(np.uint8), 'RGBA')
-    if W != N: im = im.resize((N, N), Image.LANCZOS)
-    os.makedirs('out', exist_ok=True); im.save(f'out/dreamegg_{stage:02d}.png')
+        halo += (np.exp(-(r/0.85)**2)*0.45 + np.exp(-(r/1.1)**2)*rays*0.45)*win*(1 - 0.9*a0)
+    lp = np.zeros(W*W); lp[hi] = linepx; lp = lp.reshape(W, W)
+    ve = np.zeros(W*W); ve[hi] = inner + warm; ve = gaussian_filter(ve.reshape(W, W), 2*SS)
+    cs = lp + np.clip(halo, 0, 1)*(1 - 0.4*a0)          # 틈에서 새는 빛(금빛)
+    A = np.clip(cs + ve, 0, 1)
+    VEIL = np.array([1.0, 0.985, 0.94])                   # 속빛은 거의 흰 우윳빛
+    wv = (ve/np.maximum(cs + ve, 1e-6))[..., None]
+    wl = np.clip(lp*0.7, 0, 1)[..., None]
+    gold = (GOLD*0.85 + 0.15)[None, None]*(1 - wl) + np.ones(3)[None, None]*wl
+    lrgb = gold*(1 - wv) + VEIL[None, None]*wv
+    light = np.concatenate([lrgb*np.ones((W, W, 1)), A[..., None]], -1)
+    os.makedirs('out', exist_ok=True)
+    for arr, name in ((shell, f'out/dreamegg_{stage:02d}.png'), (light, f'out/dreamegg_{stage:02d}_light.png')):
+        im = Image.fromarray((np.clip(arr, 0, 1)*255).astype(np.uint8), 'RGBA')
+        if W != N: im = im.resize((N, N), Image.LANCZOS)
+        im.save(name)
 if __name__ == '__main__':
     for k in map(int, sys.argv[1:]): render(k); print('done', k, flush=True)
