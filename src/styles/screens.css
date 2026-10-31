@@ -127,7 +127,6 @@ body{padding:0;margin:0;min-height:100dvh}
 #charName.nope{animation:nope .4s ease;border-color:var(--neg)}
 @keyframes nope{0%,100%{transform:none}20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(2px)}}
 #nameHint{line-height:1.6}
-.colors .bgrb{background:linear-gradient(160deg,#ffb3b3 0%,#ffd59e 20%,#fff2a1 38%,#c8f0a6 56%,#a9dcff 76%,#d2b8ff 100%)}
 /* 메인 포즈 */
 .mposes{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 .mpose{font:700 14px var(--f-body);color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:10px 4px;cursor:pointer;transition:transform .08s}

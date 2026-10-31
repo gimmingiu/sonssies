@@ -11,7 +11,7 @@ const PART_CARDS={
    ['쫑긋',{earY:S('earY',4)}],['작은쫑긋',{earSize:S('earSize',-4),earY:S('earY',4)}],['큰쫑긋',{earSize:S('earSize',4),earY:S('earY',4)}]]},
  // 보통·짧둥·굵직은 깨두 눈썹(비스듬히) 바탕
  '눈썹':{shot:'face',items:[['보통',{browAng:48,browLen:0.124,browThick:0.016}],['짧둥',{browAng:48,browLen:S('browLen',-5),browThick:0.016}],
-   ['굵직',{browAng:48,browLen:0.124,browThick:S('browThick',2)}],['순둥',{browAng:S('browAng',-3)}],['일자',{}],['굵은일자',{browThick:S('browThick',3)}]]},
+   ['굵직',{browAng:48,browLen:0.124,browThick:S('browThick',2)}],['겁쟁이',{browAng:S('browAng',-3)}],['순둥이',{}],['고집쟁이',{browThick:S('browThick',3)}]]},
  // 깨두 코(기본) = 네모 계열
  '코':{shot:'face',items:[['네모',{}],['작은네모',{noseSize:S('noseSize',-3)}],['큰네모',{noseSize:S('noseSize',3)}],
    ['동글',{noseSq:S('noseSq',-5)}],['작은동글',{noseSq:S('noseSq',-5),noseSize:S('noseSize',-3)}],['큰동글',{noseSq:S('noseSq',-5),noseSize:S('noseSize',3)}]]},

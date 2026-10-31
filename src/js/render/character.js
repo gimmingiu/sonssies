@@ -11,7 +11,7 @@ function build(M,B){
   const neckY=hy-hb*0.75, HG=new THREE.Group(), HI=new THREE.Group();
   HG.position.y=neckY;HI.position.y=-neckY;HG.add(HI);g.add(HG);
   const hgeo=blob(hwA,hb,0.74*P.headD,e,0.06,72);
-  // 볼살: 얼굴 아래 양옆을 바깥(앞·옆)으로 통통하게 부풀림. 입 '냠냠'(볼빵빵)은 입 높이 양 볼을 동그랗게 더 부풀림(음식을 머금은 모습)
+  // 볼살: 얼굴 아래 양옆을 바깥(앞·옆)으로 통통하게 부풀림. 입 '냠냠'(ㅡ( 입)은 괄호 쪽 볼을 동그랗게 더 부풀림(음식을 머금은 모습)
   const puff=P.mouthType==='puff';
   if(P.cheek>0||puff){const pa=hgeo.attributes.position,na=hgeo.attributes.normal,amp=0.3*P.cheek,cxk=hwA*0.58,cyk=-hb*0.4;
     const pyk=clamp(P.mouthY*P.headH,-hb*0.8,-hb*0.1)+hb*0.02,pxk=hwA*0.5;
@@ -19,7 +19,7 @@ function build(M,B){
       let w=0;
       if(amp>0){const wy=Math.exp(-(((y-cyk)/(hb*0.46))**2)), wx=0.62+0.38*Math.exp(-(((Math.abs(x)-cxk)/(hwA*0.32))**2)), side=Math.exp(-((Math.max(0,Math.abs(x)-hwA*0.82)/(hwA*0.18))**2));
         w=amp*wy*wx*side*Math.min(1,(nz+0.2)/0.6)}   // 가운데(입·턱)도 62%만큼, 볼은 가장 크게
-      if(puff){const r=Math.hypot((Math.abs(x)-pxk)/(hwA*0.3),(y-pyk)/(hb*0.3));w+=0.13*Math.exp(-r*r)*Math.min(1,(nz+0.2)/0.6)}
+      if(puff&&x>0){const r=Math.hypot((x-pxk)/(hwA*0.3),(y-pyk)/(hb*0.3));w+=0.11*Math.exp(-r*r)*Math.min(1,(nz+0.2)/0.6)}   // 'ㅡ(' 쪽 볼만 볼록
       if(w<1e-4)continue;pa.setXYZ(i,x+na.getX(i)*w,y+na.getY(i)*w*0.6,pa.getZ(i)+nz*w)}
     hgeo.computeVertexNormals()}
   const head=mesh(hgeo,hm);head.position.y=hy;HI.add(head);
@@ -74,11 +74,18 @@ function build(M,B){
     const asy=s>0?(P.browAsym||0):0;stick(head,brow,s*bx,hy+by+0.07*asy/25,0.006,s*ang-asy*Math.PI/180);
     if(P.blush){const bx0=s*Math.min(faceX,ex+0.22),by0=hy+ey-0.13+P.blushY,bt=P.blushType;
       if(bt==='hatch'){for(let j=-1;j<=1;j++){const c=mesh(capsule(0.1,0.015),pink);c.scale.z=0.7;stick(head,c,bx0+j*0.05,by0,0.005,1.05)}}   // 빗금 세 줄
-      else if(bt==='freckle'){const fm=freckleMat(P.color);[[-0.05,0.025],[0,0.04],[0.05,0.022],[-0.025,-0.02],[0.028,-0.018]].forEach(([dx,dy2])=>stick(head,mesh(blob(0.017,0.017,0.007,0.9),fm),bx0+s*dx,by0+dy2,0.004))}   // 주근깨: 피부색보다 조금 진하게
+      else if(bt==='freckle'){}   // 주근깨는 코를 붙인 뒤 한 띠로(아래)
       else if(bt==='blur')patch(head,bx0,by0,0.36,0.27,blurMat(P.blushColor));   // 볼에 번지듯 물든 볼터치
       else stick(head,mesh(blob(0.11,0.075,0.012,0.9),pink),bx0,by0,0.004)}
   }
-  stick(head,mesh(blob(nhw,nhh,0.055*ns,0.95-0.6*P.noseSq),white),0,hy+ny,0.025*ns);   // 모양: 0 둥근 ↔ 1 각진
+  const noseM=mesh(blob(nhw,nhh,0.055*ns,0.95-0.6*P.noseSq),white);stick(head,noseM,0,hy+ny,0.025*ns);   // 모양: 0 둥근 ↔ 1 각진
+  // 주근깨: 한쪽 볼 → 콧잔등 → 다른 쪽 볼로 이어지는 띠. 색은 피부색보다 조금 진하게
+  if(P.blush&&P.blushType==='freckle'){const fm=freckleMat(P.color),fr=0.016;
+    const y0=ny+nhh*0.3+P.blushY,y1=Math.min(y0-0.03,ey-er-0.07+P.blushY),x0=nhw+0.035,x1=Math.max(x0+0.12,ex+0.2);
+    const T=[[0,0],[.18,.014],[.36,-.008],[.52,.016],[.7,-.01],[.88,.012],[.27,-.038],[.62,-.042]];
+    for(const s of[-1,1])T.forEach(([t,j])=>stick(head,mesh(blob(fr,fr,0.007,0.9),fm),s*(x0+(x1-x0)*t),hy+y0+(y1-y0)*t+j,0.004));
+    noseM.updateMatrixWorld(true);
+    [[-0.5,0.3],[-0.15,0.52],[0.2,0.28],[0.52,0.48]].forEach(([dx,dy2])=>stick(noseM,mesh(blob(fr*0.9,fr*0.9,0.006,0.9),fm),dx*nhw,hy+ny+dy2*nhh,0.002))}
   // 입
   const mW=clamp(P.mouthW,0.6,1.7), mt=P.mouthType;
   if(mt==='open'){
@@ -90,12 +97,15 @@ function build(M,B){
     stick(head,mesh(blob(0.03*Math.sqrt(mW),0.038*Math.sqrt(mW),0.018,0.95),dark),0,hy+my-0.01,0.006);
   }else if(mt==='flat'){
     const c=mesh(capsule(0.075*mW,tr),dark);c.scale.z=0.7;stick(head,c,0,hy+my,0.004);
-  }else if(mt==='munch'){
-    const gM=new THREE.Group(),r2=0.024*mW;
-    for(const k of[-1,1]){const st=arcStroke(r2,tr,Math.PI*0.9,dark);st.rotation.z=Math.PI;st.position.x=k*r2;gM.add(st)}
-    stick(head,gM,0,hy+my,0.004);
-  }else if(mt==='puff'){   // 볼빵빵: 입은 작게 오므림
-    const c=mesh(capsule(0.05*mW,tr),dark);c.scale.z=0.7;stick(head,c,0,hy+my,0.004);
+  }else if(mt==='munch'){   // 야옹: 코 바로 밑에서 갈라지는 'ㅅ'자 입
+    const L=0.1*Math.sqrt(mW),a=0.72,ay=ny-nhh*0.92;
+    for(const k of[-1,1]){const c=mesh(capsule(L,tr),dark);c.scale.z=0.7;
+      stick(head,c,k*Math.sin(a)*L/2,hy+ay-Math.cos(a)*L/2,0.004,-k*(Math.PI/2-a))}
+  }else if(mt==='puff'){   // 냠냠: 'ㅡ(' 모양(입에 먹을 것을 담고 있는 표현)
+    const lw=0.085*mW,c=mesh(capsule(lw,tr),dark);c.scale.z=0.7;stick(head,c,-0.02,hy+my,0.004);
+    const R=0.05,arc=Math.PI*0.62,gP=new THREE.Group(),tor=mesh(new THREE.TorusGeometry(R,tr,12,28,arc),dark);tor.rotation.z=Math.PI-arc/2;tor.scale.z=0.75;gP.add(tor);
+    for(const an of[Math.PI-arc/2,Math.PI+arc/2]){const cap=mesh(new THREE.SphereGeometry(tr,12,10),dark);cap.scale.z=0.75;cap.position.set(R*Math.cos(an),R*Math.sin(an),0);gP.add(cap)}
+    stick(head,gP,-0.02+lw/2+R*1.15,hy+my,0.004);
   }else if(mt==='none'){
   }else{
     const sm=curveMouth(R,tr,P.mouthCurve,dark);

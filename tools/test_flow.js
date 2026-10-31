@@ -48,9 +48,9 @@ const CSS=FONTS.map(([n,w,p])=>`@font-face{font-family:'${n}';font-weight:${w};s
   await expect('이름 짓기(빈칸)','name',()=>document.getElementById('charName').value===''&&document.getElementById('nameLive').textContent==='');
   await p.click('#saveDoll');await p.waitForTimeout(600);
   await expect('빈 이름은 저장 안 됨','name');
-  await p.click('#nameDice');await p.waitForTimeout(1500);await p.click('#bgs [data-bg="rainbow"]');await p.waitForTimeout(600);
+  await p.click('#nameDice');await p.waitForTimeout(1500);await p.evaluate(()=>{const i=document.getElementById('bgPick');i.value='#ffaa00';i.dispatchEvent(new Event('input'))});await p.waitForTimeout(600);
   await p.reload();await p.waitForTimeout(3000);
-  await expect('이어하기(이름·무지개 배경)','name',()=>document.querySelector('#bgs [data-bg="rainbow"]').getAttribute('aria-pressed')==='true');
+  await expect('이어하기(이름·직접 고른 배경색)','name',()=>document.getElementById('bgPick').dataset.on==='true'&&document.getElementById('bgPick').value==='#ffaa00');
   await p.click('#saveDoll');await p.waitForTimeout(1500);
   await expect('메인(첫 인사)','main',()=>['반가워!','안녕!'].includes(document.getElementById('mbub').textContent));
   await p.click('#mainPoses [data-pose="앉기"]');await p.waitForTimeout(1500);

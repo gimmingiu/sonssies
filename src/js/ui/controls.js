@@ -112,10 +112,8 @@ function setColor(c){P.color=c;syncUI();rebuild()}
 document.querySelectorAll('#colors .sw').forEach(s=>s.onclick=()=>setColor(s.dataset.c));
 // 미리보기 배경색: 비우면 기본(화면 모드에 맞춘 색). 어두운 배경이면 라벨 글자를 밝게
 let bgColor='';
-// 무지개: 특별한 배경 값('rainbow')
-const RAINBOW_CSS='linear-gradient(160deg,#ffb3b3 0%,#ffd59e 20%,#fff2a1 38%,#c8f0a6 56%,#a9dcff 76%,#d2b8ff 100%)';
-const bgCss=c=>c==='rainbow'?RAINBOW_CSS:(c||'');
-const isDark=hex=>{if(!hex||hex==='rainbow')return false;const c=new THREE.Color(hex);return 0.2126*c.r+0.7152*c.g+0.0722*c.b<0.45};
+const bgCss=c=>c||'';
+const isDark=hex=>{if(!hex)return false;const c=new THREE.Color(hex);return 0.2126*c.r+0.7152*c.g+0.0722*c.b<0.45};
 function setBg(c){bgColor=c||'';$('rcard').style.background=bgCss(bgColor);$('stageBg').style.background=bgCss(bgColor);stage.style.setProperty('--sfg',bgColor?(isDark(bgColor)?'#eef4f5':'#1f2a2e'):'');syncUI();if(typeof persistSoon==='function')persistSoon();if(!$('result').hidden)drawPreview(true)}
 document.querySelectorAll('.bgset .sw').forEach(s=>s.onclick=()=>setBg(s.dataset.bg));
 document.querySelectorAll('.bgpick').forEach(p=>p.addEventListener('input',e=>setBg(e.target.value)));
