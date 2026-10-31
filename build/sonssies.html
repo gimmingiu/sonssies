@@ -1955,7 +1955,7 @@ function persistSoon(){clearTimeout(psT);psT=setTimeout(()=>{   // 처음 꾸미
 function syncNtag(){const t=$('nameLive');if(!rolling){t.textContent=charName||'깨두';hello(charName)}t.style.color=bgColor?(isDark(bgColor)?'#eef4f5':'#1f2a2e'):''}
 // '안녕! 나는 ○○야/이야' (받침 있으면 이야)
 function hello(){}
-function afterRebuild(){syncNtag();persistSoon();undoRecord();if(!$('result').hidden)drawPreview()}
+function afterRebuild(){applyHeadOnly();syncNtag();persistSoon();undoRecord();if(!$('result').hidden)drawPreview()}
 
 // 꾸미기 8단계: 원래 항목 묶음을 단계별로 모음
 const GRP={};document.querySelectorAll('#holder details').forEach(d=>{GRP[d.querySelector('summary').textContent.trim()]=d.querySelector('.grp')});
@@ -2089,7 +2089,12 @@ function lookAtPart(name){
   target=v.a+Math.round((angle-v.a)/(2*Math.PI))*2*Math.PI;setViewPressed(null);
   setZoom(v.z);focusH=partY(v.h);focusKT=v.f||0;
 }
-function lookReset(){setZoom(1);focusKT=0}
+function lookReset(){setZoom(1);focusKT=0;setHeadOnly(false)}
+// 머리만 보이기: 얼굴 단계(색·질감 ~ 코·입·볼)에서는 몸통을 숨기고 머리통만 보여 줌.
+// 처음 만들 때 고칠 게 적어 보이게(이탈 방지). 몸·팔다리·꼬리는 다 만든 뒤 [수정]의 세부 단계에서.
+let headOnly=false;
+function setHeadOnly(on){headOnly=on;applyHeadOnly()}
+function applyHeadOnly(){const c=chars[0];if(!c||thumbBusy)return;const HG=c.userData.HG;c.children.forEach(o=>{o.visible=!headOnly||o===HG})}
 
 // ── 하위 탭: 묶인 단계(머리·뿔, 눈·눈썹, 코·입·볼, 팔·다리)는 한 번에 하나만 보여 줌
 const subOf=[];   // 단계별 지금 보고 있는 하위 항목 이름
@@ -2162,7 +2167,7 @@ function makeThumbs(k){clearTimeout(thumbT);thumbT=setTimeout(()=>{
   if(T.sig===sig)return;T.sig=sig;
   const keep=P[k],opts=[...box.querySelectorAll('[data-v]')].map(b=>b.dataset.v);
   thumbBusy=true;UNDO.mute=true;
-  try{opts.forEach(v=>{P[k]=v;rebuild(true);T.url[v]=faceShot(176)})}finally{P[k]=keep;rebuild(true);thumbBusy=false;UNDO.mute=false}
+  try{opts.forEach(v=>{P[k]=v;rebuild(true);T.url[v]=faceShot(176)})}finally{P[k]=keep;rebuild(true);thumbBusy=false;UNDO.mute=false;applyHeadOnly()}
   box.querySelectorAll('[data-v]').forEach(b=>{const im=b.querySelector('img');if(im&&T.url[b.dataset.v])im.src=T.url[b.dataset.v]})},120)}
 // 눈·입 모양 버튼을 그림 카드로 바꾸고, 슬라이더는 '세부 조정' 아래로 접음
 [['eyeTypes','eyeRow'],['mouthTypes','mouthRow']].forEach(([id,row])=>{
@@ -2175,6 +2180,7 @@ function makeThumbs(k){clearTimeout(thumbT);thumbT=setTimeout(()=>{
 
 // 꾸미기 화면에 들어올 때·단계가 바뀔 때 (flow의 show에서 부름)
 function editorEnter(i,fresh){
+  setHeadOnly(i<5);
   if(fresh)undoStart();else undoUI();
   const N=nSteps();document.querySelectorAll('#stabs button').forEach((b,j)=>{b.hidden=j>=N;b.setAttribute('aria-selected',j===i);b.classList.toggle('done',j<i)});
   const parts=STEPS[i][1];if(parts.length>1)showSub(i,subOf[i]);

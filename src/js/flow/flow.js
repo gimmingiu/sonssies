@@ -9,7 +9,7 @@ function persistSoon(){clearTimeout(psT);psT=setTimeout(()=>{   // 처음 꾸미
 function syncNtag(){const t=$('nameLive');if(!rolling){t.textContent=charName||'깨두';hello(charName)}t.style.color=bgColor?(isDark(bgColor)?'#eef4f5':'#1f2a2e'):''}
 // '안녕! 나는 ○○야/이야' (받침 있으면 이야)
 function hello(){}
-function afterRebuild(){syncNtag();persistSoon();undoRecord();if(!$('result').hidden)drawPreview()}
+function afterRebuild(){applyHeadOnly();syncNtag();persistSoon();undoRecord();if(!$('result').hidden)drawPreview()}
 
 // 꾸미기 8단계: 원래 항목 묶음을 단계별로 모음
 const GRP={};document.querySelectorAll('#holder details').forEach(d=>{GRP[d.querySelector('summary').textContent.trim()]=d.querySelector('.grp')});
