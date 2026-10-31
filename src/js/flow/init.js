@@ -2,7 +2,10 @@
 (function initFlow(){
   setName('깨두');
   let st=[];
-  if(ST.done&&ST.doll){loadDoll(ST.doll);st=[{scr:'main'}]}
+  if(Save.dry){   // ?egg 테스트: 저장된 손시는 불러 두되(다 깨면 그 손시가 나옴) 알부터 시작
+    const d=ST.done&&ST.doll?ST.doll:ST.draft;if(d)loadDoll(d);
+    eggDone=false;st=[{scr:'egg'}];
+  }else if(ST.done&&ST.doll){loadDoll(ST.doll);st=[{scr:'main'}]}
   else if(ST.hatched){
     const d=ST.draft;if(d)loadDoll(d);
     eggDone=true;st=[{scr:'egg'}];

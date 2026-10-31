@@ -44,5 +44,7 @@ function hatch(){
   eggDone=true;const f=document.createElement('div');f.className='flash';document.body.appendChild(f);setTimeout(()=>f.remove(),1200);
   setTimeout(()=>{if(egg)egg.box.hidden=true;if(chars[0]){chars[0].visible=true}popT0=performance.now();
     hatchedUI(true);layout();ST.hatched=true;Save.commit()},200);
+  // ?egg 테스트에서 이미 만든 손시가 있으면, 깨어나는 모습을 잠깐 보여 준 뒤 메인으로 돌아감
+  if(Save.dry&&ST.done&&ST.doll)setTimeout(()=>{if(scrNow==='egg')resetTo({scr:'main'})},2800);
 }
 

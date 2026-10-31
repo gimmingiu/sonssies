@@ -1879,12 +1879,15 @@ Object.assign(P,PRESETS['깨두']);snapAll();syncUI();
 //   draft    처음 만드는 중일 때 이어하기용 {p, name, bg, scr, step}
 const Save=(()=>{
   const KEY='sonssies.v1',VER=1;
+  // 테스트 모드: 주소에 ?egg 를 붙이면 꿈알부터 다시 보여 주고, 이 기기 저장은 읽기만 함(아무것도 덮어쓰지 않음)
+  let dry=false;try{dry=/[?&#]egg\b/.test(location.search+location.hash)}catch(e){}
   const migrate=d=>{if(!d||typeof d!=='object')d={};if(!d.v)d.v=VER;if(!d.rev)d.rev=0;return d};
   let data;try{data=migrate(JSON.parse(localStorage.getItem(KEY)))}catch(e){data=migrate({})}
   return {
     data:()=>data,                                   // 지금 저장 묶음(바로 고쳐 쓰고 commit)
-    commit(){data.rev=(data.rev||0)+1;data.at=Date.now();try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}},
-    clear(){data=migrate({});try{localStorage.removeItem(KEY)}catch(e){}},
+    dry,                                             // 테스트 모드인지
+    commit(){if(dry)return;data.rev=(data.rev||0)+1;data.at=Date.now();try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}},
+    clear(){data=migrate({});if(dry)return;try{localStorage.removeItem(KEY)}catch(e){}},
   };
 })();
 // ---------- 화면 흐름 (첫 방문: 알 → 시작 고르기 → 꾸미기 8단계 → 이름 → 메인) ----------
@@ -2061,13 +2064,18 @@ function hatch(){
   eggDone=true;const f=document.createElement('div');f.className='flash';document.body.appendChild(f);setTimeout(()=>f.remove(),1200);
   setTimeout(()=>{if(egg)egg.box.hidden=true;if(chars[0]){chars[0].visible=true}popT0=performance.now();
     hatchedUI(true);layout();ST.hatched=true;Save.commit()},200);
+  // ?egg 테스트에서 이미 만든 손시가 있으면, 깨어나는 모습을 잠깐 보여 준 뒤 메인으로 돌아감
+  if(Save.dry&&ST.done&&ST.doll)setTimeout(()=>{if(scrNow==='egg')resetTo({scr:'main'})},2800);
 }
 
 // 시작 화면 정하기
 (function initFlow(){
   setName('깨두');
   let st=[];
-  if(ST.done&&ST.doll){loadDoll(ST.doll);st=[{scr:'main'}]}
+  if(Save.dry){   // ?egg 테스트: 저장된 손시는 불러 두되(다 깨면 그 손시가 나옴) 알부터 시작
+    const d=ST.done&&ST.doll?ST.doll:ST.draft;if(d)loadDoll(d);
+    eggDone=false;st=[{scr:'egg'}];
+  }else if(ST.done&&ST.doll){loadDoll(ST.doll);st=[{scr:'main'}]}
   else if(ST.hatched){
     const d=ST.draft;if(d)loadDoll(d);
     eggDone=true;st=[{scr:'egg'}];

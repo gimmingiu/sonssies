@@ -10,11 +10,14 @@
 //   draft    처음 만드는 중일 때 이어하기용 {p, name, bg, scr, step}
 const Save=(()=>{
   const KEY='sonssies.v1',VER=1;
+  // 테스트 모드: 주소에 ?egg 를 붙이면 꿈알부터 다시 보여 주고, 이 기기 저장은 읽기만 함(아무것도 덮어쓰지 않음)
+  let dry=false;try{dry=/[?&#]egg\b/.test(location.search+location.hash)}catch(e){}
   const migrate=d=>{if(!d||typeof d!=='object')d={};if(!d.v)d.v=VER;if(!d.rev)d.rev=0;return d};
   let data;try{data=migrate(JSON.parse(localStorage.getItem(KEY)))}catch(e){data=migrate({})}
   return {
     data:()=>data,                                   // 지금 저장 묶음(바로 고쳐 쓰고 commit)
-    commit(){data.rev=(data.rev||0)+1;data.at=Date.now();try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}},
-    clear(){data=migrate({});try{localStorage.removeItem(KEY)}catch(e){}},
+    dry,                                             // 테스트 모드인지
+    commit(){if(dry)return;data.rev=(data.rev||0)+1;data.at=Date.now();try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}},
+    clear(){data=migrate({});if(dry)return;try{localStorage.removeItem(KEY)}catch(e){}},
   };
 })();
