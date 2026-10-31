@@ -1,4 +1,4 @@
-// ---------- 화면 흐름 (첫 방문: 알 → 시작 고르기 → 꾸미기 8단계 → 이름 → 메인) ----------
+// ---------- 화면 흐름 (첫 방문: 꿈알 → 깨어나 기본형 고르기 → 꾸미기 5단계 → 이름 → 메인) ----------
 let ST=Save.data();   // 저장 묶음 (src/js/save/save.js)
 const snapDoll=()=>{const o={};Object.keys(P).forEach(k=>{if(!POSE_KEYS.includes(k))o[k]=P[k]});return {p:o,name:charName,bg:bgColor}};
 function loadDoll(d){if(!d)return;Object.assign(P,DEF,d.p||{});P.tex='smooth';POSE_KEYS.forEach(k=>P[k]=DEF[k]);snapAll();setName(d.name||'');setBg(d.bg||'');syncUI();rebuild()}
@@ -6,9 +6,7 @@ let psT=0;
 function persistSoon(){clearTimeout(psT);psT=setTimeout(()=>{   // 처음 꾸미는 중이면 지금까지를 저장해 두고, 앱을 닫았다 열어도 이어서
   if(ST.done||!ST.hatched)return;const cur=stack[stack.length-1]||{};if(!['egg','step','name'].includes(cur.scr)||(cur.scr==='egg'&&!eggDone))return;
   ST.draft={...snapDoll(),scr:cur.scr,step:cur.step||0};Save.commit()},300)}
-function syncNtag(){const t=$('nameLive');if(!rolling){t.textContent=charName;hello(charName)}t.style.color=bgColor?(isDark(bgColor)?'#eef4f5':'#1f2a2e'):''}
-// '안녕! 나는 ○○야/이야' (받침 있으면 이야)
-function hello(){}
+function syncNtag(){const t=$('nameLive');if(!rolling)t.textContent=charName;t.style.color=bgColor?(isDark(bgColor)?'#eef4f5':'#1f2a2e'):''}
 function afterRebuild(){applyHeadOnly();markCards();syncNtag();persistSoon();undoRecord();if(!$('result').hidden)drawPreview()}
 
 // 꾸미기 7단계(둘씩 묶음): 원래 항목 묶음을 단계별로 모음. 처음 만들 때는 앞의 5단계(얼굴)만, [수정]에서는 7단계 모두
@@ -21,7 +19,6 @@ const FACE_STEPS=5;
 const stepEls=STEPS.map(([,parts])=>{const box=document.createElement('div');box.className='stepbox';
   parts.forEach(([sub,g])=>{if(sub){const h=document.createElement('h3');h.className='sub';h.textContent=sub;box.appendChild(h)}if(GRP[g])box.appendChild(GRP[g])});return box});
 stepEls.forEach(e=>{e.hidden=true;$('stepBody').appendChild(e)});   // 모두 문서 안에 두고 지금 단계만 보임(슬라이더 표시가 계속 맞도록)
-$('prog').innerHTML=STEPS.map(()=>'<i></i>').join('');
 
 // 시작 고르기: 프리셋 3개 + 랜덤
 let startPick='깨두';
@@ -45,8 +42,6 @@ function show(st,dir){
   if(prev==='card'&&st.scr!=='card')closeResult();
   if(st.scr==='egg')enterEgg();else leaveEgg();
   if(st.scr==='step'){const i=st.step||0,N=nSteps();$('stepTitle').textContent=STEPS[i][0];stepEls.forEach((e,j)=>e.hidden=j!==i);
-    $('prog').style.gridTemplateColumns=`repeat(${N},1fr)`;$('prog').querySelectorAll('i').forEach((e,j)=>{e.hidden=j>=N;e.classList.toggle('on',j<=i)});$('pnum').textContent=(i+1)+'/'+N;
-    $('prog').setAttribute('aria-valuemax',N);$('prog').setAttribute('aria-valuenow',i+1);
     editorEnter(i,prev!=='step');requestAnimationFrame(saveBarCheck)}
   else if(prev==='step')lookReset();
   if(st.scr==='name'){faceFront();angle=target;syncNtag()}   // 이름 짓기는 늘 정면(꾸미기에서 돌려 본 각도를 따라오지 않게)
@@ -80,7 +75,6 @@ document.querySelectorAll('[data-back]').forEach(b=>b.onclick=goBack);
 // 각 화면 버튼
 $('safariGo').onclick=()=>go({scr:'egg'},{replace:true});
 $('eggGo').onclick=()=>go({scr:'step',step:0});   // 뒤로 오면 깨어난 손시·프리셋 화면(알은 다시 안 나옴)
-$('startGo').onclick=()=>go({scr:'step',step:0});
 const nSteps=()=>editing?STEPS.length:FACE_STEPS;
 $('stepSave').onclick=()=>go({scr:'name'});
 // 저장 버튼: 꾸미기 화면 맨 아래까지 내려왔을 때 나타남(내용이 짧아 내릴 곳이 없으면 바로 보임)

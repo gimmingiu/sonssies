@@ -30,11 +30,9 @@ const feltTex=(()=>{const n=512,cv=document.createElement('canvas');cv.width=cv.
     x.beginPath();x.moveTo(px,py);x.quadraticCurveTo(px+Math.cos(a+0.6)*l*0.5,py+Math.sin(a+0.6)*l*0.5,px+Math.cos(a)*l,py+Math.sin(a)*l);x.stroke()}
   x.filter='blur(0.6px)';x.drawImage(cv,0,0);
   const t=new THREE.CanvasTexture(cv);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(4,4);return t})();
-// 질감별 설정: 거칠기, 요철, 반사광 세기, 가장자리 효과
+// 질감 설정: 손시는 매트 하나(거칠기·반사광 세기)
 const TEX={
  smooth:{name:'매트',rough:0.9,spec:0.25},
- sofubi:{name:'글로시',rough:0.36,spec:1.0,
-         glsl:'outgoingLight+=diffuseColor.rgb*pow(rimF,3.0)*0.08;'},
 };
 const curTex=()=>TEX[P.tex]||TEX.smooth;
 function texFix(sh,t){

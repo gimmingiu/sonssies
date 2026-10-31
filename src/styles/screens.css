@@ -18,10 +18,6 @@ body{padding:0;margin:0;min-height:100dvh}
 .howto{text-align:left;font:500 15px/1.9 var(--f-body);margin:4px 0 0;padding-left:1.4em}
 .howto svg{vertical-align:-3px;color:var(--accent)}
 .soon{font:400 30px var(--f-name);margin:0;color:var(--fg)}
-.prog{flex:1;display:grid;grid-template-columns:repeat(8,1fr);gap:4px}
-.prog i{height:8px;border-radius:4px;background:var(--line);transition:background .25s}
-.prog i.on{background:var(--accent)}
-.pnum{flex:none;font:400 13px var(--f-mono);color:var(--muted);min-width:3ch;text-align:right}
 /* 3D 미리보기 자리 */
 .stagehold{position:relative;flex:none}
 .stagehold[data-size="step"]{position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
@@ -39,12 +35,11 @@ body{padding:0;margin:0;min-height:100dvh}
 .pickbox{display:flex;flex-direction:column;gap:10px}
 .pickbox[hidden]{display:none}
 .pickbox .bigbtn{font-size:16px;padding:14px 12px;border-radius:14px}
-.stagehold[data-size="start"] .stage{height:42vh}
 .stagehold[data-size="step"] .stage{height:40vh;box-shadow:0 8px 16px -12px rgba(0,0,0,.35)}
 .stagehold[data-size="name"] .stage{height:46vh}
 .stagehold[data-size="main"] .stage{height:58vh}
-.stage .views,.stage .zoom,.stage .sname{display:none}
-.stagehold[data-size="step"] .stage .views,.stagehold[data-size="step"] .stage .zoom{display:flex}
+.stage .views,.stage .sname{display:none}
+.stagehold[data-size="step"] .stage .views{display:flex}
 .stagehold[data-size="main"] .stage .sname{display:block}
 /* 단계 패널 */
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:16px}
@@ -65,13 +60,6 @@ body{padding:0;margin:0;min-height:100dvh}
 .starts button i{width:22px;height:22px;border-radius:50%;background:var(--c);box-shadow:inset 0 -3px 0 rgba(0,0,0,.12)}
 .starts button[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 1.5px var(--accent)}
 .starts .dice i{background:conic-gradient(#ff8a8a,#ffd36b,#8be07b,#6fd6ea,#9b8cff,#ff8a8a)}
-/* 이름표 스티커 (카드 이미지의 이름표와 같은 모양) */
-.ntag{--deep:#2b8599;--pale:#d4eef3;position:absolute;left:50%;bottom:16px;transform:translateX(-50%) rotate(-2.5deg);background:#fff;border:5px solid var(--deep);border-radius:18px;min-width:150px;max-width:86%;text-align:center;overflow:hidden;z-index:8;pointer-events:none}
-.ntag .nh{background:var(--pale);color:var(--deep);font:700 12.5px/1 var(--f-body);padding:8px 0 6px}
-.ntag .nn{font:400 34px/1.25 var(--f-name);color:#1f2a2e;padding:4px 20px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ntag.pop{animation:tagLand .38s cubic-bezier(.3,1.6,.5,1)}
-@keyframes tagLand{0%{transform:translateX(-50%) rotate(-2.5deg) scale(.92)}60%{transform:translateX(-50%) rotate(-2.5deg) scale(1.06)}100%{transform:translateX(-50%) rotate(-2.5deg) scale(1)}}
-.ntag.shuffling .nn{color:#7b888c}
 .hint{font-size:12px;color:var(--muted);margin:-8px 0 0}
 #bgRowHold:empty{display:none}
 .namerow input{font-size:22px;padding:11px 14px}
@@ -96,20 +84,14 @@ body{padding:0;margin:0;min-height:100dvh}
 .guide{font:700 17px/1.45 var(--f-body);margin:6px 0 0;text-align:left;word-break:keep-all}
 .bbar.end{justify-items:end}
 .bigbtn.fit{width:max-content;white-space:nowrap;padding:14px 28px;justify-self:end}
-.bbar.three{grid-template-columns:56px 1fr auto;align-items:center}
 .bbar.three .arrb{width:56px}
-.topbar .prog{flex:1;margin:0}
 .panel .sh{margin:0}
 
-.hello{text-align:center;font:400 26px var(--f-name);margin:8px 0 0}
-.prog{flex:none;display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin-top:-6px}
-.prog i{height:5px}
 .topbar .tt{flex:1}
-.bbar.three{grid-template-columns:56px 1fr 56px}
+.bbar.three{grid-template-columns:56px 1fr 56px;align-items:center}
 .arrb{height:54px;border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:14px;display:grid;place-items:center;cursor:pointer;padding:0}
 .arrb:active{transform:scale(.96)}
 .arrb:disabled{opacity:.35;cursor:default}
-.stagehold[data-size="step"] .stage .zoom{display:none}
 .stagehold[data-size="name"] .stage .sname{display:none}
 .nlive{position:absolute;top:14px;left:18px;z-index:8;margin:0;font:400 30px/1.15 var(--f-name);color:var(--sfg,var(--fg));pointer-events:none;max-width:80%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nlive.shuffling{opacity:.55}.nlive.pop{animation:land .38s cubic-bezier(.3,1.6,.5,1);transform-origin:left center}

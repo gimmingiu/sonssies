@@ -1,5 +1,4 @@
 /* ===== 꾸미기 화면 도구 ===== */
-.scr[data-scr="step"] .topbar{display:none}
 /* 아이콘 탭: 미리보기 바로 아래 (미리보기와 함께 위에 붙어 있음) */
 .stabs{display:flex;gap:2px;background:var(--panel);border:1px solid var(--line);border-top:0;border-radius:0 0 14px 14px;padding:4px 6px 0;margin-top:-10px;padding-top:12px;overflow-x:auto;scrollbar-width:none}
 .stabs::-webkit-scrollbar{display:none}

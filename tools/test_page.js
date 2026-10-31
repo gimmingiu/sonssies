@@ -2,7 +2,8 @@
 // 같은 파일을 로컬 npm 패키지로 대신 내려줘서 실제와 같은 모습으로 렌더링한다.
 //
 // 준비:  npm i three@0.128.0 @fontsource/jua @fontsource/noto-sans-kr @fontsource/nanum-gothic-coding playwright
-// 실행:  node tools/test_page.js            → out_main.png(꾸미기 화면), out_card.png(저장 이미지 1080×1920)
+// 실행:  node tools/test_page.js            → out_main.png(메인 미리보기), out_card.png(카드 만들기 화면의 저장 이미지 1080×1920)
+// (카드 만들기 화면은 아직 들어가는 버튼이 없어서 __dkFlow.go로 바로 엶)
 const {chromium}=require('playwright');const fs=require('fs');const path=require('path');
 const ROOT=path.join(__dirname,'..'),NM=path.join(process.cwd(),'node_modules');
 const FONTS=[['Jua',400,'jua/files/jua-korean-400-normal.woff2'],['Jua',400,'jua/files/jua-latin-400-normal.woff2'],
@@ -12,16 +13,17 @@ const FONTS=[['Jua',400,'jua/files/jua-korean-400-normal.woff2'],['Jua',400,'jua
 const CSS=FONTS.map(([n,w,p])=>`@font-face{font-family:'${n}';font-weight:${w};src:url(https://fonts.gstatic.com/l/${p}) format('woff2')}`).join('\n');
 (async()=>{
   const b=await chromium.launch({args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
-  const p=await b.newPage({viewport:{width:1300,height:900}});
+  const p=await b.newPage({viewport:{width:390,height:844}});
   p.on('pageerror',e=>console.log('PAGE ERROR',e.message));
   await p.route(/cdnjs/,r=>r.fulfill({path:path.join(NM,'three/build/three.min.js'),contentType:'application/javascript'}));
   await p.route(/fonts\.googleapis/,r=>r.fulfill({body:CSS,contentType:'text/css'}));
   await p.route(/fonts\.gstatic\.com\/l\//,r=>r.fulfill({path:path.join(NM,'@fontsource',r.request().url().split('/l/')[1]),contentType:'font/woff2'}));
   // 저장 기능 흉내: 저장 버튼을 누르면 이미지 데이터를 window.__img에 담음
   await p.addInitScript(()=>{window.claude={use:async n=>n==='downloads'?{save:async({data})=>{const fr=new FileReader();await new Promise(r=>{fr.onload=r;fr.readAsDataURL(data)});window.__img=fr.result;return{status:'saved'}}}:null}});
-  await p.goto('file://'+path.join(ROOT,'build','sonssies.html'));await p.waitForTimeout(3500);
+  await p.goto('file://'+path.join(ROOT,'build','sonssies.html'));await p.waitForTimeout(2500);
+  await p.evaluate(()=>localStorage.setItem('sonssies.v1',JSON.stringify({v:1,rev:1,hatched:true,done:true,doll:{p:{},name:'깨두',bg:''}})));await p.reload();await p.waitForTimeout(3500);
   await (await p.$('#stage')).screenshot({path:'out_main.png'});
-  await p.evaluate(()=>document.getElementById('doneBtn').click());await p.waitForTimeout(2500);
+  await p.evaluate(()=>__dkFlow.go({scr:'card'}));await p.waitForTimeout(2500);
   await p.evaluate(()=>{window.__img=null;document.getElementById('saveImg').click()});
   await p.waitForFunction(()=>window.__img,null,{timeout:60000});
   fs.writeFileSync('out_card.png',Buffer.from((await p.evaluate(()=>window.__img)).split(',')[1],'base64'));

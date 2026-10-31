@@ -16,7 +16,6 @@ header{position:relative}
 .stip strong{position:relative;display:block;font:700 14px/1.35 var(--f-body);margin-bottom:3px}
 .stip span{position:relative;display:block;font:500 12.5px/1.55 var(--f-body);color:#4b5a5f}
 .sname{position:absolute;top:14px;left:18px;margin:0;font:400 30px/1.15 var(--f-name);color:var(--sfg,var(--fg));pointer-events:none;max-width:70%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;z-index:1}
-.spec{display:flex;flex-wrap:wrap;gap:6px}
 .chip{font-size:12px;padding:4px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted);background:var(--panel)}
 .chip b{color:var(--fg);font-weight:500;font-family:var(--f-mono);font-size:11.5px;font-variant-numeric:tabular-nums}
 .main{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start}
@@ -29,14 +28,6 @@ canvas{display:block;width:100%;height:100%}
 /* 미리보기 배경은 안쪽 층에: 화면 위에 붙는(sticky) 상자에 색이 있으면 iOS Safari가 그 색으로 상태바를 물들임 */
 .stagebg{position:absolute;inset:0;z-index:-1;background:var(--stage);border-radius:inherit;pointer-events:none}
 .stage.rot canvas{cursor:grab;touch-action:none}
-.zoom{position:absolute;right:12px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px}
-.zoom button{width:32px;height:32px;border:0;border-radius:50%;background:transparent;color:var(--fg);font:600 17px/1 var(--f-body);cursor:pointer;display:grid;place-items:center;padding:0}
-.zoom button:hover{background:var(--stage)}
-.ztrack{position:relative;width:32px;height:clamp(70px,16vh,130px);cursor:pointer;touch-action:none;margin:0}
-.ztrack::before{content:"";position:absolute;left:50%;top:6px;bottom:6px;width:4px;margin-left:-2px;border-radius:2px;background:var(--line)}
-.zfill{position:absolute;left:50%;bottom:6px;width:4px;margin-left:-2px;border-radius:2px;background:var(--accent)}
-.zthumb{position:absolute;left:50%;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px var(--panel)}
-.ztrack:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
 
 .tabs{position:absolute;top:12px;left:12px;display:flex;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px}
 .tabs button,.views button,.seg button{font:500 13px var(--f-body);border:0;background:transparent;color:var(--muted);padding:6px 14px;border-radius:999px;cursor:pointer}

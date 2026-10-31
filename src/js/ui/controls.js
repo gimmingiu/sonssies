@@ -79,7 +79,6 @@ function syncUI(){
   document.querySelectorAll('#blushes .sw').forEach(s=>s.setAttribute('aria-pressed',s.dataset.c===P.blushColor));
   $('blushPick').dataset.on=![...document.querySelectorAll('#blushes .sw')].some(s=>s.dataset.c===P.blushColor);
   $('horns').checked=P.horns;$('blush2').checked=P.blush;$('tail').checked=P.tail;$('pick').value=P.color;
-  document.querySelectorAll('#texs .pbtn').forEach(b=>b.setAttribute('aria-pressed',b.dataset.t===P.tex));
   document.querySelectorAll('#colors .sw').forEach(s=>s.setAttribute('aria-pressed',s.dataset.c===P.color));
   $('pick').dataset.on=![...document.querySelectorAll('#colors .sw')].some(s=>s.dataset.c===P.color);
   document.querySelectorAll('.bgset .sw').forEach(s=>s.setAttribute('aria-pressed',s.dataset.bg===bgColor));
@@ -112,19 +111,11 @@ function setColor(c){P.color=c;syncUI();rebuild()}
 document.querySelectorAll('#colors .sw').forEach(s=>s.onclick=()=>setColor(s.dataset.c));
 // 미리보기 배경색: 비우면 기본(화면 모드에 맞춘 색). 어두운 배경이면 라벨 글자를 밝게
 let bgColor='';
-const bgCss=c=>c||'';
 const isDark=hex=>{if(!hex)return false;const c=new THREE.Color(hex);return 0.2126*c.r+0.7152*c.g+0.0722*c.b<0.45};
-function setBg(c){bgColor=c||'';$('rcard').style.background=bgCss(bgColor);$('stageBg').style.background=bgCss(bgColor);stage.style.setProperty('--sfg',bgColor?(isDark(bgColor)?'#eef4f5':'#1f2a2e'):'');syncUI();if(typeof persistSoon==='function')persistSoon();if(!$('result').hidden)drawPreview(true)}
+function setBg(c){bgColor=c||'';$('rcard').style.background=bgColor;$('stageBg').style.background=bgColor;stage.style.setProperty('--sfg',bgColor?(isDark(bgColor)?'#eef4f5':'#1f2a2e'):'');syncUI();if(typeof persistSoon==='function')persistSoon();if(!$('result').hidden)drawPreview(true)}
 document.querySelectorAll('.bgset .sw').forEach(s=>s.onclick=()=>setBg(s.dataset.bg));
 document.querySelectorAll('.bgpick').forEach(p=>p.addEventListener('input',e=>setBg(e.target.value)));
 $('pick').addEventListener('input',e=>{P.color=e.target.value;syncUI();soon()});
-$('reset').onclick=()=>{apply(PRESETS['깨두'],true);setName('깨두')};
-$('copy').onclick=()=>{
-  const o={};Object.keys(P).forEach(k=>{if(k in META){if(!POSE_KEYS.includes(k))o[k]=toStep(k)}else if(!POSE_KEYS.includes(k)||k==='sit')o[k]=P[k]});
-  o.name=charName;const txt=JSON.stringify(o);const out=$('out');out.value=txt;
-  const show=()=>{out.hidden=false;out.focus();out.select();$('toast').textContent='아래 칸의 값을 복사해 주세요.'};
-  try{navigator.clipboard.writeText(txt).then(()=>{$('toast').textContent='설정값을 복사했어요.';out.hidden=true},show)}catch(_){show()}
-};
 // 국어의 로마자 표기법(문화체육관광부 고시)에 따라 이름을 로마자로: 받침 연음, ㄹㄹ→ll, 받침 대표음 규칙 적용
 function romanize(str){
   const I=['g','kk','n','d','tt','r','m','b','pp','s','ss','','j','jj','ch','k','t','p','h'];

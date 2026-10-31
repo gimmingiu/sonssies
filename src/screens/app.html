@@ -41,9 +41,6 @@
           <label class="tg" for="tail">꼬리 <input id="tail" type="checkbox" checked></label>
         </div>
       </details>
-      <div class="foot" hidden><button id="copy">설정값 복사</button><button id="reset">기본값으로</button></div>
-      <div class="toast" id="toast" aria-live="polite" hidden></div>
-      <textarea id="out" readonly hidden aria-label="설정값"></textarea>
       <div class="pbtns" id="presets"></div>
   </aside>
 
@@ -68,16 +65,8 @@
     </div>
   </section>
 
-  <!-- 시작 고르기 -->
-  <section class="scr" data-scr="start" aria-label="시작 고르기">
-    <div class="topbar"><h1 class="tt">어떤 손시로 시작할까?</h1></div>
-    <div class="stagehold" data-size="start"></div>
-    <div class="bbar"><button type="button" class="bigbtn" id="startGo">이 손시로 꾸미기</button></div>
-  </section>
-
   <!-- 꾸미기 8단계 -->
   <section class="scr" data-scr="step" aria-label="꾸미기">
-    <div class="topbar"><div class="prog" id="prog" role="progressbar" aria-valuemin="1" aria-valuemax="8"></div><span class="pnum" id="pnum">1/5</span></div>
     <div class="stagehold" data-size="step"></div>
     <div class="panel"><h2 class="sh" id="stepTitle"></h2><div id="stepBody"></div></div>
     <div class="bbar savebar" id="saveBar"><button type="button" class="bigbtn" id="stepSave">저장</button></div>
@@ -113,12 +102,6 @@
         <b>–</b></button>
     </div>
     <div class="stip" id="statTip" hidden role="status"><div class="bx"><strong id="stTitle"></strong><span id="stBody"></span></div></div>
-    <div class="spec" hidden>
-      <span class="chip">머리 : 몸 <b id="ratio">2.0 : 1</b></span>
-      <span class="chip">상체 : 하체 <b id="ratio2">1 : 1</b></span>
-      <span class="chip">질감 <b id="texChip">매트</b></span>
-      <span class="chip">버전 <b>v0.18.1</b></span>
-    </div>
     </header>
     <div class="stagehold" data-size="main"><div class="mbub" id="mbub" hidden></div><button type="button" class="editb" id="goEdit">수정</button></div>
     <div class="mposes" id="mainPoses" role="group" aria-label="포즈"></div>

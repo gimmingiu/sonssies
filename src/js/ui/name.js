@@ -24,7 +24,7 @@ function rollName(d0,inp0){
   const live=!$('result').hidden;
   const tt=$('nameTitle');tt.classList.remove('landed');tt.classList.add('shuffling');
   const nt=$('nameLive');nt.classList.add('shuffling');
-  const tick=()=>{if(i<delays.length){inp.value=NAMES[Math.floor(Math.random()*NAMES.length)];tt.textContent=inp.value;nt.textContent=inp.value;hello(inp.value);if(live){tagNameShow=inp.value;drawPreview(true)}rolling=setTimeout(tick,delays[i++])}
+  const tick=()=>{if(i<delays.length){inp.value=NAMES[Math.floor(Math.random()*NAMES.length)];tt.textContent=inp.value;nt.textContent=inp.value;if(live){tagNameShow=inp.value;drawPreview(true)}rolling=setTimeout(tick,delays[i++])}
     else{rolling=null;inp.classList.remove('shuffling');tagNameShow=null;setName(n);nt.classList.remove('shuffling');nt.classList.remove('pop');void nt.offsetWidth;nt.classList.add('pop');void inp.offsetWidth;inp.classList.add('landed');tt.classList.remove('shuffling');void tt.offsetWidth;tt.classList.add('landed');if(live)tagLand()}};
   tick();
 }

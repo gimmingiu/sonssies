@@ -35,9 +35,6 @@ function rebuild(fine=true){
   const box=new THREE.Box3().setFromObject(chars[0]);charW=box.max.x-box.min.x;
   // 높이는 뿔 유무와 상관없이 '머리 꼭대기 + 뿔 자리'로 고정 → 뿔을 켜고 꺼도 배치·크기가 그대로
   charH=B.model.L+2*0.68*P.headH-0.08+0.3;
-  document.getElementById('ratio').textContent=RATIO.toFixed(1)+' : 1';
-  const lr=P.lowerRatio;document.getElementById('ratio2').textContent=((1-lr)/lr).toFixed(2).replace(/\.?0+$/,'')+' : 1';
-  document.getElementById('texChip').textContent=curTex().name;
   layout();afterRebuild();
 }
 // 돌려보기 줌: 휠·핀치·버튼. 가까워질수록 시선이 얼굴 쪽으로 살짝 올라감
@@ -61,11 +58,7 @@ function camStep(now){const T=camTw,u=Math.min(1,(now-T.t0)/T.dur),e=easeIO(u),L
   angle=L(T.f.a,T.t.a);zoom=L(T.f.z,T.t.z);focusK=L(T.f.k,T.t.k);focusH=L(T.f.h,T.t.h);panX=L(T.f.x,T.t.x);panY=L(T.f.y,T.t.y);placePersp();
   if(u>=1)camTw=null}
 const ZMIN=0.6,ZMAX=3;
-// 슬라이더 위치(0~1): 아래 절반 = 60~100%, 위 절반 = 100~300% (각각 로그 비율) → 100%가 정확히 가운데
-const zT=z=>z<=1?0.5*Math.log(z/ZMIN)/Math.log(1/ZMIN):0.5+0.5*Math.log(z)/Math.log(ZMAX);
-const zFromT=t=>t<=0.5?ZMIN*Math.pow(1/ZMIN,t/0.5):Math.pow(ZMAX,(t-0.5)/0.5);
-function setZoom(z){zoomT=Math.max(ZMIN,Math.min(ZMAX,z));const pc=Math.round(zoomT*100),zv=document.getElementById('zVal');if(zv)zv.textContent=pc+'%';
-  const t=zT(zoomT),th=document.getElementById('zThumb');if(th){th.style.top=`calc(6px + ${(1-t).toFixed(4)} * (100% - 12px))`;document.getElementById('zFill').style.height=`calc(${t.toFixed(4)} * (100% - 12px))`;document.getElementById('zTrack').setAttribute('aria-valuenow',pc)}}
+function setZoom(z){zoomT=Math.max(ZMIN,Math.min(ZMAX,z))}   // 확대는 손가락 벌리기·휠·부위 이동으로만(슬라이더 없음)
 function frame(){
   if(mode==='rot'&&chars[0]&&camTw){camStep(performance.now());chars[0].rotation.y=angle}
   else if(mode==='rot'&&chars[0]){if(spinning&&!dragging)target+=0.006;angle+=(target-angle)*0.12;chars[0].rotation.y=angle;
@@ -92,15 +85,5 @@ const end=e=>{ptrs.delete(e.pointerId);if(ptrs.size<2)pinch0=0;if(ptrs.size===0)
 canvas.addEventListener('pointerup',end);canvas.addEventListener('pointercancel',end);
 canvas.addEventListener('wheel',e=>{if(mode!=='rot')return;e.preventDefault();camStop();setZoom(zoomT*Math.exp(-e.deltaY*0.0015))},{passive:false});
 canvas.addEventListener('dblclick',()=>{if(mode!=='rot')return;camStop();setZoom(1);panX=panY=0;placePersp()});
-// +/−: 지금 값이 어디든 5% 단위 칸으로 이동 (102% → + → 105%, − → 100%)
-const zStep=d=>{const p=Math.round(zoomT*1000)/10;setZoom((d>0?(Math.floor(p/5+1e-6)+1):(Math.ceil(p/5-1e-6)-1))*5/100)};
-document.getElementById('zIn').onclick=()=>zStep(1);
-document.getElementById('zOut').onclick=()=>zStep(-1);
-{const tr=document.getElementById('zTrack');let on=false;
- const at=e=>{const r=tr.getBoundingClientRect(),t=Math.max(0,Math.min(1,1-(e.clientY-r.top-6)/(r.height-12)));setZoom(zFromT(t))};
- tr.addEventListener('pointerdown',e=>{on=true;tr.setPointerCapture(e.pointerId);at(e);e.preventDefault()});
- tr.addEventListener('pointermove',e=>{if(on)at(e)});
- const off=()=>{on=false};tr.addEventListener('pointerup',off);tr.addEventListener('pointercancel',off);
- tr.addEventListener('keydown',e=>{if(e.key==='ArrowUp'||e.key==='ArrowRight'){zStep(1);e.preventDefault()}else if(e.key==='ArrowDown'||e.key==='ArrowLeft'){zStep(-1);e.preventDefault()}});}
 setZoom(1);
 
