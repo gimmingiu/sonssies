@@ -26,9 +26,11 @@ $('prog').innerHTML=STEPS.map(()=>'<i></i>').join('');
 let startPick='깨두';
 Object.keys(PRESETS).forEach(n=>{const b=document.createElement('button');b.type='button';b.dataset.preset=n;b.style.setProperty('--c',PRESETS[n].color||DEF.color);
   b.innerHTML='<i></i>'+n;b.onclick=()=>{startPick=n;apply(PRESETS[n],true);setName(n);$('rndBtn').setAttribute('aria-pressed','false');bump(true)};$('starts').appendChild(b)});
-function bump(spin){if(spin){bounceT0=0;popT0=spinT0=performance.now()}else{popT0=0;bounceT0=performance.now()}}   // spin: 랜덤처럼 돌며 등장
+// 돌려 본 상태에서 기본형을 다시 고르면: 돌며 등장한 뒤 정면을 보게 (등장 시작 때 아주 작아서 방향을 바로 바꿔도 티 나지 않음)
+function toFront(){faceFront();angle=target}
+function bump(spin){if(spin){toFront();bounceT0=0;popT0=spinT0=performance.now()}else{popT0=0;bounceT0=performance.now()}}   // spin: 랜덤처럼 돌며 등장
 {const b=document.createElement('button');b.type='button';b.className='dice';b.id='rndBtn';b.innerHTML='<i></i>랜덤';
- b.onclick=()=>{startPick='랜덤';dice.onclick();setTimeout(()=>b.setAttribute('aria-pressed','true'),0);bounceT0=0;popT0=spinT0=performance.now()};$('starts').appendChild(b)}
+ b.onclick=()=>{startPick='랜덤';dice.onclick();setTimeout(()=>b.setAttribute('aria-pressed','true'),0);bump(true)};$('starts').appendChild(b)}
 
 // 화면 이동: 내부 목록(stack) + 브라우저 기록(휴대폰 뒤로가기와 같게)
 let scrNow='',stack=[],hist=true,popTo=null,editing=false;
