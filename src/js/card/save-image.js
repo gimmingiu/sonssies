@@ -10,10 +10,10 @@ let dl=null;
       const d=new Date(),pad=n=>String(n).padStart(2,'0');
       const name=`${romanize(charName||'깨두')||'kkaedu'}_${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}.png`;
       await dl.save({filename:name,data:blob});
-      $('saveMsg').textContent='저장했소.';
+      $('saveMsg').textContent='저장했어요.';
     }catch(e){
       const c=e&&e.code;
-      $('saveMsg').textContent=c==='declined'?'저장을 취소했소.':c==='rate_limited'?'잠시 뒤 다시 눌러 주시오.':(c==='unavailable'||c==='not_granted')?'이 화면에서는 저장할 수 없소. 화면을 캡처해서 저장해 주시오.':'저장하지 못했소. 다시 해 보시오.';
+      $('saveMsg').textContent=c==='declined'?'저장을 취소했어요.':c==='rate_limited'?'잠시 뒤 다시 눌러 주세요.':(c==='unavailable'||c==='not_granted')?'이 화면에서는 저장할 수 없어요. 화면을 캡처해서 저장해 주세요.':'저장하지 못했어요. 다시 해 보세요.';
       if(c==='unavailable'||c==='not_granted'){btn.hidden=true;dl=null}
     }finally{btn.disabled=false;setTimeout(()=>{if(dl)$('saveMsg').textContent=''},3500)}
   };

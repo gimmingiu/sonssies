@@ -41,4 +41,4 @@ function advTap(i,b){const s=advSt();if(i>s.stars.length){shake(b);return}
   moverHop(i);setTimeout(()=>{if(scrNow==='adv')go({scr:'play',i})},560)}
 // 선물 상자: 옆 판을 깨면 열 수 있음. 한 번만
 function giftTap(k,b){const s=advSt();if(s.gifts[k])return;if(s.stars.length<=k){shake(b);return}
-  s.gifts[k]=true;Save.commit();b.className='gift got';$('giftText').textContent='꿈빛 5개가 들어 있었소. 꿈빛 모으기는 아직 준비 중이오.';openSheet('shGift')}
+  s.gifts[k]=true;Save.commit();b.className='gift got';$('giftText').textContent='꿈빛 5개가 들어 있었어요. 꿈빛 모으기는 아직 준비 중이에요.';openSheet('shGift')}
