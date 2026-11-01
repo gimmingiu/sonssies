@@ -44,15 +44,15 @@
 /* 글꼴(Google Fonts): 이름·말풍선 Jua(우아한형제들) · 본문 Noto Sans KR Medium · 숫자·푸터 Nanum Gothic Coding */
 /* Layout: 고정되는 스테이지(턴어라운드) + 오른쪽 파츠별 조정 패널, 좁은 화면에선 스테이지가 위에 붙고 패널이 아래로 */
 :root{
-  --bg:#e4ebeb; --stage:#c4d1d3; --panel:#f8fbfb; --fg:#1f2a2e; --muted:#5b6b70; --line:#cfdbdc; --accent:#2b8599; --accent-ink:#ffffff; --neg:#c4693f;
+  --bg:#ffffff; --stage:#eef0f2; --panel:#f3f4f6; --fg:#1f2a2e; --muted:#6b7684; --line:#e5e7eb; --accent:#2b8599; --accent-ink:#ffffff; --neg:#c4693f;
   --f-name:"Jua","Noto Sans KR",system-ui,sans-serif;
   --f-body:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
   --f-mono:"Nanum Gothic Coding",ui-monospace,monospace;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#141a1c; --stage:#1b2427; --panel:#192023; --fg:#e5eef0; --muted:#93a5aa; --line:#2b383c; --accent:#7ed0e1; --accent-ink:#0f2329; --neg:#f0a27c; color-scheme:dark}}
+  --bg:#171719; --stage:#202023; --panel:#2a2a2d; --fg:#dedfe2; --muted:#8b8d8f; --line:#3b3c40; --accent:#7ed0e1; --accent-ink:#0f2329; --neg:#f0a27c; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#141a1c; --stage:#1b2427; --panel:#192023; --fg:#e5eef0; --muted:#93a5aa; --line:#2b383c; --accent:#7ed0e1; --accent-ink:#0f2329; --neg:#f0a27c; color-scheme:dark}
+  --bg:#171719; --stage:#202023; --panel:#2a2a2d; --fg:#dedfe2; --muted:#8b8d8f; --line:#3b3c40; --accent:#7ed0e1; --accent-ink:#0f2329; --neg:#f0a27c; color-scheme:dark}
 html,body{margin:0}
 html,body{background:var(--bg);color:var(--fg)}
 body{font-family:var(--f-body);font-weight:500;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 32px}
@@ -223,10 +223,12 @@ footer a:hover{color:var(--fg)}
   grid-row:3;max-width:none;padding-top:8px}}
 @media (prefers-reduced-motion: reduce){.rcard{animation:none}.bigbtn{transition:none}}
 /* ===== 단계별 화면(모바일 기준, PC에선 가운데 휴대폰 폭) ===== */
-body{padding:0;margin:0;min-height:100dvh}
-.app{max-width:480px;margin:0 auto;min-height:100dvh;padding:max(10px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));
-  box-sizing:border-box}
-.scr{display:none;flex-direction:column;gap:14px;min-height:calc(100dvh - max(10px,env(safe-area-inset-top,0px)));padding-bottom:16px}
+/* 게임처럼 고정된 판: 페이지는 스크롤되지 않고, 화면마다 가운데 .scroll만 안에서 스크롤 */
+html,body{height:100%;overflow:hidden;overscroll-behavior:none}
+body{padding:0;margin:0}
+.app{max-width:480px;margin:0 auto;height:100dvh;position:relative;overflow:hidden}
+.scr{position:absolute;inset:0;display:none;flex-direction:column;gap:14px;box-sizing:border-box;
+  padding:max(10px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
 .scr.on{display:flex;animation:scrIn .28s ease backwards}
 .scr.on.back{animation-name:scrInBack}
 @keyframes scrIn{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
@@ -243,7 +245,7 @@ body{padding:0;margin:0;min-height:100dvh}
 .soon{font:400 30px var(--f-name);margin:0;color:var(--fg)}
 /* 3D 미리보기 자리 */
 .stagehold{position:relative;flex:none}
-.stagehold[data-size="step"]{position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+.stagehold[data-size="step"]{z-index:5}
 .stagehold .stage{position:relative;top:auto;aspect-ratio:auto;min-height:0;width:100%;box-shadow:none}
 /* 알 화면: 미리보기 칸 크기는 깨기 전·후 같음 → 손시가 알이 있던 자리에서 그대로 나옴 */
 .stagehold[data-size="egg"]{flex:none;height:56vh;min-height:300px}.stagehold[data-size="egg"] .stage{height:100%;position:absolute;inset:0}
@@ -260,10 +262,9 @@ body{padding:0;margin:0;min-height:100dvh}
 .pickbox .bigbtn{font-size:16px;padding:14px 12px;border-radius:14px}
 .stagehold[data-size="step"] .stage{height:40vh;box-shadow:0 8px 16px -12px rgba(0,0,0,.35)}
 .stagehold[data-size="name"] .stage{height:46vh}
-.stagehold[data-size="main"] .stage{height:58vh}
+.stagehold[data-size="main"] .stage{height:44vh}
 .stage .views,.stage .sname{display:none}
 .stagehold[data-size="step"] .stage .views{display:flex}
-.stagehold[data-size="main"] .stage .sname{display:block}
 /* 단계 패널 */
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:16px}
 .sh{font:700 17px var(--f-body);margin:0}
@@ -296,12 +297,6 @@ body{padding:0;margin:0;min-height:100dvh}
 .mbub::after{content:"";position:absolute;left:50%;bottom:-9px;width:18px;height:18px;margin-left:-9px;background:#eef3f4;border-radius:3px;transform:rotate(45deg)}
 .mbub.pop{animation:bubPop .36s cubic-bezier(.3,1.6,.5,1)}
 @keyframes bubPop{0%{transform:translate(-50%,-100%) scale(.6);opacity:0}100%{transform:translate(-50%,-100%) scale(1);opacity:1}}
-.mbtns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.mbtn{display:flex;flex-direction:column;align-items:center;gap:6px;font:700 14px var(--f-body);color:var(--fg);
-  background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 6px 12px;cursor:pointer;transition:transform .08s}
-.mbtn svg{width:26px;height:26px;color:var(--accent)}
-.mbtn:active{transform:scale(.96)}
-.scr[data-scr="main"] footer{margin-top:auto;padding:8px 0 max(12px,env(safe-area-inset-bottom,0px))}
 /* 알 */
 .egghint{text-align:center;font:400 24px var(--f-name);color:var(--fg);margin:0;transition:opacity .3s}
 .flash{position:fixed;inset:0;z-index:60;background:radial-gradient(circle at 50% 45%,#fffdf4 0,#fff8e2 45%,#fff3d2 100%);pointer-events:none;opacity:0}
@@ -326,9 +321,6 @@ body{padding:0;margin:0;min-height:100dvh}
 .editb{position:absolute;top:12px;right:12px;z-index:8;font:700 14px var(--f-body);color:var(--fg);background:var(--panel);
   border:1px solid var(--line);border-radius:999px;padding:8px 16px;cursor:pointer}
 .editb:active{transform:scale(.96)}
-.mbtns.one{grid-template-columns:1fr}
-.mbtns.one .mbtn{flex-direction:row;justify-content:center;gap:10px;font-size:15px;padding:16px}
-
 
 
 /* 이름 짓기: 안내 글자는 누르면 사라짐, 이름 없이 저장하면 흔들림 */
@@ -396,10 +388,162 @@ details.fine summary{padding:10px 2px;font:700 13px var(--f-body);color:var(--mu
 .colors .sw,.colors input[type=color]{width:44px;height:44px;border-radius:14px;border:3px solid var(--panel);box-shadow:0 0 0 1px var(--line)}
 .colors .sw[aria-pressed="true"],.colors input[type=color][data-on="true"]{box-shadow:0 0 0 2.5px var(--accent)}
 .colors input[type=color]::-webkit-color-swatch{border-radius:10px}
-/* 저장 버튼: 꾸미기 화면 아래 가운데. 맨 아래까지 내려오면 나타남 */
-.savebar{justify-items:center;opacity:0;transform:translateY(14px);pointer-events:none;transition:opacity .28s ease,transform .32s cubic-bezier(.3,1.4,.5,1)}
-.savebar.show{opacity:1;transform:none;pointer-events:auto}
+/* 아래 가운데 큰 버튼(꾸미기 저장·같이 시작): 화면 아래에 늘 떠 있음 */
+.savebar{justify-items:center}
 .savebar .bigbtn{width:auto;min-width:170px;padding:14px 40px}
+/* ===== 앱 틀: 탭바·위쪽 바·안쪽 스크롤·카드·빈칸 블럭·목록·시트 ===== */
+/* 브라우저 티 지우기: 글자 선택·길게 누름 메뉴·누를 때 깜빡임·두 번 눌러 확대 없음(입력칸은 예외) */
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+input,textarea{-webkit-user-select:text;user-select:text}
+button,a{touch-action:manipulation}
+/* 가운데 안쪽 스크롤 영역: 화면 좌우 끝까지 */
+.scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;gap:12px;
+  margin:0 -16px;padding:2px 16px 16px;scrollbar-width:none}
+.scroll::-webkit-scrollbar{display:none}
+/* 탭 화면은 아래 탭바 자리만큼 비움 */
+.tabscr{padding-bottom:calc(68px + env(safe-area-inset-bottom,0px))}
+.tabbar{position:absolute;left:12px;right:12px;bottom:max(10px,env(safe-area-inset-bottom,0px));z-index:30;display:flex;height:58px;
+  background:var(--panel);border-radius:999px;padding:4px;box-shadow:0 8px 22px -10px rgba(0,0,0,.35)}
+.tabbar[hidden]{display:none}
+.tabbar button{flex:1;border:0;background:transparent;border-radius:999px;color:var(--muted);font:700 11.5px var(--f-body);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:2px;cursor:pointer;padding:0}
+.tabbar svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.tabbar button[aria-selected="true"]{color:var(--accent);background:var(--bg)}
+.tabbar button:active,.qbtn:active,.lrow:active{transform:scale(.96)}
+/* 위쪽 바(방·모험·도감) */
+.hud{display:flex;align-items:center;gap:8px;min-height:44px;flex:none}
+.hud .tt{flex:1}
+.hudname{flex:1;min-width:0;display:flex;align-items:center;gap:6px;border:0;background:none;padding:0;color:var(--fg);font:400 26px/1.2 var(--f-name);cursor:pointer;text-align:left}
+.hudname span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hudname svg{width:16px;height:16px;flex:none;fill:none;stroke:var(--muted);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.dream{display:inline-flex;align-items:center;gap:6px;background:var(--panel);border-radius:999px;padding:7px 12px;font:400 14px var(--f-mono);color:var(--fg)}
+.dream i{width:12px;height:12px;border-radius:50%;background:#ffe9a8;box-shadow:0 0 0 2px color-mix(in srgb,#ffe9a8 45%,transparent)}
+.hudbtn,.backb{width:40px;height:40px;flex:none;border:0;border-radius:12px;background:transparent;color:var(--fg);display:grid;place-items:center;cursor:pointer;padding:0}
+.hudbtn svg,.backb svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.backb{margin-left:-8px}
+.backb:active,.hudbtn:active{background:var(--panel)}
+/* 카드·빈칸 */
+.card{background:var(--panel);border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.ctag{font:700 13px var(--f-body);color:var(--muted)}
+.ph{background:color-mix(in srgb,var(--line) 70%,transparent);border-radius:16px;display:grid;place-items:center;gap:2px;color:var(--muted);min-height:64px}
+.ph em{font:500 12px var(--f-body);font-style:normal;opacity:.8}
+.ph span{font:700 14px var(--f-body)}
+.ph.wide{aspect-ratio:16/8}
+.ph.sq{aspect-ratio:1}
+.bar{height:12px;border-radius:6px;background:color-mix(in srgb,var(--line) 80%,transparent)}
+.w50{width:50%}.w60{width:60%}.w70{width:70%}.w80{width:80%}
+/* 목록(설정) */
+.lgroup{display:flex;flex-direction:column}
+.lhead{font:500 13px var(--f-body);color:var(--muted);margin:14px 0 0}
+.lrow{display:flex;align-items:center;gap:10px;border:0;background:none;color:var(--fg);font:500 17px var(--f-body);padding:14px 0;cursor:pointer;text-align:left}
+.lrow .lt{flex:1}
+.lrow .lv{font-size:14px;color:var(--muted)}
+.chev{width:18px;height:18px;flex:none;fill:none;stroke:var(--muted);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.lrow.warn{color:var(--neg)}
+.setstats{justify-content:flex-start;margin-top:4px}
+.setfoot footer{padding:18px 0 8px}
+/* 시트: 아래에서 올라옴 */
+.sheetbg{position:absolute;inset:0;z-index:40;background:rgba(0,0,0,.38);animation:fadeIn .2s ease}
+.sheetbg[hidden]{display:none}
+.sheet{position:absolute;left:0;right:0;bottom:0;z-index:41;background:var(--bg);border-radius:24px 24px 0 0;display:flex;flex-direction:column;gap:14px;
+  padding:22px max(20px,env(safe-area-inset-right,0px)) max(22px,env(safe-area-inset-bottom,0px)) max(20px,env(safe-area-inset-left,0px));animation:sheetUp .32s cubic-bezier(.3,1.25,.5,1)}
+.sheet[hidden]{display:none}
+.sht{font:700 19px var(--f-body);margin:0}
+.shrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.warnbtn{background:var(--neg)!important}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion: reduce){.sheet,.sheetbg{animation:none}}
+/* ===== 방·같이 하기·도감·손시란? ===== */
+.stagehold[data-size="main"] .stage .sname{display:none}   /* 방에서는 이름을 위쪽 바에 */
+/* 밤: 잘 자 인사 뒤 방이 어두워짐 */
+.nightveil{position:absolute;inset:0;z-index:7;border-radius:14px;background:radial-gradient(circle at 50% 30%,rgba(42,49,80,.35),rgba(42,49,80,.78));
+  opacity:0;pointer-events:none;transition:opacity .9s ease}
+.nightveil.on{opacity:1}
+/* 빠른 버튼 4개 */
+.qbtns{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.qbtn{border:0;background:none;color:var(--fg);font:700 13px var(--f-body);display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;padding:0}
+.qbtn i{width:56px;height:56px;border-radius:20px;background:var(--panel);display:grid;place-items:center}
+.qbtn svg{width:26px;height:26px;fill:none;stroke:var(--accent);stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.pot{aspect-ratio:16/6}
+/* 오늘의 작은 부탁 */
+.ftext{font:400 21px/1.35 var(--f-name);margin:0;color:var(--fg)}
+.frow{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:6px}
+.frow .bigbtn,.frow .ghostbtn{width:100%;font-size:14px;padding:11px 6px;border-radius:12px;white-space:nowrap}
+.favor.done .frow{display:none}
+.favor.pulse{animation:land .5s cubic-bezier(.3,1.6,.5,1)}
+/* 칩(같이 하기) */
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{font:700 14px var(--f-body);border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:999px;padding:9px 16px;cursor:pointer}
+.chips button[aria-pressed="true"]{border-color:var(--accent);color:var(--accent);box-shadow:0 0 0 1.5px var(--accent)}
+.stagehold[data-size="together"] .stage{height:30vh}
+.tbub{position:absolute;z-index:8;left:50%;top:12px;transform:translateX(-50%);background:linear-gradient(#ffffff,#eef3f4);color:#1f2a2e;
+  font:400 20px/1.3 var(--f-name);padding:10px 18px;border-radius:999px;white-space:nowrap;filter:drop-shadow(0 6px 10px rgba(0,0,0,.14))}
+.tbub[hidden]{display:none}
+.clock{font:400 64px/1 var(--f-mono);text-align:center;margin:8px 0 4px;letter-spacing:.02em}
+.togrun{align-items:center}
+/* 도감 */
+.dexseg{align-self:flex-start;display:flex;background:var(--panel);border-radius:999px;padding:3px;gap:2px}
+.dexseg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.slots{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.slots i{aspect-ratio:1;border-radius:14px;background:var(--bg);display:grid;place-items:center;font:400 18px var(--f-name);color:var(--line);font-style:normal}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center}
+.cal b{font:500 11px var(--f-body);color:var(--muted)}
+.cal span{aspect-ratio:1;border-radius:50%;display:grid;place-items:center;font:400 13px var(--f-mono);background:var(--bg);color:var(--muted)}
+.cal span.today{box-shadow:0 0 0 2px var(--accent);color:var(--fg)}
+.cal span.blank{background:none}
+/* 손시란? 카드 넘기기 */
+.acards{flex:1;min-height:0;display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -16px;padding:4px 16px;scrollbar-width:none}
+.acards::-webkit-scrollbar{display:none}
+.acard{flex:0 0 calc(100% - 24px);scroll-snap-align:center;align-self:flex-start}
+.acard b{font:400 26px var(--f-name)}
+.adots{display:flex;justify-content:center;gap:6px;padding:10px 0 max(16px,env(safe-area-inset-bottom,0px))}
+.adots i{width:7px;height:7px;border-radius:50%;background:var(--line)}
+.adots i.on{background:var(--accent);width:18px;border-radius:4px}
+/* ===== 모험 지도·스테이지·결과/선물 시트 (지금은 간단한 도형으로만) ===== */
+.advstars b{color:#f5b400;font-weight:400}
+.advmap{position:relative;flex:none;margin:0 8px}
+.advpath{position:absolute;inset:0;width:100%;height:100%}
+.advpath path{fill:none;stroke:var(--line);stroke-width:16;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.advpath path.on{stroke:color-mix(in srgb,var(--accent) 45%,var(--line))}
+/* 발판: 깬 곳(별) · 열린 곳(번호) · 잠긴 곳(자물쇠) */
+.node{position:absolute;width:62px;height:62px;margin:-31px 0 0 -31px;border-radius:50%;border:0;padding:0;cursor:pointer;display:grid;place-items:center;
+  font:400 24px var(--f-name);background:var(--panel);color:var(--muted);box-shadow:0 5px 0 color-mix(in srgb,var(--line) 80%,#000 8%)}
+.node.done{background:var(--accent);color:var(--accent-ink);box-shadow:0 5px 0 color-mix(in srgb,var(--accent) 70%,#000)}
+.node.open{background:var(--bg);color:var(--accent);box-shadow:0 0 0 4px var(--accent),0 9px 0 color-mix(in srgb,var(--accent) 70%,#000)}
+.node svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.node:active{transform:translateY(3px)}
+.nstars{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);display:flex;gap:1px;font-size:15px;line-height:1}
+.nstars i,.rstars i{font-style:normal;color:var(--line)}
+.nstars i.on,.rstars i.on{color:#f5b400}
+/* 선물 상자: 네모 + 리본 십자 */
+.gift{position:absolute;width:42px;height:42px;margin:-21px 0 0 -21px;border:0;padding:0;background:none;cursor:pointer}
+.gift i,.giftbig i{display:block;width:100%;height:100%;border-radius:10px;background:
+  linear-gradient(90deg,transparent 42%,#e23b33 42% 58%,transparent 58%),linear-gradient(transparent 42%,#e23b33 42% 58%,transparent 58%),#ffd166}
+.gift.lock i{filter:grayscale(1);opacity:.45}
+.gift.ready i{animation:giftWob 1.6s ease-in-out infinite}
+.gift.got i{opacity:.35}
+.giftbig{width:96px;height:96px;margin:4px auto}
+/* 지도 위 손시 말: 몸 색 동그라미 + 눈 두 개, 발판 위에 서 있음 */
+.mover{position:absolute;z-index:3;width:38px;height:38px;margin:-66px 0 0 -19px;pointer-events:none}
+.mover.anim{transition:left .5s cubic-bezier(.4,0,.3,1),top .5s cubic-bezier(.4,0,.3,1)}
+.mover i{display:block;width:100%;height:100%;border-radius:50% 50% 46% 46%;box-shadow:inset 0 -5px 0 rgba(0,0,0,.12),0 4px 8px rgba(0,0,0,.18);position:relative}
+.mover i::before,.mover i::after{content:'';position:absolute;top:40%;width:5px;height:7px;border-radius:3px;background:#1f2a2e}
+.mover i::before{left:32%}
+.mover i::after{right:32%}
+.mover i.hop{animation:hop .5s cubic-bezier(.3,0,.4,1)}
+.shake{animation:shake .35s}
+@keyframes hop{0%{transform:none}45%{transform:translateY(-34px) scaleY(1.06)}85%{transform:translateY(0) scale(1.12,.86)}100%{transform:none}}
+@keyframes shake{25%{translate:-5px 0}50%{translate:5px 0}75%{translate:-3px 0}}
+@keyframes giftWob{0%,100%{transform:none}50%{transform:rotate(-7deg) scale(1.06)}}
+/* 스테이지: 8×8 낱말 판(빈칸·검은 칸) */
+.xw{display:grid;grid-template-columns:repeat(8,1fr);gap:3px}
+.xw i{aspect-ratio:1;border-radius:6px;background:var(--bg)}
+.xw i.blk{background:var(--fg);opacity:.85}
+/* 결과 시트 */
+.rstars{display:flex;justify-content:center;gap:6px;font-size:46px;line-height:1}
+.tline{margin:0;text-align:center;font:400 21px/1.35 var(--f-name);color:var(--fg)}
+@media (prefers-reduced-motion: reduce){.mover.anim{transition:none}.mover i.hop,.gift.ready i,.shake{animation:none}}
 </style>
 </head>
 <body>
@@ -532,8 +676,8 @@ details.fine summary{padding:10px 2px;font:700 13px var(--f-body);color:var(--mu
   <!-- 아이폰 사파리 첫 방문: 홈 화면에 추가 안내 -->
   <section class="scr" data-scr="safari" aria-label="홈 화면에 추가 안내">
     <div class="scr-c center">
-      <h1 class="h1">홈 화면에 들여 두고<br>손시와 함께 지내 보시오</h1>
-      <p class="lead">아이폰은 사파리와 홈 화면 앱이 따로 기억하오.<br>홈 화면에 들인 앱에서 만들어야 내 손시가 계속 남아 있소.</p>
+      <h1 class="h1">홈 화면에 들여 두고<br>손시와 함께 지내 보세요</h1>
+      <p class="lead">아이폰은 사파리와 홈 화면 앱이 따로 기억해요.<br>홈 화면에 들인 앱에서 만들어야 내 손시가 계속 남아 있어요.</p>
       <ol class="howto"><li>아래쪽 <b>공유</b> 버튼 <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 3v12M7.5 7.5 12 3l4.5 4.5M5 12v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 누르기</li><li><b>홈 화면에 추가</b> 누르기</li><li>홈 화면의 <b>Sonssies</b>로 열기</li></ol>
     </div>
     <div class="bbar"><button type="button" class="ghostbtn wide" id="safariGo">브라우저에서 계속하기</button></div>
@@ -541,9 +685,9 @@ details.fine summary{padding:10px 2px;font:700 13px var(--f-body);color:var(--mu
 
   <!-- 알 깨기 -->
   <section class="scr" data-scr="egg" aria-label="꿈알">
-    <p class="guide inv" id="eggGuide">모양을 골라 보시오</p>
+    <p class="guide inv" id="eggGuide">모양을 골라 보세요</p>
     <div class="stagehold" data-size="egg"></div>
-    <p class="egghint" id="eggHint">톡톡 두드려 알을 깨 보시오</p>
+    <p class="egghint" id="eggHint">톡톡 두드려 알을 깨 보세요</p>
     <div class="pickbox" id="pickBox" hidden>
       <div class="starts" id="starts"></div>
       <button type="button" class="bigbtn" id="eggGo">만들기</button>
@@ -553,7 +697,7 @@ details.fine summary{padding:10px 2px;font:700 13px var(--f-body);color:var(--mu
   <!-- 꾸미기 8단계 -->
   <section class="scr" data-scr="step" aria-label="꾸미기">
     <div class="stagehold" data-size="step"></div>
-    <div class="panel"><h2 class="sh" id="stepTitle"></h2><div id="stepBody"></div></div>
+    <div class="scroll"><div class="panel"><h2 class="sh" id="stepTitle"></h2><div id="stepBody"></div></div></div>
     <div class="bbar savebar" id="saveBar"><button type="button" class="bigbtn" id="stepSave">저장</button></div>
   </section>
 
@@ -561,20 +705,111 @@ details.fine summary{padding:10px 2px;font:700 13px var(--f-body);color:var(--mu
   <section class="scr" data-scr="name" aria-label="이름 짓기">
     <div class="topbar"><h1 class="tt">이름 짓기</h1></div>
     <div class="stagehold" data-size="name"><p class="sname nlive" id="nameLive"></p></div>
+    <div class="scroll">
     <div class="panel">
       <div class="namerow">
-        <input id="charName" type="text" maxlength="12" value="" placeholder="이름을 지어 주시오." aria-label="손시 이름" autocomplete="off" spellcheck="false" enterkeyhint="done">
+        <input id="charName" type="text" maxlength="12" value="" placeholder="이름을 지어 주세요." aria-label="손시 이름" autocomplete="off" spellcheck="false" enterkeyhint="done">
         <button type="button" class="namedice" id="nameDice" aria-label="랜덤 이름" title="랜덤 이름"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="4" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="8.5" cy="8.5" r="1.4" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="15.5" cy="8.5" r="1.4" fill="currentColor"/><circle cx="8.5" cy="15.5" r="1.4" fill="currentColor"/></svg></button>
       </div>
-      <p class="hint" id="nameHint">한글은 여덟 자, 영문은 열두 자까지 되오.<br>띄어쓰기와 특수문자는 쓸 수 없소.</p>
+      <p class="hint" id="nameHint">한글은 여덟 자, 영문은 열두 자까지 쓸 수 있어요.<br>띄어쓰기와 특수문자는 쓸 수 없어요.</p>
       <div class="row" id="bgRowHold"></div>
+    </div>
     </div>
     <div class="bbar three"><button type="button" class="arrb" data-back aria-label="이전"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span></span><button type="button" class="bigbtn fit" id="saveDoll">저장하기</button></div>
   </section>
 
-  <!-- 메인 -->
-  <section class="scr" data-scr="main" aria-label="내 손시">
-    <header class="mhead">
+  <!-- 방 (탭) -->
+  <section class="scr tabscr" data-scr="main" aria-label="방">
+    <header class="hud">
+      <button type="button" class="hudname" id="hudName" aria-label="손시 이름 바꾸기"><span id="hudNameT"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg></button>
+      <span class="dream" id="dreamChip" aria-label="꿈빛"><i></i><b>0</b></span>
+      <button type="button" class="hudbtn" id="goSet" aria-label="설정"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.6M12 18.6v2.6M2.8 12h2.6M18.6 12h2.6M5.5 5.5l1.8 1.8M16.7 16.7l1.8 1.8M5.5 18.5l1.8-1.8M16.7 7.3l1.8-1.8"/></svg></button>
+    </header>
+    <div class="stagehold" data-size="main"><div class="mbub" id="mbub" hidden></div><div class="nightveil" id="nightVeil"></div><button type="button" class="editb" id="goEdit">꾸미기</button></div>
+    <div class="scroll">
+      <div class="qbtns" role="group" aria-label="손시와 하기">
+        <button type="button" class="qbtn" data-q="hello"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></i>인사</button>
+        <button type="button" class="qbtn" data-q="fruit"><i><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="14" r="6.5"/><path d="M12 7.5c0-2 1-3.5 3-4.5"/></svg></i>꿈열매</button>
+        <button type="button" class="qbtn" data-q="favor"><i><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3.5" width="14" height="17" rx="3"/><path d="M9 9h6M9 13h6M9 17h3"/></svg></i>부탁</button>
+        <button type="button" class="qbtn" data-q="together"><i><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8.5" cy="8" r="3"/><circle cx="16" cy="9" r="2.5"/><path d="M3 19c.6-3.4 2.8-5.2 5.5-5.2s4.9 1.8 5.5 5.2M14 14.2c2.6-.4 5 1 5.8 4.3"/></svg></i>같이 하기</button>
+      </div>
+      <div class="ph pot" aria-label="덩이 화분 자리"><span>덩이 화분</span><em>준비 중</em></div>
+      <div class="card favor" id="favorCard">
+        <span class="ctag">오늘의 작은 부탁</span>
+        <p class="ftext" id="favorText"></p>
+        <div class="frow"><button type="button" class="bigbtn" id="favorDone">했어!</button><button type="button" class="ghostbtn" id="favorNext">다른 거</button><button type="button" class="ghostbtn" id="favorRest">오늘은 쉴래</button></div>
+      </div>
+      <div class="card"><span class="ctag">포즈</span><div class="mposes" id="mainPoses" role="group" aria-label="포즈"></div></div>
+    </div>
+  </section>
+
+  <!-- 도감 (탭) — 칸·달력 모양만 -->
+  <section class="scr tabscr" data-scr="dex" aria-label="도감">
+    <header class="hud"><h1 class="tt">도감</h1></header>
+    <div class="scroll">
+      <div class="seg dexseg" id="dexSeg" role="tablist"><button type="button" data-d="mungchi" aria-pressed="true">뭉치</button><button type="button" data-d="badge">배지</button></div>
+      <div class="card"><div class="slots" id="dexSlots"></div></div>
+      <div class="card"><span class="ctag">모은 날</span><div class="cal" id="dexCal"></div></div>
+    </div>
+  </section>
+
+  <!-- 같이 하기 -->
+  <section class="scr" data-scr="together" aria-label="같이 하기">
+    <div class="topbar"><button type="button" class="backb" data-back aria-label="이전"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><h1 class="tt">같이 하기</h1></div>
+    <div class="stagehold" data-size="together"><div class="tbub" id="togBub" hidden></div></div>
+    <div class="scroll">
+      <div class="card" id="togPick">
+        <span class="ctag">무엇을 할까</span>
+        <div class="chips" id="togTask"><button type="button" aria-pressed="true">산책</button><button type="button">씻기</button><button type="button">청소</button><button type="button">빨래</button></div>
+        <span class="ctag">얼마나</span>
+        <div class="chips" id="togTime"><button type="button" data-m="2" aria-pressed="true">2분</button><button type="button" data-m="5">5분</button><button type="button" data-m="10">10분</button></div>
+      </div>
+      <div class="card togrun" id="togRun" hidden><span class="ctag" id="togWhat"></span><p class="clock" id="togClock">0:00</p></div>
+    </div>
+    <div class="bbar savebar"><button type="button" class="bigbtn" id="togGo">같이 시작</button></div>
+  </section>
+
+  <!-- 아래 탭바: 방 · 모험 · 도감 -->
+  <nav class="tabbar" id="tabbar" aria-label="메뉴" hidden>
+    <button type="button" data-tab="main"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11 12 4l8 7v8.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19.5z"/><path d="M10 21v-5h4v5"/></svg>방</button>
+    <button type="button" data-tab="adv"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg>모험</button>
+    <button type="button" data-tab="dex"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h11a3 3 0 0 1 3 3v12H8a3 3 0 0 1-3-3z"/><path d="M5 16.5a3 3 0 0 1 3-3h11"/></svg>도감</button>
+  </nav>
+  <!-- 모험 (탭): 구불구불한 길 위 발판(스테이지)·선물 상자. 아래에서 위로 올라감. 지금은 간단한 도형으로만 -->
+  <section class="scr tabscr" data-scr="adv" aria-label="모험">
+    <header class="hud"><h1 class="tt">모험</h1><span class="dream advstars" id="advStars"><b aria-hidden="true">★</b>0</span></header>
+    <div class="scroll" id="advScroll"><div class="advmap" id="advMap"></div></div>
+  </section>
+
+  <!-- 스테이지: 낱말퍼즐(아직 빈 판). [다 풀었어요] → 결과 시트 -->
+  <section class="scr" data-scr="play" aria-label="스테이지">
+    <div class="topbar"><button type="button" class="backb" data-back aria-label="이전"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><h1 class="tt" id="playTitle">스테이지</h1></div>
+    <div class="scroll">
+      <div class="card"><span class="ctag">가로세로 낱말퍼즐</span><div class="xw" id="playGrid"></div></div>
+      <div class="card"><span class="ctag">가로 열쇠</span><div class="bar w80"></div><div class="bar w60"></div><div class="bar w70"></div></div>
+      <div class="card"><span class="ctag">세로 열쇠</span><div class="bar w70"></div><div class="bar w50"></div><div class="bar w60"></div></div>
+      <p class="hint">낱말퍼즐은 짓는 중이에요. 지금은 [다 풀었어요]로 넘어가 보세요.</p>
+    </div>
+    <div class="bbar savebar"><button type="button" class="bigbtn" id="playDone">다 풀었어요</button></div>
+  </section>
+  <!-- 설정 -->
+  <section class="scr" data-scr="set" aria-label="설정">
+    <div class="topbar"><button type="button" class="backb" data-back aria-label="이전"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><h1 class="tt">설정</h1></div>
+    <div class="scroll">
+      <div class="lgroup">
+        <button type="button" class="lrow" id="setName"><span class="lt">손시 이름</span><span class="lv" id="setNameV"></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+        <button type="button" class="lrow" id="setAbout"><span class="lt">손시란?</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+      </div>
+      <p class="lhead">도움</p>
+      <div class="lgroup">
+        <button type="button" class="lrow" data-soon><span class="lt">알림</span><span class="lv">준비 중</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+        <button type="button" class="lrow" data-soon><span class="lt">자주 묻는 질문</span><span class="lv">준비 중</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+        <button type="button" class="lrow" data-soon><span class="lt">문의하기</span><span class="lv">준비 중</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+      </div>
+      <p class="lhead">손시</p>
+      <div class="lgroup"><button type="button" class="lrow warn" id="setReset"><span class="lt">처음부터 다시 만들기</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button></div>
+      <p class="lhead">Sonssies</p>
+      <header class="mhead setstats">
     <div class="stats" role="group" aria-label="누적 통계">
       <button type="button" class="stat" data-k="visit" aria-expanded="false" aria-label="누적 방문객 수">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.4"/><path d="M2.8 20c.6-3.6 3.2-5.6 6.2-5.6s5.6 2 6.2 5.6"/><circle cx="17" cy="9" r="2.6"/><path d="M16.6 14.3c2.6.2 4.2 2 4.6 4.8"/></svg>
@@ -587,21 +822,67 @@ details.fine summary{padding:10px 2px;font:700 13px var(--f-body);color:var(--mu
         <b>–</b></button>
     </div>
     <div class="stip" id="statTip" hidden role="status"><div class="bx"><strong id="stTitle"></strong><span id="stBody"></span></div></div>
-    </header>
-    <div class="stagehold" data-size="main"><div class="mbub" id="mbub" hidden></div><button type="button" class="editb" id="goEdit">수정</button></div>
-    <div class="mposes" id="mainPoses" role="group" aria-label="포즈"></div>
-    <div class="mbtns one">
-      <button type="button" class="mbtn" id="goWall"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 15l4-4 3 3 2-2 3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>배경화면 만들기</button>
+      </header>
+      <div class="setfoot">
+        <footer><div class="sns"><a href="https://www.instagram.com/sonssies/" target="_blank" rel="noopener">instagram</a><a href="https://twitter.com/sonssies" target="_blank" rel="noopener">twitter</a></div><div class="copy">ⓒ 2026 sonssies. all rights reserved.</div></footer>
+      </div>
     </div>
-  <footer><div class="sns"><a href="https://www.instagram.com/sonssies/" target="_blank" rel="noopener">instagram</a><a href="https://twitter.com/sonssies" target="_blank" rel="noopener">twitter</a></div><div class="copy">ⓒ 2026 sonssies. all rights reserved.</div></footer>
   </section>
 
-  <!-- 배경화면 만들기 (준비 중) -->
-  <section class="scr" data-scr="wall" aria-label="배경화면 만들기">
-    <div class="topbar"><h1 class="tt">배경화면 만들기</h1></div>
-    <div class="scr-c center"><p class="soon">아직 짓는 중이오…</p><p class="lead">내 손시로 휴대폰 배경화면을 만드는 곳을 준비하고 있소.</p></div>
-    <div class="bbar three"><button type="button" class="arrb" data-back aria-label="이전"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+  <!-- 손시란? 그림 카드(빈칸) -->
+  <section class="scr" data-scr="about" aria-label="손시란?">
+    <div class="topbar"><button type="button" class="backb" data-back aria-label="이전"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><h1 class="tt">손시란?</h1></div>
+    <div class="acards" id="aboutCards">
+      <div class="card acard"><div class="ph sq"><em>그림 자리</em></div><b>꿈빛</b><div class="bar w80"></div><div class="bar w60"></div></div>
+      <div class="card acard"><div class="ph sq"><em>그림 자리</em></div><b>꿈알</b><div class="bar w80"></div><div class="bar w60"></div></div>
+      <div class="card acard"><div class="ph sq"><em>그림 자리</em></div><b>손시</b><div class="bar w80"></div><div class="bar w60"></div></div>
+      <div class="card acard"><div class="ph sq"><em>그림 자리</em></div><b>터</b><div class="bar w80"></div><div class="bar w60"></div></div>
+    </div>
+    <div class="adots" id="aboutDots"><i class="on"></i><i></i><i></i><i></i></div>
   </section>
+  <!-- 아래에서 올라오는 시트 -->
+  <div class="sheetbg" id="sheetBg" hidden></div>
+  <div class="sheet" id="shHello" hidden role="dialog" aria-label="인사">
+    <p class="sht">손시에게 인사하기</p>
+    <div class="shrow"><button type="button" class="bigbtn" id="sayNight">잘 자</button><button type="button" class="bigbtn" id="sayMorning">잘 잤어?</button></div>
+    <p class="hint">꿈빛 모으기는 아직 준비 중이에요.</p>
+  </div>
+  <div class="sheet" id="shFruit" hidden role="dialog" aria-label="꿈열매">
+    <p class="sht">꿈열매</p>
+    <div class="ph wide"><em>덩이 그림 자리</em></div>
+    <p class="hint">아직 열매가 맺히지 않았어요.</p>
+    <button type="button" class="bigbtn" disabled>수확하기</button>
+  </div>
+  <div class="sheet" id="shRename" hidden role="dialog" aria-label="손시 이름 바꾸기">
+    <p class="sht">손시 이름 바꾸기</p>
+    <div class="namerow"><input id="renameIn" type="text" maxlength="12" placeholder="이름을 지어 주세요." aria-label="새 이름" autocomplete="off" spellcheck="false" enterkeyhint="done">
+      <button type="button" class="namedice" id="renameDice" aria-label="랜덤 이름"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="4" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="8.5" cy="8.5" r="1.4" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="15.5" cy="8.5" r="1.4" fill="currentColor"/><circle cx="8.5" cy="15.5" r="1.4" fill="currentColor"/></svg></button></div>
+    <p class="hint">한글은 여덟 자, 영문은 열두 자까지 쓸 수 있어요.</p>
+    <button type="button" class="bigbtn" id="renameSave">저장</button>
+  </div>
+  <div class="sheet" id="shReset" hidden role="dialog" aria-label="처음부터 다시 만들기">
+    <p class="sht">처음부터 다시 만들까요?</p>
+    <p class="hint">지금 손시와 이름, 꾸민 모습이 모두 지워지고 꿈알부터 다시 시작해요.</p>
+    <div class="shrow"><button type="button" class="ghostbtn" data-close>그만두기</button><button type="button" class="bigbtn warnbtn" id="resetGo">다시 만들기</button></div>
+  </div>
+  <div class="sheet" id="shResult" hidden role="dialog" aria-label="스테이지 결과">
+    <p class="sht" id="resTitle">다 풀었어요!</p>
+    <div class="rstars" id="resStars" aria-label="별"></div>
+    <p class="tline" id="resLine"></p>
+    <p class="hint" id="resGain"></p>
+    <div class="shrow"><button type="button" class="ghostbtn" id="resAgain">다시 하기</button><button type="button" class="bigbtn" id="resNext">계속</button></div>
+  </div>
+  <div class="sheet" id="shGift" hidden role="dialog" aria-label="선물 상자">
+    <p class="sht">선물 상자</p>
+    <div class="giftbig" aria-hidden="true"><i></i></div>
+    <p class="hint" id="giftText"></p>
+    <button type="button" class="bigbtn" data-close>받기</button>
+  </div>
+  <div class="sheet" id="shSoon" hidden role="dialog" aria-label="준비 중">
+    <p class="sht">아직 짓는 중이에요…</p>
+    <p class="hint">곧 열 테니 조금만 기다려 주세요.</p>
+    <button type="button" class="ghostbtn" data-close>닫기</button>
+  </div>
 </div>
 
 <!-- 3D 미리보기(하나만): 지금 화면의 자리로 옮겨 다님 -->
@@ -623,15 +904,15 @@ details.fine summary{padding:10px 2px;font:700 13px var(--f-body);color:var(--mu
 
 <div class="result" id="result" hidden role="dialog" aria-modal="true" aria-label="완성된 손시">
   <div class="rwrap">
-    <div class="rcard" id="rcard"><canvas id="resCv" width="1080" height="1920" aria-label="저장될 이미지 미리보기. 좌우로 끌어서 각도를 바꿀 수 있소"></canvas>
-      <div class="bubhit" id="bubHit" hidden aria-label="말풍선: 끌어서 옮기고, 누르면 글을 쓸 수 있소" role="button" tabindex="0"></div>
+    <div class="rcard" id="rcard"><canvas id="resCv" width="1080" height="1920" aria-label="저장될 이미지 미리보기. 좌우로 끌어서 각도를 바꿀 수 있어요"></canvas>
+      <div class="bubhit" id="bubHit" hidden aria-label="말풍선: 끌어서 옮기고, 누르면 글을 쓸 수 있어요" role="button" tabindex="0"></div>
       <div class="bubedit" id="bubEdit" hidden>
         <textarea id="bubText" rows="1" maxlength="30" placeholder="텍스트 입력" aria-label="말풍선 글 (엔터로 줄바꿈)" autocomplete="off" enterkeyhint="enter">반가워!</textarea>
         <span class="cnt" id="bubCnt">4/30</span>
         <button type="button" id="bubDone">완료</button>
       </div>
     </div>
-    <p class="rhint">말풍선은 끌어서 옮길 수 있고, 누르면 글을 쓸 수 있소.</p>
+    <p class="rhint">말풍선은 끌어서 옮길 수 있고, 누르면 글을 쓸 수 있어요.</p>
     <div class="rside">
       <div hidden><span class="t">이름</span>
       <div class="namerow"><input id="resName" type="text" maxlength="12" aria-label="캐릭터 이름" autocomplete="off" spellcheck="false">
@@ -1938,16 +2219,16 @@ async function openResult(){
   if($('busy').classList.contains('on'))await new Promise(r=>setTimeout(r,320));
   spinning=false;$('spinBtn').setAttribute('aria-pressed',false);target=angle;
   await loadTagFonts();
-  syncTagCols();$('resName').value=charName;$('saveMsg').textContent=dl?'':'이 화면에서는 저장 버튼을 쓸 수 없소. 화면을 캡처해서 저장해 주시오.';
+  syncTagCols();$('resName').value=charName;$('saveMsg').textContent=dl?'':'이 화면에서는 저장 버튼을 쓸 수 없어요. 화면을 캡처해서 저장해 주세요.';
   $('result').hidden=false;document.body.style.overflow='hidden';
   const card=$('rcard');card.style.animation='none';void card.offsetWidth;card.style.animation='';
   compose(resCv,1,false);$('backBtn').focus({preventScroll:true});
 }
 function closeResult(){closeBubEdit();$('result').hidden=true;document.body.style.overflow=''}
 // ---------- 누적 통계 버튼 (집계는 준비 중: 숫자 자리는 '–') ----------
-{const INFO={visit:['누적 방문객 수','지금까지 이곳을 찾아온 사람을 세는 자리요. 집계는 아직 준비 중이오.'],
-  made:['누적 손시 수','지금까지 만들어진 손시를 세는 자리요. 집계는 아직 준비 중이오.'],
-  like:['누적 좋아요 수','이곳이 받은 좋아요를 세는 자리요. 집계는 아직 준비 중이오.']};
+{const INFO={visit:['누적 방문객 수','지금까지 이곳을 찾아온 사람을 세는 자리예요. 집계는 아직 준비 중이에요.'],
+  made:['누적 손시 수','지금까지 만들어진 손시를 세는 자리예요. 집계는 아직 준비 중이에요.'],
+  like:['누적 좋아요 수','이곳이 받은 좋아요를 세는 자리예요. 집계는 아직 준비 중이에요.']};
  const tip=$('statTip'),hdr=tip.parentElement;let cur=null;
  const close=()=>{tip.hidden=true;if(cur)cur.setAttribute('aria-expanded','false');cur=null};
  document.querySelectorAll('.stat').forEach(b=>b.addEventListener('click',e=>{
@@ -2015,10 +2296,10 @@ let dl=null;
       const d=new Date(),pad=n=>String(n).padStart(2,'0');
       const name=`${romanize(charName||'깨두')||'kkaedu'}_${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}.png`;
       await dl.save({filename:name,data:blob});
-      $('saveMsg').textContent='저장했소.';
+      $('saveMsg').textContent='저장했어요.';
     }catch(e){
       const c=e&&e.code;
-      $('saveMsg').textContent=c==='declined'?'저장을 취소했소.':c==='rate_limited'?'잠시 뒤 다시 눌러 주시오.':(c==='unavailable'||c==='not_granted')?'이 화면에서는 저장할 수 없소. 화면을 캡처해서 저장해 주시오.':'저장하지 못했소. 다시 해 보시오.';
+      $('saveMsg').textContent=c==='declined'?'저장을 취소했어요.':c==='rate_limited'?'잠시 뒤 다시 눌러 주세요.':(c==='unavailable'||c==='not_granted')?'이 화면에서는 저장할 수 없어요. 화면을 캡처해서 저장해 주세요.':'저장하지 못했어요. 다시 해 보세요.';
       if(c==='unavailable'||c==='not_granted'){btn.hidden=true;dl=null}
     }finally{btn.disabled=false;setTimeout(()=>{if(dl)$('saveMsg').textContent=''},3500)}
   };
@@ -2054,6 +2335,8 @@ const Save=(()=>{
 //   edited  [수정]에서 모양을 바꾸고 저장한 뒤 메인에 왔을 때 (반드시 이 중 하나)
 //   morning·noon·evening·night  시간대 멘트 (그 시간에만 섞여 나옴)
 //   any     언제든 나오는 멘트
+//   sleep·wake·favorDone·rest·togStart·togDone·togStop  방의 인사, 작은 부탁, 같이 하기에서
+//   advDone  모험 스테이지를 다 풀었을 때(결과 시트)
 const LINES={
   first:['반가워!','안녕!'],
   edited:['나 어때?','새로운 기분이야!','어울려?','짠! 달라졌지?'],
@@ -2062,7 +2345,19 @@ const LINES={
   evening:['오늘 어땠어?','수고했어!','저녁 먹었어?'],
   night:['졸려…','잘 자!','꿈에서 만나!'],
   any:['안녕!','반가워!','보고 싶었어!','나랑 놀자!','헤헤','오늘도 고마워!'],
+  sleep:['잘 자! 꿈빛 많이 주워 올게','흥, 내가 먼저 잔다~ 킥킥','꿈에서 만나. 늦지 마!'],        // 인사: 잘 자
+  wake:['일어났네? 늦잠꾸러기 킥킥','잘 잤어? 나 꿈에서 너 봤다!','좋은 아침! …아직 졸려'],          // 인사: 잘 잤어?
+  favorDone:['오~ 진짜 했어? …좀 하네? 킥킥','역시 내 단짝!','헤헤, 나 기분 좋아졌어'],           // 작은 부탁: 했어
+  rest:['흥, 오늘만 봐준다. 대신 나랑 뒹굴기다','그럼 같이 누워 있자','쉬는 것도 잘한 거야'],   // 작은 부탁: 오늘은 쉴래
+  togStart:['좋아, 같이 하자!','나도 옆에서 할게. 킥킥','시작! 내가 먼저 끝낸다~'],                // 같이 하기: 시작
+  togDone:['우리 해냈다!','끝! 나 좀 멋있지?','봤지? 같이 하니까 금방이잖아'],                     // 같이 하기: 끝까지
+  advDone:['봤지? 우리 둘이면 금방이야','킥킥, 내가 좀 도와줬지?','다음 판도 가 보자!','흥, 이 정도야 뭐~'],       // 모험: 다 풀었을 때
+  togStop:['여기까지 한 것도 대단해!','흥, 쉬었다 또 하면 되지','반만 해도 반은 한 거야'],         // 같이 하기: 중간에 그만
 };
+// 오늘의 작은 부탁(손시가 하는 말). 하루에 하나, [다른 거]로 바꿀 수 있음
+const FAVORS=['창문 좀 열어 줄래? 바깥 냄새 궁금해','물 한 잔 마시자. 나도 마실래','바깥 공기 맡으러 잠깐 나갈래?','세수하고 오면 나랑 놀자',
+  '빨래통에 하나만 넣어 볼래?','책상 위 하나만 치워 줘','기지개 쭉~ 같이 펴자','오늘 하늘 무슨 색이야?'];
+const FAVOR_END={done:'오늘 부탁 끝! 내일 또 줄게. 킥킥',rest:'오늘은 같이 쉬는 날!'};
 const lineTime=h=>h>=5&&h<11?'morning':h>=11&&h<14?'noon':h>=17&&h<22?'evening':h>=22||h<5?'night':'';
 let lastLine='';
 // mood가 있으면(처음 만든 뒤·수정한 뒤) 그 묶음에서만, 없으면 지금 시간대 + 언제든 멘트에서. 바로 앞과 같은 말은 피함
@@ -2113,10 +2408,10 @@ function show(st,dir){
   if(prev==='card'&&st.scr!=='card')closeResult();
   if(st.scr==='egg')enterEgg();else leaveEgg();
   if(st.scr==='step'){const i=st.step||0,N=nSteps();$('stepTitle').textContent=STEPS[i][0];stepEls.forEach((e,j)=>e.hidden=j!==i);
-    editorEnter(i,prev!=='step');requestAnimationFrame(saveBarCheck)}
+    editorEnter(i,prev!=='step')}
   else if(prev==='step')lookReset();
   if(st.scr==='name'){faceFront();angle=target;syncNtag()}   // 이름 짓기는 늘 정면(꾸미기에서 돌려 본 각도를 따라오지 않게)
-  if(st.scr==='main'){
+  if(st.scr==='main'){roomEnter();
     if(editing){editing=false;if(ST.doll)loadDoll(ST.doll)}            // 꾸미다 저장하지 않고 돌아오면 원래대로
     setPose(ST.pose,false);                                             // 메인에서 고른 포즈
     if(ST.doll)setBg(ST.doll.bg||'');
@@ -2127,7 +2422,14 @@ function show(st,dir){
     sayMood='';}
   if(st.scr==='card'){faceFront();angle=target;if(ST.doll)setBg(ST.doll.bg||'');openResult()}
   if(st.scr!=='main'){$('mbub').hidden=true;clearTimeout(sayT)}
-  layout();scrollTo(0,0);persistSoon();
+  if(st.scr==='together')togEnter();else if(prev==='together')togStop('');
+  if(st.scr==='dex')dexEnter();
+  if(st.scr==='play')playEnter(st.i);
+  if(st.scr==='set')setEnter();
+  closeSheet();tabUI();
+  const sc=document.querySelector(`.scr[data-scr="${st.scr}"] .scroll`);if(sc&&dir>0)sc.scrollTop=0;   // 새로 들어간 화면은 맨 위부터
+  if(st.scr==='adv')advEnter();   // 모험 지도는 손시가 있는 발판으로 스크롤(맨 위로 올린 뒤에)
+  layout();persistSoon();
 }
 function faceFront(){spinning=false;$('spinBtn').setAttribute('aria-pressed',false);target=Math.round(angle/(2*Math.PI))*2*Math.PI;setViewPressed('0')}
 function go(st,o={}){
@@ -2143,16 +2445,12 @@ addEventListener('popstate',e=>{
   else if(d>stack.length){history.go(stack.length-d)}   // 앞으로 가기는 막음
 });
 document.querySelectorAll('[data-back]').forEach(b=>b.onclick=goBack);
-// == 화면 버튼: 만들기·저장(꾸미기)·저장하기(이름)·수정·포즈
+// == 화면 버튼: 만들기·저장(꾸미기)·저장하기(이름)·꾸미기(방)·포즈
 // 각 화면 버튼
 $('safariGo').onclick=()=>go({scr:'egg'},{replace:true});
 $('eggGo').onclick=()=>go({scr:'step',step:0});   // 뒤로 오면 깨어난 손시·프리셋 화면(알은 다시 안 나옴)
 const nSteps=()=>editing?STEPS.length:FACE_STEPS;
 $('stepSave').onclick=()=>go({scr:'name'});
-// 저장 버튼: 꾸미기 화면 맨 아래까지 내려왔을 때 나타남(내용이 짧아 내릴 곳이 없으면 바로 보임)
-function saveBarCheck(){if(scrNow!=='step')return;const end=innerHeight+scrollY>=document.documentElement.scrollHeight-16;$('saveBar').classList.toggle('show',end)}
-addEventListener('scroll',saveBarCheck,{passive:true});addEventListener('resize',saveBarCheck);
-try{new ResizeObserver(saveBarCheck).observe($('stepBody'))}catch(_){}
 // 이름 짓기 → 저장하기. 이름이 비어 있으면 입력칸을 흔들어 알려 줌
 let sayMood='',enterSpin=false;   // enterSpin: 이름 짓고 저장한 뒤 메인에서 돌며 등장   // 다음에 메인에 들어갈 때 말풍선 상황(lines.js): 처음 만든 뒤 'first', 수정해서 바뀐 뒤 'edited'
 $('saveDoll').onclick=()=>{setName($('charName').value);
@@ -2168,7 +2466,6 @@ function setPose(n,anim){n=POSES[n]?n:'기본';const same=POSE_KEYS.every(k=>P[k
   if(same)return;POSE_KEYS.forEach(k=>P[k]=DEF[k]);Object.assign(P,POSES[n]);syncUI();rebuild();if(anim)bump()}
 Object.keys(POSES).forEach(n=>{const b=document.createElement('button');b.type='button';b.className='mpose';b.dataset.pose=n;
   b.textContent=n;b.onclick=()=>setPose(n,true);$('mainPoses').appendChild(b)});
-$('goWall').onclick=()=>go({scr:'wall'});
 // == 메인 말풍선 + 말랑통통·등장 모션 + 매 프레임(flowFrame)
 // 메인: 말풍선(들어올 때마다, 누를 때마다 다른 말 · 멘트는 lines.js) + 누르면 통통
 let bounceT0=0,popT0=0,spinT0=0,bounceK=1,sayT=0;
@@ -2206,6 +2503,147 @@ function flowFrame(now){
   partWiggle(now);
   if(egg)eggFrame(now);
 }
+// == 앱 틀: 아래 탭바(방·모험·도감), 아래에서 올라오는 시트 열고 닫기, 브라우저 확대 막기
+const TABS=['main','adv','dex'];
+// 탭 화면에서만 탭바를 보이고, 지금 탭을 표시. 탭끼리 옮길 때는 기록을 쌓지 않음(뒤로가기로 탭을 되짚지 않게)
+function tabUI(){const on=TABS.includes(scrNow);$('tabbar').hidden=!on;
+  document.querySelectorAll('#tabbar button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===scrNow))}
+document.querySelectorAll('#tabbar button').forEach(b=>b.onclick=()=>{if(scrNow!==b.dataset.tab)go({scr:b.dataset.tab},{replace:true})});
+// 시트: 한 번에 하나. 바깥(어두운 곳)이나 [닫기]를 누르면 닫힘
+let sheetOn=null;
+function openSheet(id){closeSheet();sheetOn=$(id);sheetOn.hidden=false;$('sheetBg').hidden=false}
+function closeSheet(){if(!sheetOn)return;const s=sheetOn;sheetOn=null;s.hidden=true;$('sheetBg').hidden=true;if(s.onclose)s.onclose()}
+$('sheetBg').onclick=closeSheet;
+document.querySelectorAll('.sheet [data-close]').forEach(b=>b.onclick=closeSheet);
+// 두 손가락으로 화면 전체가 확대되지 않게(아이폰 사파리는 확대 금지 설정을 무시해서). 미리보기의 두 손가락 확대는 그대로
+['gesturestart','gesturechange'].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
+// == 방: 위쪽 바(이름·꿈빛·설정), 빠른 버튼(인사·꿈열매·부탁·같이 하기), 오늘의 작은 부탁, 밤(잘 자)·아침(잘 잤어?)
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()};
+function roomEnter(){$('hudNameT').textContent=charName;$('nightVeil').classList.toggle('on',ST.room==='night');favorShow()}
+$('hudName').onclick=()=>openRename();
+$('goSet').onclick=()=>go({scr:'set'});
+const QUICK={hello:()=>openSheet('shHello'),fruit:()=>openSheet('shFruit'),together:()=>go({scr:'together'}),
+  favor:()=>{const c=$('favorCard');c.scrollIntoView({behavior:'smooth',block:'center'});c.classList.remove('pulse');void c.offsetWidth;c.classList.add('pulse')}};
+document.querySelectorAll('.qbtn').forEach(b=>b.onclick=()=>QUICK[b.dataset.q]());
+// 인사: 밤이면 방이 어두워지고, 아침이면 밝아짐(꿈빛 계산은 아직)
+function roomTime(t){ST.room=t;Save.commit();closeSheet();$('nightVeil').classList.toggle('on',t==='night');
+  bounceK=0.6;popT0=0;bounceT0=performance.now();setTimeout(()=>sayLine(t==='night'?'sleep':'wake'),200)}
+$('sayNight').onclick=()=>roomTime('night');$('sayMorning').onclick=()=>roomTime('morning');
+// 오늘의 작은 부탁: 하루에 하나(다른 거로 바꿀 수 있음). 했어·쉴래 모두 손시가 반겨 줌. 확인은 하지 않음
+function favorState(){if(!ST.favor||ST.favor.day!==today())ST.favor={day:today(),i:Math.floor(Math.random()*FAVORS.length),end:''};return ST.favor}
+function favorShow(){const f=favorState(),c=$('favorCard');c.classList.toggle('done',!!f.end);
+  $('favorText').textContent=f.end==='done'?FAVOR_END.done:f.end==='rest'?FAVOR_END.rest:FAVORS[f.i%FAVORS.length]}
+function favorEnd(how){const f=favorState();f.end=how;Save.commit();favorShow();bounceK=how==='done'?1:0.5;popT0=0;bounceT0=performance.now();
+  setTimeout(()=>sayLine(how==='done'?'favorDone':'rest'),160)}
+$('favorDone').onclick=()=>favorEnd('done');$('favorRest').onclick=()=>favorEnd('rest');
+$('favorNext').onclick=()=>{const f=favorState();f.i=(f.i+1)%FAVORS.length;Save.commit();favorShow()};
+// == 같이 하기: 할 일·시간을 고르고 타이머. 그동안 손시가 옆에서 말을 걸어 줌. 중간에 그만둬도 칭찬
+let togT=0,togEnd=0;
+const pickOf=box=>box.querySelector('[aria-pressed="true"]');
+['togTask','togTime'].forEach(id=>$(id).querySelectorAll('button').forEach(b=>b.onclick=()=>{if(togT)return;
+  $(id).querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b))}));
+function togSay(t){const b=$('togBub');b.hidden=false;typeText(b,t)}
+function togEnter(){togStop('');faceFront();angle=target;$('togBub').hidden=true}
+function togTick(){const s=Math.max(0,Math.ceil((togEnd-Date.now())/1000));$('togClock').textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+  if(s<=0)togStop('togDone')}
+function togStop(mood){if(togT){clearInterval(togT);togT=0}$('togPick').hidden=false;$('togRun').hidden=true;$('togGo').textContent='같이 시작';
+  if(mood){togSay(pickLine(mood));bounceK=1;popT0=0;bounceT0=performance.now()}}
+$('togGo').onclick=()=>{if(togT){togStop('togStop');return}
+  const m=+pickOf($('togTime')).dataset.m;togEnd=Date.now()+m*60000;
+  $('togWhat').textContent=pickOf($('togTask')).textContent+' · '+m+'분';$('togPick').hidden=true;$('togRun').hidden=false;$('togGo').textContent='그만하기';
+  togSay(pickLine('togStart'));togTick();togT=setInterval(togTick,250)};
+// == 도감: 뭉치·배지 칸(아직 빈칸), 모은 날 달력(이번 달, 오늘 표시)
+let dexTab='mungchi';
+function dexEnter(){dexSlots();dexCal()}
+document.querySelectorAll('#dexSeg button').forEach(b=>b.onclick=()=>{dexTab=b.dataset.d;
+  document.querySelectorAll('#dexSeg button').forEach(x=>x.setAttribute('aria-pressed',x===b));dexSlots()});
+function dexSlots(){$('dexSlots').innerHTML=Array.from({length:dexTab==='mungchi'?12:8},()=>'<i>?</i>').join('')}
+function dexCal(){const d=new Date(),y=d.getFullYear(),m=d.getMonth(),first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate();
+  let h='일월화수목금토'.split('').map(w=>`<b>${w}</b>`).join('')+'<span class="blank"></span>'.repeat(first);
+  for(let i=1;i<=days;i++)h+=`<span${i===d.getDate()?' class="today"':''}>${i}</span>`;
+  $('dexCal').innerHTML=h;$('dexCal').previousElementSibling.textContent='모은 날 · '+(m+1)+'월'}
+// == 모험 지도: 구불구불한 길·발판(스테이지)·선물 상자·지도 위 손시 말. 아래(1번)에서 위로 올라감. 지금은 간단한 도형으로만
+// 진행은 ST.adv = {stars:[판마다 받은 별 0~3], at:손시가 서 있는 발판, gifts:{연 상자 번호:true}}
+// 깬 판 수 = stars.length. 다음 판은 별 개수와 상관없이 열림(별은 보너스). 생명·에너지 제한 없음
+const ADV={n:12,gap:112,pad:70,gifts:[2,5,8,11]};   // gifts: 이 번호 판을 깨면 옆 상자가 열림
+let advHop=-1;   // 결과 뒤 지도로 돌아오면 이 발판으로 뛰어감
+const advSt=()=>ST.adv||(ST.adv={stars:[],at:0,gifts:{}});
+const advH=()=>ADV.pad*2+(ADV.n-1)*ADV.gap;
+const advXY=i=>({x:50+30*Math.sin(i*1.15),y:advH()-ADV.pad-i*ADV.gap});   // x는 %, y는 px
+// 상자: 두 발판 사이 길에서 옆으로 비켜 둠(마지막 상자는 끝 발판 위)
+const giftXY=k=>{const a=advXY(k),b=advXY(Math.min(k+1,ADV.n-1)),m=(a.x+b.x)/2;
+  return {x:Math.min(88,Math.max(12,m<50?m+32:m-32)),y:k+1<ADV.n?(a.y+b.y)/2:a.y-ADV.gap*.55}};
+const STAR3=n=>[0,1,2].map(j=>`<i class="${j<n?'on':''}">★</i>`).join('');
+const LOCK='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/></svg>';
+function advEnter(){const s=advSt(),done=s.stars.length,map=$('advMap'),H=advH();
+  $('advStars').lastChild.textContent=s.stars.reduce((a,b)=>a+b,0)+' / '+ADV.n*3;
+  map.style.height=H+'px';
+  // 길: 발판을 잇는 부드러운 곡선(깬 데까지는 진하게)
+  const pts=[...Array(ADV.n)].map((_,i)=>advXY(i)),W=360,X=p=>p.x/100*W;
+  const path=k=>pts.slice(0,k+1).map((p,i)=>i?`C${X(pts[i-1])},${p.y+ADV.gap/2} ${X(p)},${pts[i-1].y-ADV.gap/2} ${X(p)},${p.y}`:`M${X(p)},${p.y}`).join(' ');
+  let h=`<svg class="advpath" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><path d="${path(ADV.n-1)}"/>`+
+    (done?`<path class="on" d="${path(Math.min(done,ADV.n-1))}"/>`:'')+'</svg>';
+  pts.forEach((p,i)=>{const st=i<done?'done':i===done?'open':'lock';
+    h+=`<button type="button" class="node ${st}" data-i="${i}" style="left:${p.x}%;top:${p.y}px" aria-label="스테이지 ${i+1}">`+
+      (st==='lock'?LOCK:`<b>${i+1}</b>`)+(st==='done'?`<span class="nstars">${STAR3(s.stars[i])}</span>`:'')+'</button>'});
+  ADV.gifts.forEach(k=>{const g=giftXY(k),st=s.gifts[k]?'got':done>k?'ready':'lock';
+    h+=`<button type="button" class="gift ${st}" data-k="${k}" style="left:${g.x}%;top:${g.y}px" aria-label="선물 상자"><i></i></button>`});
+  h+=`<div class="mover" id="advMover" aria-hidden="true"><i style="background:${P.color}"></i></div>`;
+  map.innerHTML=h;
+  map.querySelectorAll('.node').forEach(b=>b.onclick=()=>advTap(+b.dataset.i,b));
+  map.querySelectorAll('.gift').forEach(b=>b.onclick=()=>giftTap(+b.dataset.k,b));
+  moverAt(Math.min(s.at,done),false);
+  const sc=$('advScroll');sc.scrollTop=advXY(advHop>=0?advHop:s.at).y-sc.clientHeight/2;   // 손시가 있는 데가 가운데
+  if(advHop>=0){const to=advHop;advHop=-1;setTimeout(()=>moverHop(to),380)}}
+// 손시 말: 발판 위에 서 있음. 다른 발판을 누르면 통통 뛰어서 감
+function moverAt(i,anim){const m=$('advMover'),p=advXY(i);m.classList.toggle('anim',anim);m.style.left=p.x+'%';m.style.top=p.y+'px'}
+function moverHop(i){const s=advSt(),m=$('advMover');if(!m)return;s.at=i;Save.commit();moverAt(i,true);
+  m.firstChild.classList.remove('hop');void m.offsetWidth;m.firstChild.classList.add('hop')}
+const shake=b=>{b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake')};
+function advTap(i,b){const s=advSt();if(i>s.stars.length){shake(b);return}
+  if(s.at===i){go({scr:'play',i});return}
+  moverHop(i);setTimeout(()=>{if(scrNow==='adv')go({scr:'play',i})},560)}
+// 선물 상자: 옆 판을 깨면 열 수 있음. 한 번만
+function giftTap(k,b){const s=advSt();if(s.gifts[k])return;if(s.stars.length<=k){shake(b);return}
+  s.gifts[k]=true;Save.commit();b.className='gift got';$('giftText').textContent='꿈빛 5개가 들어 있었어요. 꿈빛 모으기는 아직 준비 중이에요.';openSheet('shGift')}
+// == 스테이지 화면(낱말퍼즐 자리)과 결과 시트: [다 풀었어요] → 별·보상·손시 한마디 → [다시 하기]·[계속]
+// 낱말퍼즐은 아직 빈 판(8×8, 검은 칸 무늬만). 지금은 다 풀면 별 3개
+let playI=0,playAgain=false;
+const XW_BLOCK=[3,6,12,17,22,28,33,37,41,46,51,57,60];   // 검은 칸 자리(모양만)
+function playEnter(i){playI=i||0;$('playTitle').textContent='스테이지 '+(playI+1);
+  $('playGrid').innerHTML=[...Array(64)].map((_,j)=>XW_BLOCK.includes(j)?'<i class="blk"></i>':'<i></i>').join('')}
+$('playDone').onclick=()=>{const s=advSt(),n=3,first=playI>=s.stars.length;
+  s.stars[playI]=Math.max(s.stars[playI]||0,n);Save.commit();
+  $('resTitle').textContent=first?'다 풀었어요!':'또 풀었어요!';
+  $('resStars').innerHTML=STAR3(n);
+  $('resLine').textContent='“'+pickLine('advDone')+'”';
+  $('resGain').textContent='꿈빛 +'+n+' · 꿈빛 모으기는 아직 준비 중이에요.';
+  $('resNext').textContent=playI+1<ADV.n?'계속':'지도로';
+  openSheet('shResult')};
+// 결과 시트를 닫으면(계속·바깥 누르기) 지도로 돌아가 손시가 다음 발판으로 뜀. [다시 하기]는 이 판 그대로
+$('shResult').onclose=()=>{if(playAgain){playAgain=false;return}
+  if(scrNow==='play'){advHop=Math.min(playI+1,ADV.n-1);goBack()}};
+$('resNext').onclick=closeSheet;
+$('resAgain').onclick=()=>{playAgain=true;closeSheet();playEnter(playI)};
+// == 설정: 손시 이름 바꾸기(시트), 손시란?(카드 넘기기), 준비 중 항목, 처음부터 다시 만들기
+function setEnter(){$('setNameV').textContent=charName}
+function openRename(){$('renameIn').value=charName;openSheet('shRename')}
+// 저장하지 않고 닫으면(주사위로 바뀐 이름 포함) 원래 이름으로
+$('shRename').onclose=()=>{if(ST.doll&&charName!==ST.doll.name)setName(ST.doll.name)};
+$('renameIn').addEventListener('input',e=>{if(e.isComposing)return;const c=cleanName(e.target.value);if(c!==e.target.value)e.target.value=c});
+$('renameIn').addEventListener('compositionend',e=>{e.target.value=cleanName(e.target.value)});
+$('renameDice').onclick=()=>rollName($('renameDice'),$('renameIn'));
+$('renameSave').onclick=()=>{const n=cleanName($('renameIn').value),inp=$('renameIn');
+  if(!n){inp.classList.remove('nope');void inp.offsetWidth;inp.classList.add('nope');inp.focus();return}
+  setName(n);if(ST.doll){ST.doll.name=charName;Save.commit()}closeSheet();setEnter();$('hudNameT').textContent=charName};
+$('setName').onclick=openRename;
+$('setAbout').onclick=()=>go({scr:'about'});
+document.querySelectorAll('[data-soon]').forEach(b=>b.onclick=()=>openSheet('shSoon'));
+$('setReset').onclick=()=>openSheet('shReset');
+$('resetGo').onclick=()=>{Save.clear();location.reload()};
+// 손시란? 카드: 옆으로 넘기면 아래 점이 따라감
+$('aboutCards').addEventListener('scroll',()=>{const c=$('aboutCards'),w=c.firstElementChild.offsetWidth+12,i=Math.round(c.scrollLeft/w);
+  [...$('aboutDots').children].forEach((d,j)=>d.classList.toggle('on',j===i))},{passive:true});
 // ---------- 꾸미기 화면 도구 ----------
 // ① 고치는 부위로 카메라 자동 이동 ② 미리보기 아래 아이콘 탭(단계 바로 가기) ③ 되돌리기·다시하기·처음으로
 // ④ 부위별 그림 카드로 고르기(+ 세부 조정 접기) ⑤ 묶인 단계 안의 하위 탭
@@ -2441,7 +2879,7 @@ function makeEgg(){
 function eggBeat(n){const k=n/EGG_N;egg.box.style.setProperty('--beat',(2.2-1.2*k).toFixed(2)+'s');egg.box.style.setProperty('--lmin',(0.35+0.25*k).toFixed(2))}
 function hatchedUI(on){$('eggHint').hidden=on;$('eggGuide').classList.toggle('inv',!on);$('pickBox').hidden=!on;$('app').querySelector('.stagehold[data-size="egg"]').classList.toggle('done',on)}
 function enterEgg(){if(eggDone){hatchedUI(true);if(egg)egg.box.hidden=true;if(chars[0])chars[0].visible=true;return}
-  hatchedUI(false);if(!egg)makeEgg();egg.box.hidden=false;if(chars[0])chars[0].visible=false;$('eggHint').textContent='톡톡 두드려 알을 깨 보시오'}
+  hatchedUI(false);if(!egg)makeEgg();egg.box.hidden=false;if(chars[0])chars[0].visible=false;$('eggHint').textContent='톡톡 두드려 알을 깨 보세요'}
 function leaveEgg(){if(egg&&eggDone){egg.box.remove();egg=null}if(chars[0])chars[0].visible=true}
 function eggTap(){
   if(eggDone||!egg||eggTaps>=EGG_N)return;
@@ -2460,7 +2898,7 @@ function eggTap(){
     {transform:'translateY(0) scale(1,1) rotate(0deg)'}],{duration:640+k*120});
   egg.glow.animate([{opacity:1,transform:'scale(1.15)'},{opacity:0,transform:'scale(1)'}],{duration:420,easing:'ease-out'});   // 누를 때 빛 번쩍
   try{navigator.vibrate&&navigator.vibrate(10+n*2)}catch(_){}
-  $('eggHint').textContent=n<4?'톡톡 두드려 알을 깨 보시오':n<8?'손시가 깨어나고 있소!':'손시가 곧 태어나겠소!';
+  $('eggHint').textContent=n<4?'톡톡 두드려 알을 깨 보세요':n<8?'손시가 깨어나고 있어요!':'손시가 곧 태어나요!';
   if(n>=EGG_N)setTimeout(hatch,900);
 }
 // 알 그림의 알 가운데가 손시의 몸 가운데와 겹치게 세로 위치를 맞춤(손시가 알이 있던 자리에서 나오게)
