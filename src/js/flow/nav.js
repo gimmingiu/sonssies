@@ -11,10 +11,10 @@ function show(st,dir){
   if(prev==='card'&&st.scr!=='card')closeResult();
   if(st.scr==='egg')enterEgg();else leaveEgg();
   if(st.scr==='step'){const i=st.step||0,N=nSteps();$('stepTitle').textContent=STEPS[i][0];stepEls.forEach((e,j)=>e.hidden=j!==i);
-    editorEnter(i,prev!=='step');requestAnimationFrame(saveBarCheck)}
+    editorEnter(i,prev!=='step')}
   else if(prev==='step')lookReset();
   if(st.scr==='name'){faceFront();angle=target;syncNtag()}   // 이름 짓기는 늘 정면(꾸미기에서 돌려 본 각도를 따라오지 않게)
-  if(st.scr==='main'){
+  if(st.scr==='main'){roomEnter();
     if(editing){editing=false;if(ST.doll)loadDoll(ST.doll)}            // 꾸미다 저장하지 않고 돌아오면 원래대로
     setPose(ST.pose,false);                                             // 메인에서 고른 포즈
     if(ST.doll)setBg(ST.doll.bg||'');
@@ -25,7 +25,12 @@ function show(st,dir){
     sayMood='';}
   if(st.scr==='card'){faceFront();angle=target;if(ST.doll)setBg(ST.doll.bg||'');openResult()}
   if(st.scr!=='main'){$('mbub').hidden=true;clearTimeout(sayT)}
-  layout();scrollTo(0,0);persistSoon();
+  if(st.scr==='together')togEnter();else if(prev==='together')togStop('');
+  if(st.scr==='dex')dexEnter();
+  if(st.scr==='set')setEnter();
+  closeSheet();tabUI();
+  const sc=document.querySelector(`.scr[data-scr="${st.scr}"] .scroll`);if(sc&&dir>0)sc.scrollTop=0;   // 새로 들어간 화면은 맨 위부터
+  layout();persistSoon();
 }
 function faceFront(){spinning=false;$('spinBtn').setAttribute('aria-pressed',false);target=Math.round(angle/(2*Math.PI))*2*Math.PI;setViewPressed('0')}
 function go(st,o={}){

@@ -1,0 +1,48 @@
+  <!-- 설정 -->
+  <section class="scr" data-scr="set" aria-label="설정">
+    <div class="topbar"><button type="button" class="backb" data-back aria-label="이전"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><h1 class="tt">설정</h1></div>
+    <div class="scroll">
+      <div class="lgroup">
+        <button type="button" class="lrow" id="setName"><span class="lt">손시 이름</span><span class="lv" id="setNameV"></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+        <button type="button" class="lrow" id="setAbout"><span class="lt">손시란?</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+      </div>
+      <p class="lhead">도움</p>
+      <div class="lgroup">
+        <button type="button" class="lrow" data-soon><span class="lt">알림</span><span class="lv">준비 중</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+        <button type="button" class="lrow" data-soon><span class="lt">자주 묻는 질문</span><span class="lv">준비 중</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+        <button type="button" class="lrow" data-soon><span class="lt">문의하기</span><span class="lv">준비 중</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+      </div>
+      <p class="lhead">손시</p>
+      <div class="lgroup"><button type="button" class="lrow warn" id="setReset"><span class="lt">처음부터 다시 만들기</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button></div>
+      <p class="lhead">Sonssies</p>
+      <header class="mhead setstats">
+    <div class="stats" role="group" aria-label="누적 통계">
+      <button type="button" class="stat" data-k="visit" aria-expanded="false" aria-label="누적 방문객 수">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.4"/><path d="M2.8 20c.6-3.6 3.2-5.6 6.2-5.6s5.6 2 6.2 5.6"/><circle cx="17" cy="9" r="2.6"/><path d="M16.6 14.3c2.6.2 4.2 2 4.6 4.8"/></svg>
+        <b>–</b></button>
+      <button type="button" class="stat" data-k="made" aria-expanded="false" aria-label="누적 손시 생성 수">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="8" width="17" height="12" rx="5"/><path d="M7.5 8.2 8.6 4l2.4 4M16.5 8.2 15.4 4 13 8"/><circle cx="9.5" cy="13.6" r=".9" fill="currentColor"/><circle cx="14.5" cy="13.6" r=".9" fill="currentColor"/></svg>
+        <b>–</b></button>
+      <button type="button" class="stat" data-k="like" aria-expanded="false" aria-label="누적 좋아요 수">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7.5-4.4-7.5-10.2A4.3 4.3 0 0 1 12 7.3a4.3 4.3 0 0 1 7.5 2.5C19.5 15.6 12 20 12 20Z"/></svg>
+        <b>–</b></button>
+    </div>
+    <div class="stip" id="statTip" hidden role="status"><div class="bx"><strong id="stTitle"></strong><span id="stBody"></span></div></div>
+      </header>
+      <div class="setfoot">
+        <footer><div class="sns"><a href="https://www.instagram.com/sonssies/" target="_blank" rel="noopener">instagram</a><a href="https://twitter.com/sonssies" target="_blank" rel="noopener">twitter</a></div><div class="copy">ⓒ 2026 sonssies. all rights reserved.</div></footer>
+      </div>
+    </div>
+  </section>
+
+  <!-- 손시란? 그림 카드(빈칸) -->
+  <section class="scr" data-scr="about" aria-label="손시란?">
+    <div class="topbar"><button type="button" class="backb" data-back aria-label="이전"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><h1 class="tt">손시란?</h1></div>
+    <div class="acards" id="aboutCards">
+      <div class="card acard"><div class="ph sq"><em>그림 자리</em></div><b>꿈빛</b><div class="bar w80"></div><div class="bar w60"></div></div>
+      <div class="card acard"><div class="ph sq"><em>그림 자리</em></div><b>꿈알</b><div class="bar w80"></div><div class="bar w60"></div></div>
+      <div class="card acard"><div class="ph sq"><em>그림 자리</em></div><b>손시</b><div class="bar w80"></div><div class="bar w60"></div></div>
+      <div class="card acard"><div class="ph sq"><em>그림 자리</em></div><b>터</b><div class="bar w80"></div><div class="bar w60"></div></div>
+    </div>
+    <div class="adots" id="aboutDots"><i class="on"></i><i></i><i></i><i></i></div>
+  </section>

@@ -1,5 +1,5 @@
 // 손시 전체 흐름 확인 (Playwright, 휴대폰 크기 390×844)
-// 꿈알 깨기 → 기본형 고르기 → 꾸미기(탭·하위 탭·그림 카드·되돌리기·맨 아래 저장 버튼) → 이름(빈칸·주사위) → 저장 → 다시 열기 → 메인(말풍선·포즈) → 수정(몸·꼬리 단계) → 수정 저장(말풍선) → 배경화면
+// 꿈알 깨기 → 기본형 고르기 → 꾸미기(탭·하위 탭·그림 카드·되돌리기·맨 아래 저장 버튼) → 이름(빈칸·주사위) → 저장 → 다시 열기 → 메인(말풍선·포즈) → 수정(몸·꼬리 단계) → 수정 저장(말풍선) → 방(인사·작은 부탁·같이 하기) → 모험·도감 탭 → 설정(이름 바꾸기·손시란?)
 // 각 단계에서 화면 이름·눈에 보이는 요소를 검사하고, 페이지 오류가 하나라도 나면 실패로 끝남. 화면은 out_flow/에 저장.
 //
 // 준비(한 번):  npm i three@0.128.0 @fontsource/jua @fontsource/noto-sans-kr @fontsource/nanum-gothic-coding playwright
@@ -42,8 +42,7 @@ const CSS=FONTS.map(([n,w,p])=>`@font-face{font-family:'${n}';font-weight:${w};s
   await p.click('.stepbox:not([hidden]) .subtabs button:nth-child(2)');await p.waitForTimeout(1000);
   await expect('하위 탭(눈썹)','step');
   await p.click('#stabs [data-j="4"]');await p.waitForTimeout(800);
-  await p.evaluate(()=>scrollTo(0,document.documentElement.scrollHeight));await p.waitForTimeout(800);
-  await expect('맨 아래 → 저장 버튼','step',()=>document.getElementById('saveBar').classList.contains('show'));
+  await expect('저장 버튼 늘 보임','step',()=>document.getElementById('stepSave').getBoundingClientRect().bottom<=innerHeight&&document.documentElement.scrollHeight<=innerHeight+1);
   await p.click('#stepSave');await p.waitForTimeout(1000);
   await expect('이름 짓기(빈칸)','name',()=>document.getElementById('charName').value===''&&document.getElementById('nameLive').textContent==='');
   await p.click('#saveDoll');await p.waitForTimeout(600);
@@ -63,13 +62,31 @@ const CSS=FONTS.map(([n,w,p])=>`@font-face{font-family:'${n}';font-weight:${w};s
   await expect('수정 취소→메인','main');
   await p.click('#goEdit');await p.waitForTimeout(800);await p.click('#stabs [data-j="5"]');await p.waitForTimeout(4000);
   await p.click('.pcards[data-part="몸"] .tcard:nth-child(3)');await p.waitForTimeout(1500);
-  await p.evaluate(()=>scrollTo(0,document.documentElement.scrollHeight));await p.waitForTimeout(800);
   await p.click('#stepSave');await p.waitForTimeout(1000);
   await expect('수정 → 이름(이름 그대로)','name',()=>document.getElementById('charName').value!=='');
   await p.click('#saveDoll');await p.waitForTimeout(2600);
   await expect('수정 후 메인(새 모습 멘트)','main',()=>['나 어때?','새로운 기분이야!','어울려?','짠! 달라졌지?'].includes(document.getElementById('mbub').textContent));
-  await p.click('#goWall');await p.waitForTimeout(800);
-  await expect('배경화면','wall');
+  await expect('방: 탭바·빠른 버튼','main',()=>!document.getElementById('tabbar').hidden&&document.querySelectorAll('.qbtn').length===4);
+  await p.click('.qbtn[data-q="hello"]');await p.waitForTimeout(600);
+  await p.click('#sayNight');await p.waitForTimeout(1500);
+  await expect('인사: 잘 자 → 밤','main',()=>document.getElementById('nightVeil').classList.contains('on')&&document.getElementById('sheetBg').hidden);
+  await p.click('#favorDone');await p.waitForTimeout(1200);
+  await expect('작은 부탁: 했어','main',()=>document.getElementById('favorCard').classList.contains('done'));
+  await p.click('.qbtn[data-q="together"]');await p.waitForTimeout(1200);
+  await p.click('#togGo');await p.waitForTimeout(1500);
+  await expect('같이 하기: 타이머','together',()=>!document.getElementById('togRun').hidden&&/^[0-9]+:[0-9]{2}$/.test(document.getElementById('togClock').textContent));
+  await p.click('#togGo');await p.waitForTimeout(600);await p.goBack();await p.waitForTimeout(1000);
+  await p.click('#tabbar [data-tab="adv"]');await p.waitForTimeout(800);
+  await expect('탭: 모험','adv',()=>!document.getElementById('tabbar').hidden);
+  await p.click('#tabbar [data-tab="dex"]');await p.waitForTimeout(800);
+  await expect('탭: 도감(칸·달력)','dex',()=>document.querySelectorAll('#dexSlots i').length===12&&document.querySelector('#dexCal .today'));
+  await p.click('#tabbar [data-tab="main"]');await p.waitForTimeout(800);
+  await p.click('#goSet');await p.waitForTimeout(800);
+  await expect('설정','set',()=>document.getElementById('tabbar').hidden&&document.getElementById('setNameV').textContent!=='');
+  await p.click('#setName');await p.waitForTimeout(500);await p.fill('#renameIn','새이름');await p.click('#renameSave');await p.waitForTimeout(600);
+  await expect('이름 바꾸기','set',()=>document.getElementById('setNameV').textContent==='새이름');
+  await p.click('#setAbout');await p.waitForTimeout(800);
+  await expect('손시란? 카드','about',()=>document.querySelectorAll('.acard').length===4);
   await b.close();
   if(errs.length)console.log('페이지 오류:\n  '+errs.join('\n  '));
   console.log(fails.length||errs.length?`실패 ${fails.length}개, 오류 ${errs.length}개`:'모두 통과','→ 화면: '+OUT);

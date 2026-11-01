@@ -14,12 +14,18 @@
 소스는 `src/`에 역할별로 나뉘어 있고, `tools/assemble.py`가 한 파일로 합쳐요.
 합친 결과(`build/sonssies.html`) 하나가 아티팩트로도, 사이트로도 쓰여요. `build/`는 매번 새로 만드는 결과물이라 저장소에 올리지 않음(.gitignore).
 
+**앱 틀(2026-11-01~):** 게임처럼 고정된 판. 페이지는 스크롤되지 않고 화면마다 `.scroll`만 안에서 스크롤. 탭(방·모험·도감)은 아래 떠 있는 탭바, 탭끼리는 기록을 쌓지 않음(replace).
+설정은 방 오른쪽 위 톱니. 꾸미기는 방의 [꾸미기] 버튼(예전 [수정]). 만들기 탭·배경화면 화면은 없앰. 아직 내용이 없는 곳은 회색 빈칸(`.ph`, `.bar`)으로 자리만.
+색: 라이트 바탕 흰색, 다크는 토스 다크 참고(#171719 바탕, #2a2a2d 카드).
+
 ```
 src/
   page.html            뼈대. `@@include 경로` 줄이 해당 파일 내용으로 바뀜 (포함 순서 = 실행 순서)
-  styles/              디자인: base(색·글꼴 토큰) · controls(공통 부품) · card(카드 화면) · screens(단계별 화면) · egg(꿈알) · editor(꾸미기 도구)
+  styles/              디자인: base(색·글꼴 토큰) · controls(공통 부품) · card(카드 화면) · screens(단계별 화면·고정된 판) · egg(꿈알) · editor(꾸미기 도구)
+                       · shell(탭바·위쪽 바·안쪽 스크롤·카드·빈칸·목록·시트) · room(방·같이 하기·도감·모험·손시란?)
   intro/intro.html     홈 화면 앱 인트로(점프하는 손시 머리)
-  screens/             화면 HTML: app.html(알·꾸미기·이름·메인·배경화면), stage.html(3D 미리보기), card.html(카드 만들기)
+  screens/             화면 HTML: app.html(안내·꿈알·꾸미기·이름·방) + tabs.html(모험·도감·같이 하기·탭바) · settings.html(설정·손시란?) · sheets.html(시트들),
+                       stage.html(3D 미리보기), card.html(카드 만들기 — 들어가는 버튼 없음, 나중에 사용)
   js/core/             params.js(슬라이더·프리셋·포즈 정의), boot.js(초기 손시)
   js/render/           3D: renderer(조명·재질) · shape(형태 도구) · body-sdf(몸) · ears · character(머리·얼굴·볼터치·뿔·귀 조립)
                        camera(카메라 자리·화면 배치 layout) · rebuild(손시 다시 만들기) · camera-motion(확대·시선·화면 옮기기·camTo·매 프레임 frame)
@@ -30,11 +36,12 @@ src/
   js/save/save.js      ★ 저장 창구. 손시 데이터는 전부 여기로 읽고 씀 (지금은 기기 저장 → 나중에 서버 저장으로 이 파일만 교체)
   js/flow/             lines(메인 말풍선 멘트 — 새 멘트는 여기에만)
                        doll(손시 저장·불러오기) → steps(꾸미기 단계 조립·기본형 버튼) → nav(화면 이동 show·go·뒤로가기) → actions(화면 버튼·저장·수정·포즈)
-                       → motion(말풍선·말랑통통·등장·매 프레임 flowFrame)
+                       → motion(말풍선·말랑통통·등장·매 프레임 flowFrame) → shell(탭바 방·모험·도감, 시트 openSheet/closeSheet, 확대 막기)
                        editor-camera(부위별 카메라·몸통 서서히 보이기/숨기기·고친 부위만 말랑) · editor-tabs(아이콘 탭 7개·하위 탭) · editor-undo(되돌리기) ·
                        editor-thumbs(눈·입 그림 카드) · editor-cards(나머지 부위 프리셋 카드·카드 그림 구도) · editor(꾸미기 들어올 때),
                        egg-art(꿈알 그림 파일 목록, 자동 생성 — 그림 자체는 저장소 맨 위 egg/*.webp) · egg(꿈알), init(시작 화면 정하기)
                        꾸미기 단계: 피부·머리 / 뿔·귀 / 눈·눈썹 / 코·입 / 볼터치·볼살 (처음 만들 때 = 여기까지, 머리만) / 몸·꼬리 / 팔·다리 ([수정]에서만)
+  js/screens/          room(방: 위쪽 바·빠른 버튼·인사 밤/아침·오늘의 작은 부탁) · together(같이 하기 타이머) · dex(도감 칸·달력) · settings(이름 바꾸기·손시란?·다시 만들기)
   js/dev/hooks.js      테스트용 창구(window.__dk*): 아이콘·인트로 그림 뽑을 때 씀
   (js/game/, js/auth/  앞으로 추가: 게임 규칙(꿈빛·덩이·꿈열매), 로그인)
 ```
