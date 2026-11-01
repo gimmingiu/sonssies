@@ -38,7 +38,7 @@ button,a{touch-action:manipulation}
 .ph.wide{aspect-ratio:16/8}
 .ph.sq{aspect-ratio:1}
 .bar{height:12px;border-radius:6px;background:color-mix(in srgb,var(--line) 80%,transparent)}
-.w30{width:30%}.w40{width:40%}.w50{width:50%}.w60{width:60%}.w70{width:70%}.w80{width:80%}
+.w50{width:50%}.w60{width:60%}.w70{width:70%}.w80{width:80%}
 /* 목록(설정) */
 .lgroup{display:flex;flex-direction:column}
 .lhead{font:500 13px var(--f-body);color:var(--muted);margin:14px 0 0}

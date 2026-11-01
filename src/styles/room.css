@@ -1,4 +1,4 @@
-/* ===== 방·같이 하기·도감·모험·손시란? ===== */
+/* ===== 방·같이 하기·도감·손시란? ===== */
 .stagehold[data-size="main"] .stage .sname{display:none}   /* 방에서는 이름을 위쪽 바에 */
 /* 밤: 잘 자 인사 뒤 방이 어두워짐 */
 .nightveil{position:absolute;inset:0;z-index:7;border-radius:14px;background:radial-gradient(circle at 50% 30%,rgba(42,49,80,.35),rgba(42,49,80,.78));
@@ -36,8 +36,6 @@
 .cal span{aspect-ratio:1;border-radius:50%;display:grid;place-items:center;font:400 13px var(--f-mono);background:var(--bg);color:var(--muted)}
 .cal span.today{box-shadow:0 0 0 2px var(--accent);color:var(--fg)}
 .cal span.blank{background:none}
-/* 모험 */
-.advc{gap:10px}
 /* 손시란? 카드 넘기기 */
 .acards{flex:1;min-height:0;display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -16px;padding:4px 16px;scrollbar-width:none}
 .acards::-webkit-scrollbar{display:none}

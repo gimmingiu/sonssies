@@ -1,0 +1,17 @@
+  <!-- 모험 (탭): 구불구불한 길 위 발판(스테이지)·선물 상자. 아래에서 위로 올라감. 지금은 간단한 도형으로만 -->
+  <section class="scr tabscr" data-scr="adv" aria-label="모험">
+    <header class="hud"><h1 class="tt">모험</h1><span class="dream advstars" id="advStars"><b aria-hidden="true">★</b>0</span></header>
+    <div class="scroll" id="advScroll"><div class="advmap" id="advMap"></div></div>
+  </section>
+
+  <!-- 스테이지: 낱말퍼즐(아직 빈 판). [다 풀었소] → 결과 시트 -->
+  <section class="scr" data-scr="play" aria-label="스테이지">
+    <div class="topbar"><button type="button" class="backb" data-back aria-label="이전"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><h1 class="tt" id="playTitle">스테이지</h1></div>
+    <div class="scroll">
+      <div class="card"><span class="ctag">가로세로 낱말퍼즐</span><div class="xw" id="playGrid"></div></div>
+      <div class="card"><span class="ctag">가로 열쇠</span><div class="bar w80"></div><div class="bar w60"></div><div class="bar w70"></div></div>
+      <div class="card"><span class="ctag">세로 열쇠</span><div class="bar w70"></div><div class="bar w50"></div><div class="bar w60"></div></div>
+      <p class="hint">낱말퍼즐은 짓는 중이오. 지금은 [다 풀었소]로 넘어가 보시오.</p>
+    </div>
+    <div class="bbar savebar"><button type="button" class="bigbtn" id="playDone">다 풀었소</button></div>
+  </section>

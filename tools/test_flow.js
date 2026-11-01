@@ -1,5 +1,5 @@
 // 손시 전체 흐름 확인 (Playwright, 휴대폰 크기 390×844)
-// 꿈알 깨기 → 기본형 고르기 → 꾸미기(탭·하위 탭·그림 카드·되돌리기·맨 아래 저장 버튼) → 이름(빈칸·주사위) → 저장 → 다시 열기 → 메인(말풍선·포즈) → 수정(몸·꼬리 단계) → 수정 저장(말풍선) → 방(인사·작은 부탁·같이 하기) → 모험·도감 탭 → 설정(이름 바꾸기·손시란?)
+// 꿈알 깨기 → 기본형 고르기 → 꾸미기(탭·하위 탭·그림 카드·되돌리기·맨 아래 저장 버튼) → 이름(빈칸·주사위) → 저장 → 다시 열기 → 메인(말풍선·포즈) → 수정(몸·꼬리 단계) → 수정 저장(말풍선) → 방(인사·작은 부탁·같이 하기) → 모험(지도·스테이지·결과·선물 상자) → 도감 탭 → 설정(이름 바꾸기·손시란?)
 // 각 단계에서 화면 이름·눈에 보이는 요소를 검사하고, 페이지 오류가 하나라도 나면 실패로 끝남. 화면은 out_flow/에 저장.
 //
 // 준비(한 번):  npm i three@0.128.0 @fontsource/jua @fontsource/noto-sans-kr @fontsource/nanum-gothic-coding playwright
@@ -77,7 +77,20 @@ const CSS=FONTS.map(([n,w,p])=>`@font-face{font-family:'${n}';font-weight:${w};s
   await expect('같이 하기: 타이머','together',()=>!document.getElementById('togRun').hidden&&/^[0-9]+:[0-9]{2}$/.test(document.getElementById('togClock').textContent));
   await p.click('#togGo');await p.waitForTimeout(600);await p.goBack();await p.waitForTimeout(1000);
   await p.click('#tabbar [data-tab="adv"]');await p.waitForTimeout(800);
-  await expect('탭: 모험','adv',()=>!document.getElementById('tabbar').hidden);
+  await expect('탭: 모험(지도)','adv',()=>!document.getElementById('tabbar').hidden&&document.querySelectorAll('#advMap .node').length===12&&
+    document.querySelector('#advMap .node.open').dataset.i==='0'&&document.querySelectorAll('#advMap .node.lock').length===11);
+  await p.click('#advMap .node[data-i="0"]');await p.waitForTimeout(1000);
+  await expect('스테이지 1(빈 낱말 판)','play',()=>document.getElementById('tabbar').hidden&&document.querySelectorAll('#playGrid i').length===64);
+  await p.click('#playDone');await p.waitForTimeout(800);
+  await expect('결과 시트(별 3)','play',()=>!document.getElementById('shResult').hidden&&document.querySelectorAll('#resStars i.on').length===3);
+  await p.click('#resNext');await p.waitForTimeout(1600);
+  await expect('지도: 1 깸·2 열림·손시 이동','adv',()=>document.querySelector('#advMap .node[data-i="0"]').classList.contains('done')&&
+    document.querySelector('#advMap .node[data-i="1"]').classList.contains('open')&&document.getElementById('advStars').textContent.includes('3 / 36'));
+  for(let i=1;i<3;i++){await p.click(`#advMap .node[data-i="${i}"]`);await p.waitForTimeout(900);await p.click('#playDone');await p.waitForTimeout(600);
+    await p.click('#resNext');await p.waitForTimeout(1400)}
+  await p.click('#advMap .gift[data-k="2"]');await p.waitForTimeout(800);
+  await expect('선물 상자(3판 깬 뒤)','adv',()=>!document.getElementById('shGift').hidden);
+  await p.click('#shGift [data-close]');await p.waitForTimeout(400);
   await p.click('#tabbar [data-tab="dex"]');await p.waitForTimeout(800);
   await expect('탭: 도감(칸·달력)','dex',()=>document.querySelectorAll('#dexSlots i').length===12&&document.querySelector('#dexCal .today'));
   await p.click('#tabbar [data-tab="main"]');await p.waitForTimeout(800);

@@ -27,9 +27,11 @@ function show(st,dir){
   if(st.scr!=='main'){$('mbub').hidden=true;clearTimeout(sayT)}
   if(st.scr==='together')togEnter();else if(prev==='together')togStop('');
   if(st.scr==='dex')dexEnter();
+  if(st.scr==='play')playEnter(st.i);
   if(st.scr==='set')setEnter();
   closeSheet();tabUI();
   const sc=document.querySelector(`.scr[data-scr="${st.scr}"] .scroll`);if(sc&&dir>0)sc.scrollTop=0;   // 새로 들어간 화면은 맨 위부터
+  if(st.scr==='adv')advEnter();   // 모험 지도는 손시가 있는 발판으로 스크롤(맨 위로 올린 뒤에)
   layout();persistSoon();
 }
 function faceFront(){spinning=false;$('spinBtn').setAttribute('aria-pressed',false);target=Math.round(angle/(2*Math.PI))*2*Math.PI;setViewPressed('0')}

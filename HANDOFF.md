@@ -22,9 +22,9 @@
 src/
   page.html            뼈대. `@@include 경로` 줄이 해당 파일 내용으로 바뀜 (포함 순서 = 실행 순서)
   styles/              디자인: base(색·글꼴 토큰) · controls(공통 부품) · card(카드 화면) · screens(단계별 화면·고정된 판) · egg(꿈알) · editor(꾸미기 도구)
-                       · shell(탭바·위쪽 바·안쪽 스크롤·카드·빈칸·목록·시트) · room(방·같이 하기·도감·모험·손시란?)
+                       · shell(탭바·위쪽 바·안쪽 스크롤·카드·빈칸·목록·시트) · room(방·같이 하기·도감·손시란?) · adventure(모험 지도·스테이지·결과/선물 시트)
   intro/intro.html     홈 화면 앱 인트로(점프하는 손시 머리)
-  screens/             화면 HTML: app.html(안내·꿈알·꾸미기·이름·방) + tabs.html(모험·도감·같이 하기·탭바) · settings.html(설정·손시란?) · sheets.html(시트들),
+  screens/             화면 HTML: app.html(안내·꿈알·꾸미기·이름·방) + tabs.html(도감·같이 하기·탭바) · adventure.html(모험 지도·스테이지) · settings.html(설정·손시란?) · sheets.html(시트들),
                        stage.html(3D 미리보기), card.html(카드 만들기 — 들어가는 버튼 없음, 나중에 사용)
   js/core/             params.js(슬라이더·프리셋·포즈 정의), boot.js(초기 손시)
   js/render/           3D: renderer(조명·재질) · shape(형태 도구) · body-sdf(몸) · ears · character(머리·얼굴·볼터치·뿔·귀 조립)
@@ -41,7 +41,7 @@ src/
                        editor-thumbs(눈·입 그림 카드) · editor-cards(나머지 부위 프리셋 카드·카드 그림 구도) · editor(꾸미기 들어올 때),
                        egg-art(꿈알 그림 파일 목록, 자동 생성 — 그림 자체는 저장소 맨 위 egg/*.webp) · egg(꿈알), init(시작 화면 정하기)
                        꾸미기 단계: 피부·머리 / 뿔·귀 / 눈·눈썹 / 코·입 / 볼터치·볼살 (처음 만들 때 = 여기까지, 머리만) / 몸·꼬리 / 팔·다리 ([수정]에서만)
-  js/screens/          room(방: 위쪽 바·빠른 버튼·인사 밤/아침·오늘의 작은 부탁) · together(같이 하기 타이머) · dex(도감 칸·달력) · settings(이름 바꾸기·손시란?·다시 만들기)
+  js/screens/          room(방: 위쪽 바·빠른 버튼·인사 밤/아침·오늘의 작은 부탁) · together(같이 하기 타이머) · dex(도감 칸·달력) · adventure(모험 지도: 길·발판·선물 상자·손시 말, 진행 ST.adv) · play(스테이지=낱말퍼즐 자리·결과 시트) · settings(이름 바꾸기·손시란?·다시 만들기)
   js/dev/hooks.js      테스트용 창구(window.__dk*): 아이콘·인트로 그림 뽑을 때 씀
   (js/game/, js/auth/  앞으로 추가: 게임 규칙(꿈빛·덩이·꿈열매), 로그인)
 ```
